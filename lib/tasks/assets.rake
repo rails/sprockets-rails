@@ -8,9 +8,9 @@ namespace :assets do
     args << "--trace" if Rake.application.options.trace
     if $0 =~ /rake\.bat\Z/i
       Kernel.exec $0, *args
-    else  
+    else
       fork ? ruby(*args) : Kernel.exec(FileUtils::RUBY, *args)
-    end    
+    end
   end
 
   # We are currently running with no explicit bundler group
@@ -47,12 +47,12 @@ namespace :assets do
 
       env      = Rails.application.assets
       target   = File.join(Rails.public_path, config.assets.prefix)
-      compiler = Sprockets::StaticCompiler.new(env,
-                                               target,
-                                               config.assets.precompile,
-                                               :manifest_path => config.assets.manifest,
-                                               :digest => config.assets.digest,
-                                               :manifest => digest.nil?)
+      compiler = Sprockets::Rails::StaticCompiler.new(env,
+                                                      target,
+                                                      config.assets.precompile,
+                                                      :manifest_path => config.assets.manifest,
+                                                      :digest => config.assets.digest,
+                                                      :manifest => digest.nil?)
       compiler.compile
     end
 
@@ -99,7 +99,7 @@ namespace :assets do
       Rake::Task["environment"].invoke
     else
       Rails.application.initialize!(:assets)
-      Sprockets::Bootstrap.new(Rails.application).run
+      Sprockets::Rails::Bootstrap.new(Rails.application).run
     end
   end
 end
