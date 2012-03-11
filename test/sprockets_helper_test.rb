@@ -1,12 +1,9 @@
-require 'abstract_unit'
-require 'sprockets'
-require 'sprockets/helpers/rails_helper'
-require 'mocha'
+require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 
-class SprocketsHelperTest < ActionView::TestCase
-  include Sprockets::Helpers::RailsHelper
+class SprocketsHelperTest < ActiveSupport::TestCase
+  include Sprockets::Rails::Helpers::RailsHelper
 
-  attr_accessor :assets
+  attr_accessor :assets, :controller, :params
 
   class MockRequest
     def protocol() 'http://' end
@@ -16,23 +13,22 @@ class SprocketsHelperTest < ActionView::TestCase
   end
 
   def setup
-    super
-
     @controller         = BasicController.new
     @controller.request = MockRequest.new
 
     @assets = Sprockets::Environment.new
-    @assets.append_path(FIXTURES.join("sprockets/app/javascripts"))
-    @assets.append_path(FIXTURES.join("sprockets/app/stylesheets"))
-    @assets.append_path(FIXTURES.join("sprockets/app/images"))
-    @assets.append_path(FIXTURES.join("sprockets/app/fonts"))
+    @assets.append_path(FIXTURES.join("app/javascripts"))
+    @assets.append_path(FIXTURES.join("app/stylesheets"))
+    @assets.append_path(FIXTURES.join("app/images"))
+    @assets.append_path(FIXTURES.join("app/fonts"))
 
     application = Struct.new(:config, :assets).new(config, @assets)
-    Rails.stubs(:application).returns(application)
+    ::Rails.stubs(:application).returns(application)
     @config = config
     @config.perform_caching = true
     @config.assets.digest = true
     @config.assets.compile = true
+    @params = {}
   end
 
   def url_for(*args)
@@ -321,7 +317,7 @@ class SprocketsHelperTest < ActionView::TestCase
 
   test "alternate asset environment" do
     assets = Sprockets::Environment.new
-    assets.append_path(FIXTURES.join("sprockets/alternate/stylesheets"))
+    assets.append_path(FIXTURES.join("alternate/stylesheets"))
     stubs(:asset_environment).returns(assets)
     assert_match %r{/assets/style-[0-9a-f]+.css}, asset_path("style", :ext => "css")
   end
@@ -329,7 +325,7 @@ class SprocketsHelperTest < ActionView::TestCase
   test "alternate hash based on environment" do
     assets = Sprockets::Environment.new
     assets.version = 'development'
-    assets.append_path(FIXTURES.join("sprockets/alternate/stylesheets"))
+    assets.append_path(FIXTURES.join("alternate/stylesheets"))
     stubs(:asset_environment).returns(assets)
     dev_path = asset_path("style", :ext => "css")
 

@@ -1,10 +1,9 @@
-require 'abstract_unit'
-require 'sprockets'
-require 'sprockets/helpers/rails_helper'
-require 'mocha'
+require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 
-class SprocketsHelperWithRoutesTest < ActionView::TestCase
-  include Sprockets::Helpers::RailsHelper
+class SprocketsHelperWithRoutesTest < ActiveSupport::TestCase
+  include Sprockets::Rails::Helpers::RailsHelper
+
+  attr_accessor :controller, :params
 
   # Let's bring in some named routes to test namespace conflicts with potential *_paths.
   # We have to do this after we bring in the Sprockets RailsHelper so if there are conflicts,
@@ -16,20 +15,24 @@ class SprocketsHelperWithRoutesTest < ActionView::TestCase
   include routes.url_helpers
 
   def setup
-    super
     @controller = BasicController.new
 
     @assets = Sprockets::Environment.new
-    @assets.append_path(FIXTURES.join("sprockets/app/javascripts"))
-    @assets.append_path(FIXTURES.join("sprockets/app/stylesheets"))
-    @assets.append_path(FIXTURES.join("sprockets/app/images"))
+    @assets.append_path(FIXTURES.join("app/javascripts"))
+    @assets.append_path(FIXTURES.join("app/stylesheets"))
+    @assets.append_path(FIXTURES.join("app/images"))
 
     application = Struct.new(:config, :assets).new(config, @assets)
-    Rails.stubs(:application).returns(application)
+    ::Rails.stubs(:application).returns(application)
     @config = config
     @config.perform_caching = true
     @config.assets.digest = true
     @config.assets.compile = true
+    @params = {}
+  end
+
+  def config
+    @controller ? @controller.config : @config
   end
 
   test "namespace conflicts on a named route called asset_path" do

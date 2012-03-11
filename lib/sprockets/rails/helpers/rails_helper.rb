@@ -81,7 +81,7 @@ module Sprockets
 
       private
         def debug_assets?
-          compile_assets? && (Rails.application.config.assets.debug || params[:debug_assets])
+          compile_assets? && (::Rails.application.config.assets.debug || params[:debug_assets])
         rescue NoMethodError
           false
         end
@@ -93,26 +93,26 @@ module Sprockets
         # If you only want to change where the assets are mounted, refer to
         # +config.assets.prefix+ instead.
         def asset_prefix
-          Rails.application.config.assets.prefix
+          ::Rails.application.config.assets.prefix
         end
 
         def asset_digests
-          Rails.application.config.assets.digests
+          ::Rails.application.config.assets.digests
         end
 
         def compile_assets?
-          Rails.application.config.assets.compile
+          ::Rails.application.config.assets.compile
         end
 
         def digest_assets?
-          Rails.application.config.assets.digest
+          ::Rails.application.config.assets.digest
         end
 
         # Override to specify an alternative asset environment for asset
         # path generation. The environment should already have been mounted
         # at the prefix returned by +asset_prefix+.
         def asset_environment
-          Rails.application.assets
+          ::Rails.application.assets
         end
 
         class AssetPaths < ::ActionView::AssetPaths #:nodoc:
