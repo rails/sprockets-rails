@@ -7,7 +7,7 @@ module Sprockets
         end
 
         def config
-          Rails.application.config.action_controller
+          ::Rails.application.config.action_controller
         end
       end
     end

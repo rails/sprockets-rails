@@ -31,7 +31,7 @@ namespace :assets do
 
   namespace :precompile do
     def internal_precompile(digest=nil)
-      unless Rails.application.config.assets.enabled
+      unless ::Rails.application.config.assets.enabled
         warn "Cannot precompile assets if sprockets is disabled. Please set config.assets.enabled to true"
         exit
       end
@@ -40,13 +40,13 @@ namespace :assets do
       # sprockets hooks get executed
       _ = ActionView::Base
 
-      config = Rails.application.config
+      config = ::Rails.application.config
       config.assets.compile = true
       config.assets.digest  = digest unless digest.nil?
       config.assets.digests = {}
 
-      env      = Rails.application.assets
-      target   = File.join(Rails.public_path, config.assets.prefix)
+      env      = ::Rails.application.assets
+      target   = File.join(::Rails.public_path, config.assets.prefix)
       compiler = Sprockets::Rails::StaticCompiler.new(env,
                                                       target,
                                                       config.assets.precompile,
@@ -63,7 +63,7 @@ namespace :assets do
       # required in order to compile digestless assets as the
       # environment has already cached the assets on the primary
       # run.
-      ruby_rake_task("assets:precompile:nondigest", false) if Rails.application.config.assets.digest
+      ruby_rake_task("assets:precompile:nondigest", false) if ::Rails.application.config.assets.digest
     end
 
     task :primary => ["assets:cache:clean"] do
@@ -82,23 +82,23 @@ namespace :assets do
 
   namespace :clean do
     task :all => ["assets:cache:clean"] do
-      config = Rails.application.config
-      public_asset_path = File.join(Rails.public_path, config.assets.prefix)
+      config = ::Rails.application.config
+      public_asset_path = File.join(::Rails.public_path, config.assets.prefix)
       rm_rf public_asset_path, :secure => true
     end
   end
 
   namespace :cache do
     task :clean => ["assets:environment"] do
-      Rails.application.assets.cache.clear
+      ::Rails.application.assets.cache.clear
     end
   end
 
   task :environment do
-    if Rails.application.config.assets.initialize_on_precompile
+    if ::Rails.application.config.assets.initialize_on_precompile
       Rake::Task["environment"].invoke
     else
-      Rails.application.initialize!(:assets)
+      ::Rails.application.initialize!(:assets)
       Sprockets::Rails::Bootstrap.new(Rails.application).run
     end
   end
