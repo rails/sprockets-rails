@@ -1,8 +1,8 @@
-require 'isolation/abstract_unit'
+require File.expand_path(File.dirname(__FILE__) + "/abstract_unit")
 require 'rack/test'
 
 module ApplicationTests
-  class AssetDebuggingTest < ActiveSupport::TestCase
+  class AssetsDebuggingTest < ActiveSupport::TestCase
     include ActiveSupport::Testing::Isolation
     include Rack::Test::Methods
 

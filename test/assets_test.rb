@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'isolation/abstract_unit'
-require 'active_support/core_ext/kernel/reporting'
+require File.expand_path(File.dirname(__FILE__) + "/abstract_unit")
 require 'rack/test'
 
 module ApplicationTests
