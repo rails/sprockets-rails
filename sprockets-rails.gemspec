@@ -16,5 +16,4 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency "sprockets", "~> 2.2.0"
   s.add_runtime_dependency "railties",  ">= 4.0.0.beta", '< 5.0'
-  s.add_development_dependency "mocha"
 end
