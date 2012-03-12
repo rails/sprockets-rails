@@ -1,12 +1,24 @@
 #!/usr/bin/env rake
 require 'rake/testtask'
 
-Rake::TestTask.new(:test) do |t|
+namespace :test do
+  task :isolated do
+    Dir["test/assets*_test.rb"].each do |file|
+      dash_i = [
+        'test',
+        'lib',
+      ]
+      ruby "-I#{dash_i.join ':'}", file
+    end
+  end
+end
+
+Rake::TestTask.new("test:regular") do |t|
   t.libs << 'lib'
   t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
+  t.pattern = 'test/**/sprockets*_test.rb'
   t.verbose = true
 end
 
-
+task :test => ['test:isolated', 'test:regular']
 task :default => :test
