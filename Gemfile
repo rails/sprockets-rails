@@ -4,3 +4,6 @@ source "http://rubygems.org"
 gemspec
 
 gem "rails", :git => "git://github.com/rails/rails"
+gem "uglifier", :require => false
+gem "mocha"
+gem "jquery-rails"
