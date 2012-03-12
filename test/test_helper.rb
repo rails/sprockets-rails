@@ -1,14 +1,10 @@
 lib = File.expand_path("#{File.dirname(__FILE__)}/../lib")
 $:.unshift(lib) unless $:.include?('lib') || $:.include?(lib)
 
-ENV['TMPDIR'] = File.join(File.dirname(__FILE__), 'tmp')
-
 require 'minitest/autorun'
 require 'sprockets-rails'
 require 'action_controller'
 require 'mocha'
-require 'abstract_controller'
-require 'action_view'
 require 'active_support/dependencies'
 require 'action_controller/vendor/html-scanner'
 
