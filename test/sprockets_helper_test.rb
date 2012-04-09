@@ -228,34 +228,34 @@ class SprocketsHelperTest < ActiveSupport::TestCase
   end
 
   test "javascript include tag" do
-    assert_match %r{<script src="/assets/application-[0-9a-f]+.js" type="text/javascript"></script>},
+    assert_match %r{<script src="/assets/application-[0-9a-f]+.js"></script>},
       javascript_include_tag(:application)
-    assert_match %r{<script src="/assets/application-[0-9a-f]+.js" type="text/javascript"></script>},
+    assert_match %r{<script src="/assets/application-[0-9a-f]+.js"></script>},
       javascript_include_tag(:application, :digest => true)
-    assert_match %r{<script src="/assets/application.js" type="text/javascript"></script>},
+    assert_match %r{<script src="/assets/application.js"></script>},
       javascript_include_tag(:application, :digest => false)
 
-    assert_match %r{<script src="/assets/xmlhr-[0-9a-f]+.js" type="text/javascript"></script>},
+    assert_match %r{<script src="/assets/xmlhr-[0-9a-f]+.js"></script>},
       javascript_include_tag("xmlhr")
-    assert_match %r{<script src="/assets/xmlhr-[0-9a-f]+.js" type="text/javascript"></script>},
+    assert_match %r{<script src="/assets/xmlhr-[0-9a-f]+.js"></script>},
       javascript_include_tag("xmlhr.js")
-    assert_equal '<script src="http://www.example.com/xmlhr" type="text/javascript"></script>',
+    assert_equal '<script src="http://www.example.com/xmlhr"></script>',
       javascript_include_tag("http://www.example.com/xmlhr")
 
-    assert_match %r{<script src=\"/assets/xmlhr-[0-9a-f]+.js" type=\"text/javascript\"></script>\n<script src=\"/assets/extra-[0-9a-f]+.js" type=\"text/javascript\"></script>},
+    assert_match %r{<script src=\"/assets/xmlhr-[0-9a-f]+.js"></script>\n<script src=\"/assets/extra-[0-9a-f]+.js"></script>},
       javascript_include_tag("xmlhr", "extra")
 
-    assert_match %r{<script src="/assets/xmlhr-[0-9a-f]+.js\?body=1" type="text/javascript"></script>\n<script src="/assets/application-[0-9a-f]+.js\?body=1" type="text/javascript"></script>},
+    assert_match %r{<script src="/assets/xmlhr-[0-9a-f]+.js\?body=1"></script>\n<script src="/assets/application-[0-9a-f]+.js\?body=1"></script>},
       javascript_include_tag(:application, :debug => true)
 
-    assert_match %r{<script src="/assets/jquery.plugin.js" type="text/javascript"></script>},
+    assert_match %r{<script src="/assets/jquery.plugin.js"></script>},
       javascript_include_tag('jquery.plugin', :digest => false)
 
     @config.assets.compile = true
     @config.assets.debug = true
-    assert_match %r{<script src="/javascripts/application.js" type="text/javascript"></script>},
+    assert_match %r{<script src="/javascripts/application.js"></script>},
       javascript_include_tag('/javascripts/application')
-    assert_match %r{<script src="/assets/xmlhr-[0-9a-f]+.js\?body=1" type="text/javascript"></script>\n<script src="/assets/application-[0-9a-f]+.js\?body=1" type="text/javascript"></script>},
+    assert_match %r{<script src="/assets/xmlhr-[0-9a-f]+.js\?body=1"></script>\n<script src="/assets/application-[0-9a-f]+.js\?body=1"></script>},
       javascript_include_tag(:application)
   end
 
@@ -273,40 +273,40 @@ class SprocketsHelperTest < ActiveSupport::TestCase
   end
 
   test "stylesheet link tag" do
-    assert_match %r{<link href="/assets/application-[0-9a-f]+.css" media="screen" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/application-[0-9a-f]+.css" media="screen" rel="stylesheet" />},
       stylesheet_link_tag(:application)
-    assert_match %r{<link href="/assets/application-[0-9a-f]+.css" media="screen" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/application-[0-9a-f]+.css" media="screen" rel="stylesheet" />},
       stylesheet_link_tag(:application, :digest => true)
-    assert_match %r{<link href="/assets/application.css" media="screen" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/application.css" media="screen" rel="stylesheet" />},
       stylesheet_link_tag(:application, :digest => false)
 
-    assert_match %r{<link href="/assets/style-[0-9a-f]+.css" media="screen" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/style-[0-9a-f]+.css" media="screen" rel="stylesheet" />},
       stylesheet_link_tag("style")
-    assert_match %r{<link href="/assets/style-[0-9a-f]+.css" media="screen" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/style-[0-9a-f]+.css" media="screen" rel="stylesheet" />},
       stylesheet_link_tag("style.css")
 
-    assert_equal '<link href="http://www.example.com/style.css" media="screen" rel="stylesheet" type="text/css" />',
+    assert_equal '<link href="http://www.example.com/style.css" media="screen" rel="stylesheet" />',
       stylesheet_link_tag("http://www.example.com/style.css")
-    assert_match %r{<link href="/assets/style-[0-9a-f]+.css" media="all" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/style-[0-9a-f]+.css" media="all" rel="stylesheet" />},
       stylesheet_link_tag("style", :media => "all")
-    assert_match %r{<link href="/assets/style-[0-9a-f]+.css" media="print" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/style-[0-9a-f]+.css" media="print" rel="stylesheet" />},
       stylesheet_link_tag("style", :media => "print")
 
-    assert_match %r{<link href="/assets/style-[0-9a-f]+.css" media="screen" rel="stylesheet" type="text/css" />\n<link href="/assets/extra-[0-9a-f]+.css" media="screen" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/style-[0-9a-f]+.css" media="screen" rel="stylesheet" />\n<link href="/assets/extra-[0-9a-f]+.css" media="screen" rel="stylesheet" />},
       stylesheet_link_tag("style", "extra")
 
-    assert_match %r{<link href="/assets/style-[0-9a-f]+.css\?body=1" media="screen" rel="stylesheet" type="text/css" />\n<link href="/assets/application-[0-9a-f]+.css\?body=1" media="screen" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/style-[0-9a-f]+.css\?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/application-[0-9a-f]+.css\?body=1" media="screen" rel="stylesheet" />},
       stylesheet_link_tag(:application, :debug => true)
 
     @config.assets.compile = true
     @config.assets.debug = true
-    assert_match %r{<link href="/stylesheets/application.css" media="screen" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/stylesheets/application.css" media="screen" rel="stylesheet" />},
       stylesheet_link_tag('/stylesheets/application')
 
-    assert_match %r{<link href="/assets/style-[0-9a-f]+.css\?body=1" media="screen" rel="stylesheet" type="text/css" />\n<link href="/assets/application-[0-9a-f]+.css\?body=1" media="screen" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/style-[0-9a-f]+.css\?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/application-[0-9a-f]+.css\?body=1" media="screen" rel="stylesheet" />},
       stylesheet_link_tag(:application)
 
-    assert_match %r{<link href="/assets/style-[0-9a-f]+.css\?body=1" media="print" rel="stylesheet" type="text/css" />\n<link href="/assets/application-[0-9a-f]+.css\?body=1" media="print" rel="stylesheet" type="text/css" />},
+    assert_match %r{<link href="/assets/style-[0-9a-f]+.css\?body=1" media="print" rel="stylesheet" />\n<link href="/assets/application-[0-9a-f]+.css\?body=1" media="print" rel="stylesheet" />},
       stylesheet_link_tag(:application, :media => "print")
   end
 
