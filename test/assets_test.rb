@@ -27,7 +27,7 @@ module ApplicationTests
 
       app_file 'config/routes.rb', <<-RUBY
         AppTemplate::Application.routes.draw do
-          match '*path', :to => lambda { |env| [200, { "Content-Type" => "text/html" }, "Not an asset"] }
+          get '*path', :to => lambda { |env| [200, { "Content-Type" => "text/html" }, "Not an asset"] }
         end
       RUBY
 
@@ -203,7 +203,7 @@ module ApplicationTests
 
       app_file "config/routes.rb", <<-RUBY
         AppTemplate::Application.routes.draw do
-          match '/posts', :to => "posts#index"
+          get '/posts', :to => "posts#index"
         end
       RUBY
 
@@ -229,7 +229,7 @@ module ApplicationTests
 
       app_file "config/routes.rb", <<-RUBY
         AppTemplate::Application.routes.draw do
-          match '/posts', :to => "posts#index"
+          get '/posts', :to => "posts#index"
         end
       RUBY
 
@@ -333,7 +333,7 @@ module ApplicationTests
 
       app_file "config/routes.rb", <<-RUBY
         AppTemplate::Application.routes.draw do
-          match '/omg', :to => "omg#index"
+          get '/omg', :to => "omg#index"
         end
       RUBY
 
@@ -524,7 +524,7 @@ module ApplicationTests
 
       app_file "config/routes.rb", <<-RUBY
         AppTemplate::Application.routes.draw do
-          match '/posts', :to => "posts#index"
+          get '/posts', :to => "posts#index"
         end
       RUBY
     end
