@@ -55,7 +55,7 @@ module ActiveSupport
     # have been loaded.
     setup_once do
       SharedTestRoutes.draw do
-        match ':controller(/:action)'
+        get ':controller(/:action)'
       end
     end
 
