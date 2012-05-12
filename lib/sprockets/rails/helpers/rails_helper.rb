@@ -67,17 +67,17 @@ module Sprockets
         def font_path(source)
           path_to_asset(source)
         end
-        alias_method :path_to_font, :font_path # aliased to avoid conflicts with an font_path named route
+        alias_method :path_to_font, :font_path # aliased to avoid conflicts with a font_path named route
 
         def javascript_path(source)
           path_to_asset(source, :ext => 'js')
         end
-        alias_method :path_to_javascript, :javascript_path # aliased to avoid conflicts with an javascript_path named route
+        alias_method :path_to_javascript, :javascript_path # aliased to avoid conflicts with a javascript_path named route
 
         def stylesheet_path(source)
           path_to_asset(source, :ext => 'css')
         end
-        alias_method :path_to_stylesheet, :stylesheet_path # aliased to avoid conflicts with an stylesheet_path named route
+        alias_method :path_to_stylesheet, :stylesheet_path # aliased to avoid conflicts with a stylesheet_path named route
 
       private
         def debug_assets?
@@ -120,6 +120,8 @@ module Sprockets
 
           class AssetNotPrecompiledError < StandardError; end
 
+          # Retrieve the asset path on disk, for processed files +ext+ should
+          # contain the final extension (e.g. +js+ for  <tt>*.js.coffee</tt>).
           def asset_for(source, ext)
             source = source.to_s
             return nil if is_uri?(source)
