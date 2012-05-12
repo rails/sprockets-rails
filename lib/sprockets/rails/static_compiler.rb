@@ -17,8 +17,7 @@ module Sprockets
 
       def compile
         manifest = {}
-        env.each_logical_path do |logical_path|
-          next unless compile_path?(logical_path)
+        env.each_logical_path(paths) do |logical_path|
           if asset = env.find_asset(logical_path)
             manifest[logical_path] = write_asset(asset)
           end
@@ -40,20 +39,6 @@ module Sprockets
           asset.write_to(filename)
           asset.write_to("#{filename}.gz") if filename.to_s =~ @zip_files
         end
-      end
-
-      def compile_path?(logical_path)
-        paths.each do |path|
-          case path
-          when Regexp
-            return true if path.match(logical_path)
-          when Proc
-            return true if path.call(logical_path)
-          else
-            return true if File.fnmatch(path.to_s, logical_path)
-          end
-        end
-        false
       end
 
       def path_for(asset)
