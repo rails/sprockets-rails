@@ -45,7 +45,16 @@ namespace :assets do
       config.assets.digest  = digest unless digest.nil?
       config.assets.digests = {}
 
-      env      = ::Rails.application.assets
+      original_assets = Sprockets::Rails::Bootstrap.original_assets
+      env = if !config.assets.digest && original_assets
+        original_assets.cache.clear
+        # Expire index
+        original_assets.version = original_assets.version
+        original_assets
+      else
+        Rails.application.assets
+      end
+
       target   = File.join(::Rails.public_path, config.assets.prefix)
       compiler = Sprockets::Rails::StaticCompiler.new(env,
                                                       target,
@@ -58,12 +67,7 @@ namespace :assets do
 
     task :all do
       Rake::Task["assets:precompile:primary"].invoke
-      # We need to reinvoke in order to run the secondary digestless
-      # asset compilation run - a fresh Sprockets environment is
-      # required in order to compile digestless assets as the
-      # environment has already cached the assets on the primary
-      # run.
-      ruby_rake_task("assets:precompile:nondigest", false) if ::Rails.application.config.assets.digest
+      Rake::Task["assets:precompile:nondigest"].invoke if ::Rails.application.config.assets.digest
     end
 
     task :primary => ["assets:cache:clean"] do

@@ -1,6 +1,8 @@
 module Sprockets
   module Rails
     class Bootstrap
+      cattr_accessor :original_assets
+
       def initialize(app)
         @app = app
       end
@@ -33,6 +35,7 @@ module Sprockets
         end
 
         if config.assets.digest
+          self.class.original_assets = app.assets
           app.assets = app.assets.index
         end
       end
