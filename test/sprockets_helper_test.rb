@@ -254,6 +254,9 @@ class SprocketsHelperTest < ActiveSupport::TestCase
     assert_match %r{\A<script src="/assets/xmlhr-[0-9a-f]+.js"></script>\Z},
       javascript_include_tag("xmlhr", "xmlhr")
 
+    assert_match %r{\A<script src="/assets/foo.min-[0-9a-f]+.js"></script>\Z},
+      javascript_include_tag("foo.min")
+
     @config.assets.compile = true
     @config.assets.debug = true
     assert_match %r{<script src="/javascripts/application.js"></script>},
@@ -306,6 +309,9 @@ class SprocketsHelperTest < ActiveSupport::TestCase
 
     assert_match %r{\A<link href="/assets/style-[0-9a-f]+.ext" media="screen" rel="stylesheet" />\Z},
       stylesheet_link_tag("style.ext")
+
+    assert_match %r{\A<link href="/assets/style.min-[0-9a-f]+.css" media="screen" rel="stylesheet" />\Z},
+      stylesheet_link_tag("style.min")
 
     @config.assets.compile = true
     @config.assets.debug = true
