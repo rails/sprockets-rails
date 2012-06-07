@@ -8,3 +8,4 @@ gem 'active_record_deprecated_finders', :git => 'git://github.com/rails/active_r
 gem "uglifier", :require => false
 gem "mocha"
 gem "jquery-rails"
+gem "debugger"
