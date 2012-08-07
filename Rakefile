@@ -1,5 +1,6 @@
 #!/usr/bin/env rake
 require 'rake/testtask'
+ENV["TEST_CORES"] = "1"
 
 namespace :test do
   task :isolated do
