@@ -228,7 +228,7 @@ module ApplicationTests
 
       get '/posts'
       assert_match(/AssetNotPrecompiledError/, last_response.body)
-      assert_match(/app.js isn't precompiled/, last_response.body)
+      assert_match(/app\.js isn.+t precompiled/, last_response.body)
     end
 
     test "assets raise AssetNotPrecompiledError when manifest file is present and requested file isn't precompiled if digest is disabled" do
@@ -252,7 +252,7 @@ module ApplicationTests
 
       get '/posts'
       assert_match(/AssetNotPrecompiledError/, last_response.body)
-      assert_match(/app.js isn't precompiled/, last_response.body)
+      assert_match(/app\.js isn.+t precompiled/, last_response.body)
     end
 
     test "precompile properly refers files referenced with asset_path and and run in the provided RAILS_ENV" do
