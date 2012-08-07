@@ -7,13 +7,10 @@ require 'minitest/autorun'
 require 'active_support/test_case'
 require 'rails/generators'
 require "active_support/testing/isolation"
-require "active_support/testing/declarative"
 require "active_support/core_ext/kernel/reporting"
 
 module TestHelpers
   module Paths
-    module_function
-
     TMP_PATH = File.expand_path(File.join(File.dirname(__FILE__), *%w[.. tmp]))
 
     def tmp_path(*args)
@@ -117,7 +114,6 @@ class ActiveSupport::TestCase
   include TestHelpers::Paths
   include TestHelpers::Rack
   include TestHelpers::Generation
-  extend  ActiveSupport::Testing::Declarative
 end
 
 # Create a scope and build a fixture rails app
@@ -136,10 +132,4 @@ Module.new do
   File.open("#{tmp_path}/app_template/config/boot.rb", 'w') do |f|
     f.puts 'require "action_controller/railtie"'
   end
-
-  # This is temporary, disable sprockets-rails railtie done in rails
-  file = "#{tmp_path}/app_template/config/application.rb"
-  contents = File.read(file)
-  contents.sub!(/require \"sprockets\/railtie\"/, "")
-  File.open(file, "w+") { |f| f.puts contents }
 end
