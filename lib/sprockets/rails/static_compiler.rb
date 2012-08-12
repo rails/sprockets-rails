@@ -11,7 +11,6 @@ module Sprockets
         @paths = paths
         @digest = options.fetch(:digest, true)
         @manifest = options.fetch(:manifest, true)
-        @manifest_path = options.delete(:manifest_path) || target
         @zip_files = options.delete(:zip_files) || /\.(?:css|html|js|svg|txt|xml)$/
       end
 
@@ -26,8 +25,8 @@ module Sprockets
       end
 
       def write_manifest(manifest)
-        FileUtils.mkdir_p(@manifest_path)
-        File.open("#{@manifest_path}/manifest.yml", 'wb') do |f|
+        FileUtils.mkdir_p(@target)
+        File.open("#{@target}/manifest.yml", 'wb') do |f|
           YAML.dump(manifest, f)
         end
       end
