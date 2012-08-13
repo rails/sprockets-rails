@@ -93,7 +93,7 @@ namespace :assets do
   end
 
   namespace :cache do
-    task :clean => ["assets:environment"] do
+    task :clean => ['tmp:create', "assets:environment"] do
       ::Rails.application.assets.cache.clear
     end
   end
