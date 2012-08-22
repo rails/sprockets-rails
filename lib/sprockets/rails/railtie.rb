@@ -12,7 +12,7 @@ module Sprockets
     # TODO: Get rid of config.assets.enabled
     class Railtie < ::Rails::Railtie
       rake_tasks do
-        load "tasks/assets.rake"
+        load "sprockets-rails/tasks/assets.rake"
       end
 
       initializer "sprockets.environment", :group => :all do |app|
