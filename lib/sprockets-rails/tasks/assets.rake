@@ -59,7 +59,6 @@ namespace :assets do
       compiler = Sprockets::Rails::StaticCompiler.new(env,
                                                       target,
                                                       config.assets.precompile,
-                                                      :manifest_path => config.assets.manifest,
                                                       :digest => config.assets.digest,
                                                       :manifest => digest.nil?)
       compiler.compile
