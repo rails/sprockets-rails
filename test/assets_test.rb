@@ -141,21 +141,6 @@ module ApplicationTests
       assert_match(/application-([0-z]+)\.css/, assets["application.css"])
     end
 
-    test "precompile creates a manifest file in a custom path with all the assets listed" do
-      app_file "app/assets/stylesheets/application.css.erb", "<%= asset_path('rails.png') %>"
-      app_file "app/assets/javascripts/application.js", "alert();"
-      # digest is default in false, we must enable it for test environment
-      add_to_config "config.assets.digest = true"
-      add_to_config "config.assets.manifest = '#{app_path}/shared'"
-
-      precompile!
-      manifest = "#{app_path}/shared/manifest.yml"
-
-      assets = YAML.load_file(manifest)
-      assert_match(/application-([0-z]+)\.js/, assets["application.js"])
-      assert_match(/application-([0-z]+)\.css/, assets["application.css"])
-    end
-
     test "the manifest file should be saved by default in the same assets folder" do
       app_file "app/assets/javascripts/application.js", "alert();"
       # digest is default in false, we must enable it for test environment
