@@ -124,11 +124,11 @@ class SprocketsHelperTest < ActiveSupport::TestCase
     @config.asset_host = Proc.new do |asset, request|
       fail "This should not have been called."
     end
-    assert_raises ActionController::RoutingError do
+    assert_raises ActionView::MissingRequestError do
       asset_path("logo.png")
     end
     @config.asset_host = method :compute_host
-    assert_raises ActionController::RoutingError do
+    assert_raises ActionView::MissingRequestError do
       asset_path("logo.png")
     end
   end
