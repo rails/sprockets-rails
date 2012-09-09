@@ -22,6 +22,14 @@ module ApplicationTests
       end
     end
 
+    def assert_file_exists(filename)
+      assert File.exists?(filename), "missing #{filename}"
+    end
+
+    def assert_no_file_exists(filename)
+      assert !File.exists?(filename), "#{filename} does exist"
+    end
+
     test "assets routes have higher priority" do
       app_file "app/assets/javascripts/demo.js.erb", "a = <%= image_path('rails.png').inspect %>;"
 
@@ -92,20 +100,20 @@ module ApplicationTests
       precompile!
 
       images_should_compile.each do |filename|
-        assert File.exists?("#{app_path}/public/assets/#{filename}")
+        assert_file_exists("#{app_path}/public/assets/#{filename}")
       end
 
-      assert File.exists?("#{app_path}/public/assets/application.js")
-      assert File.exists?("#{app_path}/public/assets/application.css")
+      assert_file_exists("#{app_path}/public/assets/application.js")
+      assert_file_exists("#{app_path}/public/assets/application.css")
 
-      assert !File.exists?("#{app_path}/public/assets/someapplication.js")
-      assert !File.exists?("#{app_path}/public/assets/someapplication.css")
+      assert_no_file_exists("#{app_path}/public/assets/someapplication.js")
+      assert_no_file_exists("#{app_path}/public/assets/someapplication.css")
 
-      assert !File.exists?("#{app_path}/public/assets/something.min.js")
-      assert !File.exists?("#{app_path}/public/assets/something.min.css")
+      assert_no_file_exists("#{app_path}/public/assets/something.min.js")
+      assert_no_file_exists("#{app_path}/public/assets/something.min.css")
 
-      assert !File.exists?("#{app_path}/public/assets/something.else.js")
-      assert !File.exists?("#{app_path}/public/assets/something.else.css")
+      assert_no_file_exists("#{app_path}/public/assets/something.else.js")
+      assert_no_file_exists("#{app_path}/public/assets/something.else.css")
     end
 
     test "precompile something.js for directory containing index file" do
@@ -114,7 +122,7 @@ module ApplicationTests
 
       precompile!
 
-      assert File.exists?("#{app_path}/public/assets/something.js")
+      assert_file_exists("#{app_path}/public/assets/something.js")
     end
 
     test "asset pipeline should use a Sprockets::Index when config.assets.digest is true" do
@@ -161,8 +169,8 @@ module ApplicationTests
 
       precompile!
 
-      assert File.exists?("#{app_path}/public/assets/application.js")
-      assert File.exists?("#{app_path}/public/assets/application.css")
+      assert_file_exists("#{app_path}/public/assets/application.js")
+      assert_file_exists("#{app_path}/public/assets/application.css")
 
       manifest = "#{app_path}/public/assets/manifest.yml"
 
@@ -294,7 +302,7 @@ module ApplicationTests
 
       get "/assets/#{URI.parser.escape(filename)}"
       assert_match "not a image really", last_response.body
-      assert File.exists?("#{app_path}/public/assets/#{filename}")
+      assert_file_exists("#{app_path}/public/assets/#{filename}")
     end
 
     test "assets are cleaned up properly" do
@@ -493,7 +501,7 @@ module ApplicationTests
         Dir.chdir(app_path){ `bundle exec rake assets:precompile` }
       end
 
-      assert File.exists?("#{app_path}/public/assets/page.html")
+      assert_file_exists("#{app_path}/public/assets/page.html")
     end
 
     test "assets:cache:clean should clean cache" do
