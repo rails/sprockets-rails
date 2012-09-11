@@ -16,9 +16,18 @@ module ApplicationTests
       teardown_app
     end
 
-    def precompile!
+    def precompile!(env = nil)
       quietly do
-        Dir.chdir(app_path){ `bundle exec rake assets:precompile` }
+        precompile_task = "bundle exec rake assets:precompile #{env} 2>&1"
+        output = Dir.chdir(app_path) { %x[ #{precompile_task} ] }
+        assert $?.success?, output
+        output
+      end
+    end
+
+    def clean_assets!
+      quietly do
+        assert Dir.chdir(app_path) { system('bundle exec rake assets:clean') }
       end
     end
 
@@ -253,9 +262,8 @@ module ApplicationTests
       # digest is default in false, we must enable it for test environment
       add_to_env_config "test", "config.assets.digest = true"
 
-      quietly do
-        Dir.chdir(app_path){ `bundle exec rake assets:precompile RAILS_ENV=test` }
-      end
+      precompile!('RAILS_ENV=test')
+
       file = Dir["#{app_path}/public/assets/application.css"].first
       assert_match(/\/assets\/rails\.png/, File.read(file))
       file = Dir["#{app_path}/public/assets/application-*.css"].first
@@ -285,9 +293,9 @@ module ApplicationTests
       add_to_config "config.assets.compile = true"
 
       ENV["RAILS_ENV"] = nil
-      quietly do
-        Dir.chdir(app_path){ `bundle exec rake assets:precompile RAILS_GROUPS=assets` }
-      end
+
+      precompile!('RAILS_GROUPS=assets')
+
       file = Dir["#{app_path}/public/assets/application-*.css"].first
       assert_match(/\/assets\/rails-([0-z]+)\.png/, File.read(file))
     end
@@ -310,9 +318,7 @@ module ApplicationTests
       app_file "public/assets/application.css", "a { color: green; }"
       app_file "public/assets/subdir/broken.png", "not really an image file"
 
-      quietly do
-        Dir.chdir(app_path){ `bundle exec rake assets:clean` }
-      end
+      clean_assets!
 
       files = Dir["#{app_path}/public/assets/**/*", "#{app_path}/tmp/cache/assets/*"]
       assert_equal 0, files.length, "Expected no assets, but found #{files.join(', ')}"
@@ -440,9 +446,7 @@ module ApplicationTests
       add_to_config "config.assets.compile = true"
       add_to_config "config.assets.digest = true"
 
-      quietly do
-        Dir.chdir(app_path){ `bundle exec rake assets:clean assets:precompile` }
-      end
+      precompile!
 
       files = Dir["#{app_path}/public/assets/application-*.js"]
       assert_equal 1, files.length, "Expected digested application.js asset to be generated, but none found"
@@ -453,9 +457,8 @@ module ApplicationTests
       add_to_env_config "production", "config.assets.prefix = 'production_assets'"
 
       ENV["RAILS_ENV"] = nil
-      quietly do
-        Dir.chdir(app_path){ `bundle exec rake assets:clean` }
-      end
+
+      clean_assets!
 
       files = Dir["#{app_path}/public/production_assets/application.js"]
       assert_equal 0, files.length, "Expected application.js asset to be removed, but still exists"
