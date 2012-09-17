@@ -357,4 +357,12 @@ class SprocketsHelperTest < ActiveSupport::TestCase
     assert_equal '/assets/logo.png',
       asset_path("logo.png")
   end
+
+  test "`config.digest = false` works with `config.compile = false`" do
+    @config.assets.digest = false
+    @config.assets.compile = false
+
+    assert_equal '/assets/logo.png',
+      asset_path("logo.png")
+  end
 end
