@@ -1,6 +1,7 @@
 require 'sprockets'
 require 'fileutils'
 require 'action_controller/railtie'
+require 'sprockets/rails/helper'
 
 module Sprockets
   module Rails
