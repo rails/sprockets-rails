@@ -17,15 +17,14 @@ module Sprockets
         options = sources.extract_options!
         debug   = options.delete(:debug)  { debug_assets? }
         body    = options.delete(:body)   { false }
-        digest  = options.delete(:digest) { ::Rails.application.config.assets.digest }
 
         sources.collect do |source|
           if debug && asset = asset_for(source, 'js')
             asset.to_a.map { |dep|
-              super(dep.pathname.to_s, { :src => path_to_asset(dep, :ext => 'js', :body => true, :digest => digest) }.merge!(options))
+              super(dep.pathname.to_s, { :src => path_to_asset(dep, :ext => 'js', :body => true) }.merge!(options))
             }
           else
-            super(source.to_s, { :src => path_to_asset(source, :ext => 'js', :body => body, :digest => digest) }.merge!(options))
+            super(source.to_s, { :src => path_to_asset(source, :ext => 'js', :body => body) }.merge!(options))
           end
         end.uniq.join("\n").html_safe
       end
@@ -34,15 +33,14 @@ module Sprockets
         options = sources.extract_options!
         debug   = options.delete(:debug)  { debug_assets? }
         body    = options.delete(:body)   { false }
-        digest  = options.delete(:digest) { ::Rails.application.config.assets.digest }
 
         sources.collect do |source|
           if debug && asset = asset_for(source, 'css')
             asset.to_a.map { |dep|
-              super(dep.pathname.to_s, { :href => path_to_asset(dep, :ext => 'css', :body => true, :protocol => :request, :digest => digest) }.merge!(options))
+              super(dep.pathname.to_s, { :href => path_to_asset(dep, :ext => 'css', :body => true, :protocol => :request) }.merge!(options))
             }
           else
-            super(source.to_s, { :href => path_to_asset(source, :ext => 'css', :body => body, :protocol => :request, :digest => digest) }.merge!(options))
+            super(source.to_s, { :href => path_to_asset(source, :ext => 'css', :body => body, :protocol => :request) }.merge!(options))
           end
         end.uniq.join("\n").html_safe
       end
@@ -108,7 +106,7 @@ module Sprockets
           if source[0] == ?/
             source
           else
-            source = digest_for(source) unless options[:digest] == false
+            source = digest_for(source) if ::Rails.application.config.assets.digest
             source = File.join(dir, source)
             source = "/#{source}" unless source =~ /^\//
             source
