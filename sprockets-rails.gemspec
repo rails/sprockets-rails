@@ -8,6 +8,7 @@ Gem::Specification.new do |s|
   s.files = Dir["README.md", "lib/**/*.rb"]
 
   s.add_dependency "sprockets", "~> 2.6"
+  s.add_dependency "actionpack"
 
   s.author = "Joshua Peek"
   s.email  = "josh@joshpeek.com"
