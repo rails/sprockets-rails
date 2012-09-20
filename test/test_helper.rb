@@ -32,7 +32,6 @@ class HelperTest < Test::Unit::TestCase
 
     @view = ActionView::Base.new
     @view.extend Sprockets::Rails::Helper
-    @view.config.assets_dir = File.expand_path("..", __FILE__)
   end
 
   def test_javascript_path
