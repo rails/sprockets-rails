@@ -51,13 +51,10 @@ module Sprockets
           end
 
           env.context_class.class_eval do
-            def asset_path(path, options = {})
-              asset_paths = AssetPaths.new(::Rails.application.config.action_controller, nil)
-              # TODO: compute_public_path should support this
-              anchor, path = path[/(#.+)$/], path.sub(/(#.+)$/, '')
-              url = asset_paths.compute_public_path(path, ::Rails.application.config.assets.prefix, options)
-              "#{url}#{anchor}"
-            end
+            include ::Sprockets::Rails::Helper
+            # def asset_path(path, options = {})
+            #   compute_public_path(path, options)
+            # end
           end
         end
 

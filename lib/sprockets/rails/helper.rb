@@ -45,7 +45,7 @@ module Sprockets
 
       def asset_path(source, options = {})
         source = source.logical_path if source.respond_to?(:logical_path)
-        path = compute_public_path(source, ::Rails.application.config.assets.prefix, options.merge(:body => true))
+        path = compute_public_path(source, options.merge(:body => true))
         options[:body] ? "#{path}?body=1" : path
       end
       alias_method :path_to_asset, :asset_path
@@ -77,13 +77,15 @@ module Sprockets
           false
         end
 
-        def compute_public_path(source, dir, options = {})
+        def compute_public_path(source, options = {})
+          dir = ::Rails.application.config.assets.prefix
           source = source.to_s
           return source if source =~ URI_REGEXP
+          anchor, source = source[/(#.+)$/], source.sub(/(#.+)$/, '')
           source = rewrite_extension(source, dir, options[:ext]) if options[:ext]
           source = rewrite_asset_path(source, dir, options)
           source = rewrite_host_and_protocol(source, options[:protocol])
-          source
+          "#{source}#{anchor}"
         end
 
         def rewrite_extension(source, dir, ext)
@@ -135,7 +137,7 @@ module Sprockets
         end
 
         def compute_asset_host(source)
-          if host = config.asset_host
+          if host = ::Rails.application.config.action_controller.asset_host
             if host.respond_to?(:call)
               args = [source]
               arity = host.respond_to?(:arity) ? host.arity : host.method(:call).arity
