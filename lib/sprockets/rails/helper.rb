@@ -15,11 +15,10 @@ module Sprockets
 
       def javascript_include_tag(*sources)
         options = sources.extract_options!
-        debug   = options.delete(:debug)  { debug_assets? }
-        body    = options.delete(:body)   { false }
+        body    = options.delete(:body) { false }
 
         sources.collect do |source|
-          if debug && asset = asset_for(source, 'js')
+          if debug_assets? && asset = asset_for(source, 'js')
             asset.to_a.map { |dep|
               super(dep.pathname.to_s, { :src => path_to_asset(dep, :ext => 'js', :body => true) }.merge!(options))
             }
@@ -31,11 +30,10 @@ module Sprockets
 
       def stylesheet_link_tag(*sources)
         options = sources.extract_options!
-        debug   = options.delete(:debug)  { debug_assets? }
-        body    = options.delete(:body)   { false }
+        body    = options.delete(:body) { false }
 
         sources.collect do |source|
-          if debug && asset = asset_for(source, 'css')
+          if debug_assets? && asset = asset_for(source, 'css')
             asset.to_a.map { |dep|
               super(dep.pathname.to_s, { :href => path_to_asset(dep, :ext => 'css', :body => true, :protocol => :request) }.merge!(options))
             }
