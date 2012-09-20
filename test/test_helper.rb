@@ -37,9 +37,11 @@ class HelperTest < Test::Unit::TestCase
 
   def test_javascript_path
     assert_equal "/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js", @view.javascript_path("foo")
+    assert_equal "/assets/missing.js", @view.javascript_path("missing")
   end
 
   def test_stylesheet_path
     assert_equal "/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css", @view.stylesheet_path("foo")
+    assert_equal "/assets/missing.css", @view.stylesheet_path("missing")
   end
 end
