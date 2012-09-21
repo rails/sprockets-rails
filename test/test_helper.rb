@@ -101,6 +101,40 @@ class NoDigestHelperTest < HelperTest
     super
     Rails.application.config.assets.digest = false
   end
+
+  def test_javascript_include_tag
+    super
+
+    assert_equal %(<script src="/assets/foo.js" type="text/javascript"></script>),
+      @view.javascript_include_tag("foo")
+    assert_equal %(<script src="/assets/foo.js" type="text/javascript"></script>),
+      @view.javascript_include_tag("foo.js")
+    assert_equal %(<script src="/assets/foo.js" type="text/javascript"></script>),
+      @view.javascript_include_tag(:foo)
+  end
+
+  def test_stylesheet_link_tag
+    super
+
+    assert_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag("foo")
+    assert_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag("foo.css")
+    assert_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag(:foo)
+  end
+
+  def test_javascript_path
+    super
+
+    assert_equal "/assets/foo.js", @view.javascript_path("foo")
+  end
+
+  def test_stylesheet_path
+    super
+
+    assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
+  end
 end
 
 class DigestHelperTest < HelperTest
