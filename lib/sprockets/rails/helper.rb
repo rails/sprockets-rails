@@ -12,8 +12,6 @@ module Sprockets
       include ActionView::Helpers::AssetTagHelper
       include AssetTagHelper
 
-      class AssetNotPrecompiledError < StandardError; end
-
       URI_REGEXP = %r{^[-a-z]+://|^(?:cid|data):|^//}
 
       def asset_path(source, options = {})
@@ -60,7 +58,7 @@ module Sprockets
           if source[0] == ?/
             source
           else
-            source = digest_for(source) if ::Rails.application.config.assets.digest
+            source = sprockets_digest_for(source) if ::Rails.application.config.assets.digest
             source = File.join(dir, source)
             source = "/#{source}" unless source =~ /^\//
             source
@@ -103,19 +101,28 @@ module Sprockets
           end
         end
 
-        def digest_for(logical_path)
-          if ::Rails.application.config.assets.digest && ::Rails.application.config.assets.manifest && (digest = ::Rails.application.config.assets.manifest.assets[logical_path])
-            return digest
+        def sprockets_manifest
+          ::Rails.application.config.assets.manifest
+        end
+
+        def sprockets_compile?
+          ::Rails.application.config.assets.compile
+        end
+
+        def sprockets_digest_for(logical_path)
+          if manifest = sprockets_manifest
+            if digest = manifest.assets[logical_path]
+              return digest
+            end
           end
 
-          if ::Rails.application.config.assets.compile
-            if ::Rails.application.config.assets.digest && asset = ::Rails.application.assets[logical_path]
+          if sprockets_compile?
+            if asset = ::Rails.application.assets[logical_path]
               return asset.digest_path
             end
-            return logical_path
-          else
-            raise AssetNotPrecompiledError.new("#{logical_path} isn't precompiled")
           end
+
+          logical_path
         end
     end
   end
