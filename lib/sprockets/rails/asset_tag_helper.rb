@@ -1,6 +1,9 @@
 module Sprockets
   module Rails
     # Provides simplified versions of Rails' asset tag helpers.
+    #
+    # Nothing Rails or Sprockets specific in here. It'd be nice if
+    # this is what the stock Rails module used.
     module AssetTagHelper
       # Simplified version of javascript_include_tag. Does not any
       # concatenation.
@@ -25,6 +28,41 @@ module Sprockets
           tag(:link, tag_options, false, false)
         }.join("\n").html_safe
       end
+
+      def asset_path(source, options = {})
+        raise NotImplementedError
+      end
+      alias_method :path_to_asset, :asset_path
+
+      def image_path(source)
+        path_to_asset(source, :type => :image)
+      end
+      alias_method :path_to_image, :image_path
+
+      def video_path(source)
+        path_to_asset(source, :type => :video)
+      end
+      alias_method :path_to_video, :video_path
+
+      def audio_path(source)
+        path_to_asset(source, :type => :audio)
+      end
+      alias_method :path_to_audio, :audio_path
+
+      def font_path(source)
+        path_to_asset(source, :type => :font)
+      end
+      alias_method :path_to_font, :font_path
+
+      def javascript_path(source)
+        path_to_asset(source, :type => :javascript)
+      end
+      alias_method :path_to_javascript, :javascript_path
+
+      def stylesheet_path(source)
+        path_to_asset(source, :type => :stylesheet)
+      end
+      alias_method :path_to_stylesheet, :stylesheet_path
     end
   end
 end

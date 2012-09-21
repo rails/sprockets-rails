@@ -23,26 +23,6 @@ module Sprockets
       end
       alias_method :path_to_asset, :asset_path
 
-      def image_path(source)
-        path_to_asset(source)
-      end
-      alias_method :path_to_image, :image_path
-
-      def font_path(source)
-        path_to_asset(source)
-      end
-      alias_method :path_to_font, :font_path
-
-      def javascript_path(source)
-        path_to_asset(source, :ext => 'js')
-      end
-      alias_method :path_to_javascript, :javascript_path
-
-      def stylesheet_path(source)
-        path_to_asset(source, :ext => 'css')
-      end
-      alias_method :path_to_stylesheet, :stylesheet_path
-
       private
         def debug_assets?
           ::Rails.application.config.assets.compile && (::Rails.application.config.assets.debug || params[:debug_assets])
@@ -55,6 +35,8 @@ module Sprockets
           source = source.to_s
           return source if source =~ URI_REGEXP
           anchor, source = source[/(#.+)$/], source.sub(/(#.+)$/, '')
+          options[:ext] = 'js' if options[:type] == :javascript
+          options[:ext] = 'css' if options[:type] == :stylesheet
           source = rewrite_extension(source, dir, options[:ext]) if options[:ext]
           source = rewrite_asset_path(source, dir, options)
           source = rewrite_host_and_protocol(source, options[:protocol])
