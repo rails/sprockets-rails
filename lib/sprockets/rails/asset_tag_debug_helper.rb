@@ -12,7 +12,7 @@ module Sprockets
 
         if debug_assets?
           sources.map { |source|
-            if asset = sprockets_asset_for(source, 'js')
+            if asset = sprockets_asset_for(source, :type => :javascript)
               asset.to_a.map do |a|
                 tag_options = { "type" => "text/javascript", "src" => path_to_javascript(a.logical_path)+"?body=1" }.merge(options)
                 content_tag(:script, "", tag_options)
@@ -31,7 +31,7 @@ module Sprockets
 
         if debug_assets?
           sources.map { |source|
-            if asset = sprockets_asset_for(source, 'css')
+            if asset = sprockets_asset_for(source, :type => :stylesheet)
               asset.to_a.map do |a|
                 tag_options = { "rel" => "stylesheet", "type" => "text/css", "media" => "screen", "href" => path_to_stylesheet(a.logical_path)+"?body=1" }.merge(options)
                 tag(:link, tag_options, false, false)

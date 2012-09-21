@@ -16,43 +16,44 @@ module Sprockets
       URI_REGEXP = %r{^[-a-z]+://|^(?:cid|data):|^//}
 
       def asset_path(source, options = {})
-        dir = ::Rails.application.config.assets.prefix
         source = source.to_s
         return source if source =~ URI_REGEXP
+
         anchor, source = source[/(#.+)$/], source.sub(/(#.+)$/, '')
-        options[:ext] = 'js' if options[:type] == :javascript
-        options[:ext] = 'css' if options[:type] == :stylesheet
-        source = rewrite_extension(source, dir, options[:ext]) if options[:ext]
-        source = rewrite_asset_path(source, dir, options)
+        source = expand_source_extension(source, options)
+
+        if source[0] != ?/
+          source = compute_assets_path(source, options) || compute_public_path(source, options)
+        end
         source = rewrite_host_and_protocol(source, options[:protocol])
+
         "#{source}#{anchor}"
       end
       alias_method :path_to_asset, :asset_path
 
-      private
-        def rewrite_extension(source, dir, ext)
-          source_ext = File.extname(source)
-          if ext && source_ext != ".#{ext}"
-            if !source_ext.empty? && (asset = ::Rails.application.assets[source]) &&
-                asset.pathname.to_s =~ /#{source}\Z/
-              source
-            else
-              "#{source}.#{ext}"
-            end
-          else
-            source
-          end
+      protected
+        def compute_assets_path(path, options = {})
+          return unless ::Rails.application.assets[path]
+          dir = ::Rails.application.config.assets.prefix
+          path = sprockets_digest_for(path) if ::Rails.application.config.assets.digest
+          path = File.join(dir, path)
+          path = "/#{path}" unless path =~ /^\//
+          path
         end
 
-        def rewrite_asset_path(source, dir, options = {})
-          if source[0] == ?/
-            source
-          else
-            source = sprockets_digest_for(source) if ::Rails.application.config.assets.digest
-            source = File.join(dir, source)
-            source = "/#{source}" unless source =~ /^\//
-            source
+        def compute_public_path(source, options = {})
+          case options[:type]
+          when :javascript
+            dir = 'javascripts'
+          when :stylesheet
+            dir = 'stylesheets'
+          when :image
+            dir = 'images'
           end
+
+          source = File.join(dir, source)
+          source = "/#{source}" unless source =~ /^\//
+          source
         end
 
         def rewrite_host_and_protocol(source, protocol = nil)
@@ -86,12 +87,10 @@ module Sprockets
           ::Rails.application.config.assets.compile
         end
 
-       def sprockets_asset_for(source, ext)
-          source = source.to_s
-          return nil if source =~ URI_REGEXP
-          source = rewrite_extension(source, nil, ext)
-          ::Rails.application.assets[source]
-       end
+        def sprockets_asset_for(path, options = {})
+          return unless path = expand_source_extension(path, options)
+          ::Rails.application.assets[path]
+        end
 
         def sprockets_digest_for(logical_path)
           if manifest = sprockets_manifest
@@ -107,6 +106,22 @@ module Sprockets
           end
 
           logical_path
+        end
+
+      private
+        def expand_source_extension(path, options = {})
+          path = path.to_s
+          return nil if path =~ URI_REGEXP
+          if options[:type] == :javascript
+            ext = '.js'
+          elsif options[:type] == :stylesheet
+            ext = '.css'
+          end
+          if ext && File.extname(path).empty?
+            "#{path}#{ext}"
+          else
+            path
+          end
         end
     end
   end

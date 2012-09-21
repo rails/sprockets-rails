@@ -36,16 +36,16 @@ class HelperTest < Test::Unit::TestCase
   end
 
   def test_javascript_include_tag
-    assert_equal %(<script src="/assets/static.js" type="text/javascript"></script>),
+    assert_equal %(<script src="/javascripts/static.js" type="text/javascript"></script>),
       @view.javascript_include_tag("static")
-    assert_equal %(<script src="/assets/static.js" type="text/javascript"></script>),
+    assert_equal %(<script src="/javascripts/static.js" type="text/javascript"></script>),
       @view.javascript_include_tag("static.js")
-    assert_equal %(<script src="/assets/static.js" type="text/javascript"></script>),
+    assert_equal %(<script src="/javascripts/static.js" type="text/javascript"></script>),
       @view.javascript_include_tag(:static)
 
     assert_equal %(<script src="/elsewhere.js" type="text/javascript"></script>),
       @view.javascript_include_tag("/elsewhere.js")
-    assert_equal %(<script src="/script1.js" type="text/javascript"></script>\n<script src="/assets/script2.js" type="text/javascript"></script>),
+    assert_equal %(<script src="/script1.js" type="text/javascript"></script>\n<script src="/javascripts/script2.js" type="text/javascript"></script>),
       @view.javascript_include_tag("/script1.js", "script2.js")
 
     assert_equal %(<script src="http://example.com/script" type="text/javascript"></script>),
@@ -57,16 +57,16 @@ class HelperTest < Test::Unit::TestCase
   end
 
   def test_stylesheet_link_tag
-    assert_equal %(<link href="/assets/static.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("static")
-    assert_equal %(<link href="/assets/static.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("static.css")
-    assert_equal %(<link href="/assets/static.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag(:static)
 
     assert_equal %(<link href="/elsewhere.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("/elsewhere.css")
-    assert_equal %(<link href="/style1.css" media="screen" rel="stylesheet" type="text/css" />\n<link href="/assets/style2.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/style1.css" media="screen" rel="stylesheet" type="text/css" />\n<link href="/stylesheets/style2.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("/style1.css", "style2.css")
 
     assert_equal %(<link href="http://www.example.com/styles/style" media="screen" rel="stylesheet" type="text/css" />),
@@ -78,19 +78,18 @@ class HelperTest < Test::Unit::TestCase
   end
 
   def test_javascript_path
-    assert_equal "/assets/xmlhr.js", @view.javascript_path("xmlhr")
-    assert_equal "/assets/xmlhr.js", @view.javascript_path("xmlhr.js")
-    assert_equal "/assets/super/xmlhr.js", @view.javascript_path("super/xmlhr")
+    assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
+    assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
+    assert_equal "/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
     assert_equal "/super/xmlhr.js", @view.javascript_path("/super/xmlhr")
   end
 
   def test_stylesheet_path
-    assert_equal "/assets/bank.css", @view.stylesheet_path("bank")
-    assert_equal "/assets/bank.css", @view.stylesheet_path("bank.css")
-    assert_equal "/assets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
+    assert_equal "/stylesheets/bank.css", @view.stylesheet_path("bank")
+    assert_equal "/stylesheets/bank.css", @view.stylesheet_path("bank.css")
+    assert_equal "/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
     assert_equal "/subdir/subdir.css", @view.stylesheet_path("/subdir/subdir.css")
   end
-
 end
 
 class NoDigestHelperTest < HelperTest
