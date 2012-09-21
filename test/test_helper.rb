@@ -35,9 +35,6 @@ class HelperTest < Test::Unit::TestCase
     @view.extend Sprockets::Rails::Helper
   end
 
-  def default_test
-  end
-
   def test_javascript_include_tag
     assert_equal %(<script src="/assets/static.js" type="text/javascript"></script>),
       @view.javascript_include_tag("static")
