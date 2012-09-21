@@ -3,31 +3,18 @@ require 'active_support/core_ext/file'
 require 'sprockets'
 require 'zlib'
 
+require 'sprockets/rails/asset_tag_helper'
+
 module Sprockets
   module Rails
     module Helper
       extend ActiveSupport::Concern
       include ActionView::Helpers::AssetTagHelper
+      include AssetTagHelper
 
       class AssetNotPrecompiledError < StandardError; end
 
       URI_REGEXP = %r{^[-a-z]+://|^(?:cid|data):|^//}
-
-      def javascript_include_tag(*sources)
-        options = sources.extract_options!.stringify_keys
-        sources.map { |source|
-          tag_options = { "type" => "text/javascript", "src" => path_to_javascript(source) }.merge(options)
-          content_tag(:script, "", tag_options)
-        }.join("\n").html_safe
-      end
-
-      def stylesheet_link_tag(*sources)
-        options = sources.extract_options!.stringify_keys
-        sources.map { |source|
-          tag_options = { "rel" => "stylesheet", "type" => "text/css", "media" => "screen", "href" => path_to_stylesheet(source) }.merge(options)
-          tag(:link, tag_options, false, false)
-        }.join("\n").html_safe
-      end
 
       def asset_path(source, options = {})
         source = source.logical_path if source.respond_to?(:logical_path)
