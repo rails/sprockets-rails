@@ -3,14 +3,14 @@ require 'active_support/core_ext/file'
 require 'sprockets'
 
 require 'sprockets/rails/asset_tag_helper'
-require 'sprockets/rails/asset_host'
+require 'sprockets/rails/asset_host_helper'
 
 module Sprockets
   module Rails
     module Helper
       extend ActiveSupport::Concern
       include ActionView::Helpers::AssetTagHelper
-      include AssetTagHelper, AssetHost
+      include AssetTagHelper, AssetHostHelper
 
       URI_REGEXP = %r{^[-a-z]+://|^(?:cid|data):|^//}
 
@@ -66,7 +66,7 @@ module Sprockets
         end
 
         def rewrite_host_and_protocol(source, protocol = nil)
-          host = compute_asset_host(::Rails.application.config.action_controller.asset_host, source, @controller && @controller.request)
+          host = compute_asset_host(::Rails.application.config.action_controller.asset_host, source)
           if host && host !~ URI_REGEXP
             if protocol == :request && !@controller.respond_to?(:request)
               host = nil

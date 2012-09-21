@@ -1,9 +1,9 @@
 require 'test/unit'
 
-require 'sprockets/rails/asset_host'
+require 'sprockets/rails/asset_host_helper'
 
-class AssetHostTest < Test::Unit::TestCase
-  include Sprockets::Rails::AssetHost
+class AssetHostHelperTest < Test::Unit::TestCase
+  include Sprockets::Rails::AssetHostHelper
 
   def test_compute_asset_host_empty
     assert_equal nil, compute_asset_host(nil, "foo.js")

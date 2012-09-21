@@ -5,11 +5,13 @@ module Sprockets
     # Old school Rails asset host configuration
     #
     # http://apidock.com/rails/ActionView/Helpers/AssetTagHelper
-    module AssetHost
-      extend self
-
+    module AssetHostHelper
       def compute_asset_host(host, source, request = nil)
         return if host.nil? || host == ""
+
+        if defined?(@controller) && @controller.respond_to?(:request)
+          request = @controller.request
+        end
 
         if host.respond_to?(:call)
           args = [source]
