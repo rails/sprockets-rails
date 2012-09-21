@@ -174,3 +174,40 @@ class DigestHelperTest < HelperTest
     assert_equal "/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css", @view.stylesheet_path("foo")
   end
 end
+
+class DebugHelperTest < HelperTest
+  def setup
+    super
+    Rails.application.config.assets.debug = true
+  end
+
+  def test_javascript_include_tag
+    super
+
+    assert_equal %(<script src="/assets/foo.js?body=1" type="text/javascript"></script>),
+      @view.javascript_include_tag(:foo)
+    assert_equal %(<script src="/assets/foo.js?body=1" type="text/javascript"></script>\n<script src="/assets/bar.js?body=1" type="text/javascript"></script>),
+      @view.javascript_include_tag(:bar)
+  end
+
+  def test_stylesheet_link_tag
+    super
+
+    assert_equal %(<link href="/assets/foo.css?body=1" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag(:foo)
+    assert_equal %(<link href="/assets/foo.css?body=1" media="screen" rel="stylesheet" type="text/css" />\n<link href="/assets/bar.css?body=1" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag(:bar)
+  end
+
+  def test_javascript_path
+    super
+
+    assert_equal "/assets/foo.js", @view.javascript_path("foo")
+  end
+
+  def test_stylesheet_path
+    super
+
+    assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
+  end
+end

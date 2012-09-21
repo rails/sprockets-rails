@@ -8,11 +8,53 @@ require 'sprockets/rails/asset_host_helper'
 module Sprockets
   module Rails
     module Helper
-      extend ActiveSupport::Concern
-      include ActionView::Helpers::AssetTagHelper
       include AssetTagHelper, AssetHostHelper
 
       URI_REGEXP = %r{^[-a-z]+://|^(?:cid|data):|^//}
+
+      # javascript_include_tag with debugging support
+      #
+      # Eventually will be deprecated and replaced by source maps.
+      def javascript_include_tag(*sources)
+        options = sources.extract_options!.stringify_keys
+
+        if debug_assets?
+          sources.map { |source|
+            if asset = sprockets_asset_for(source, 'js')
+              asset.to_a.map do |a|
+                tag_options = { "type" => "text/javascript", "src" => path_to_javascript(a.logical_path)+"?body=1" }.merge(options)
+                content_tag(:script, "", tag_options)
+              end
+            else
+              super(source)
+            end
+          }.join("\n").html_safe
+        else
+          super
+        end
+      end
+
+      # stylesheet_link_tag with debugging support.
+      #
+      # Eventually will be deprecated and replaced by source maps.
+      def stylesheet_link_tag(*sources)
+        options = sources.extract_options!.stringify_keys
+
+        if debug_assets?
+          sources.map { |source|
+            if asset = sprockets_asset_for(source, 'css')
+              asset.to_a.map do |a|
+                tag_options = { "rel" => "stylesheet", "type" => "text/css", "media" => "screen", "href" => path_to_stylesheet(a.logical_path)+"?body=1" }.merge(options)
+                tag(:link, tag_options, false, false)
+              end
+            else
+              super(source)
+            end
+          }.join("\n").html_safe
+        else
+          super
+        end
+      end
 
       def asset_path(source, options = {})
         path = compute_public_path(source, options.merge(:body => true))
@@ -22,9 +64,15 @@ module Sprockets
 
       private
         def debug_assets?
-          ::Rails.application.config.assets.compile && (::Rails.application.config.assets.debug || params[:debug_assets])
-        rescue NameError
-          false
+          return unless sprockets_compile?
+
+          if ::Rails.application.config.assets.debug
+            true
+          elsif defined?(@controller) && @controller && params[:debug_assets]
+            true
+          else
+            false
+          end
         end
 
         def compute_public_path(source, options = {})
@@ -95,6 +143,13 @@ module Sprockets
         def sprockets_compile?
           ::Rails.application.config.assets.compile
         end
+
+       def sprockets_asset_for(source, ext)
+          source = source.to_s
+          return nil if source =~ URI_REGEXP
+          source = rewrite_extension(source, nil, ext)
+          ::Rails.application.assets[source]
+       end
 
         def sprockets_digest_for(logical_path)
           if manifest = sprockets_manifest
