@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "sprockets", "~> 2.6"
   s.add_dependency "actionpack"
+  s.add_development_dependency "rake"
 
   s.author = "Joshua Peek"
   s.email  = "josh@joshpeek.com"
