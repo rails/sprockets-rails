@@ -79,6 +79,21 @@ class HelperTest < Test::Unit::TestCase
     assert_equal %(<link href="//www.example.com/styles/style.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("//www.example.com/styles/style.css")
   end
+
+  def test_javascript_path
+    assert_equal "/assets/xmlhr.js", @view.javascript_path("xmlhr")
+    assert_equal "/assets/xmlhr.js", @view.javascript_path("xmlhr.js")
+    assert_equal "/assets/super/xmlhr.js", @view.javascript_path("super/xmlhr")
+    assert_equal "/super/xmlhr.js", @view.javascript_path("/super/xmlhr")
+  end
+
+  def test_stylesheet_path
+    assert_equal "/assets/bank.css", @view.stylesheet_path("bank")
+    assert_equal "/assets/bank.css", @view.stylesheet_path("bank.css")
+    assert_equal "/assets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
+    assert_equal "/subdir/subdir.css", @view.stylesheet_path("/subdir/subdir.css")
+  end
+
 end
 
 class NoDigestHelperTest < HelperTest
@@ -117,12 +132,14 @@ class DigestHelperTest < HelperTest
   end
 
   def test_javascript_path
+    super
+
     assert_equal "/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js", @view.javascript_path("foo")
-    assert_equal "/assets/missing.js", @view.javascript_path("missing")
   end
 
   def test_stylesheet_path
+    super
+
     assert_equal "/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css", @view.stylesheet_path("foo")
-    assert_equal "/assets/missing.css", @view.stylesheet_path("missing")
   end
 end
