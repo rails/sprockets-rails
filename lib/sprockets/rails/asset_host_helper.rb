@@ -1,3 +1,4 @@
+require 'sprockets'
 require 'zlib'
 
 module Sprockets

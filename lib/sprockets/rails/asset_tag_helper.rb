@@ -1,3 +1,5 @@
+require 'sprockets'
+
 module Sprockets
   module Rails
     # Provides simplified versions of Rails' asset tag helpers.

@@ -2,59 +2,18 @@ require 'action_view'
 require 'active_support/core_ext/file'
 require 'sprockets'
 
-require 'sprockets/rails/asset_tag_helper'
 require 'sprockets/rails/asset_host_helper'
+require 'sprockets/rails/asset_tag_helper'
+require 'sprockets/rails/asset_tag_debug_helper'
 
 module Sprockets
   module Rails
     module Helper
-      include AssetTagHelper, AssetHostHelper
+      include AssetHostHelper
+      include AssetTagHelper
+      include AssetTagDebugHelper
 
       URI_REGEXP = %r{^[-a-z]+://|^(?:cid|data):|^//}
-
-      # javascript_include_tag with debugging support
-      #
-      # Eventually will be deprecated and replaced by source maps.
-      def javascript_include_tag(*sources)
-        options = sources.extract_options!.stringify_keys
-
-        if debug_assets?
-          sources.map { |source|
-            if asset = sprockets_asset_for(source, 'js')
-              asset.to_a.map do |a|
-                tag_options = { "type" => "text/javascript", "src" => path_to_javascript(a.logical_path)+"?body=1" }.merge(options)
-                content_tag(:script, "", tag_options)
-              end
-            else
-              super(source)
-            end
-          }.join("\n").html_safe
-        else
-          super
-        end
-      end
-
-      # stylesheet_link_tag with debugging support.
-      #
-      # Eventually will be deprecated and replaced by source maps.
-      def stylesheet_link_tag(*sources)
-        options = sources.extract_options!.stringify_keys
-
-        if debug_assets?
-          sources.map { |source|
-            if asset = sprockets_asset_for(source, 'css')
-              asset.to_a.map do |a|
-                tag_options = { "rel" => "stylesheet", "type" => "text/css", "media" => "screen", "href" => path_to_stylesheet(a.logical_path)+"?body=1" }.merge(options)
-                tag(:link, tag_options, false, false)
-              end
-            else
-              super(source)
-            end
-          }.join("\n").html_safe
-        else
-          super
-        end
-      end
 
       def asset_path(source, options = {})
         dir = ::Rails.application.config.assets.prefix
