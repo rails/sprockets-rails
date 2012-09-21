@@ -103,15 +103,6 @@ module Sprockets
           end
         end
 
-        def asset_for(source, ext)
-          source = source.to_s
-          return nil if source =~ URI_REGEXP
-          source = rewrite_extension(source, nil, ext)
-          ::Rails.application.assets[source]
-        rescue Sprockets::FileOutsidePaths
-          nil
-        end
-
         def digest_for(logical_path)
           if ::Rails.application.config.assets.digest && ::Rails.application.config.assets.manifest && (digest = ::Rails.application.config.assets.manifest.assets[logical_path])
             return digest
