@@ -14,33 +14,19 @@ module Sprockets
       URI_REGEXP = %r{^[-a-z]+://|^(?:cid|data):|^//}
 
       def javascript_include_tag(*sources)
-        options = sources.extract_options!
-        body    = options.delete(:body) { false }
-
-        sources.collect do |source|
-          if debug_assets? && asset = asset_for(source, 'js')
-            asset.to_a.map { |dep|
-              super(dep.pathname.to_s, { :src => path_to_asset(dep, :ext => 'js', :body => true) }.merge!(options))
-            }
-          else
-            super(source.to_s, { :src => path_to_asset(source, :ext => 'js', :body => body) }.merge!(options))
-          end
-        end.uniq.join("\n").html_safe
+        options = sources.extract_options!.stringify_keys
+        sources.map { |source|
+          tag_options = { "type" => "text/javascript", "src" => path_to_javascript(source) }.merge(options)
+          content_tag(:script, "", tag_options)
+        }.join("\n").html_safe
       end
 
       def stylesheet_link_tag(*sources)
-        options = sources.extract_options!
-        body    = options.delete(:body) { false }
-
-        sources.collect do |source|
-          if debug_assets? && asset = asset_for(source, 'css')
-            asset.to_a.map { |dep|
-              super(dep.pathname.to_s, { :href => path_to_asset(dep, :ext => 'css', :body => true, :protocol => :request) }.merge!(options))
-            }
-          else
-            super(source.to_s, { :href => path_to_asset(source, :ext => 'css', :body => body, :protocol => :request) }.merge!(options))
-          end
-        end.uniq.join("\n").html_safe
+        options = sources.extract_options!.stringify_keys
+        sources.map { |source|
+          tag_options = { "rel" => "stylesheet", "type" => "text/css", "media" => "screen", "href" => path_to_stylesheet(source) }.merge(options)
+          tag(:link, tag_options, false, false)
+        }.join("\n").html_safe
       end
 
       def asset_path(source, options = {})
