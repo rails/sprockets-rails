@@ -17,7 +17,6 @@ module Sprockets
       URI_REGEXP = %r{^[-a-z]+://|^(?:cid|data):|^//}
 
       def asset_path(source, options = {})
-        source = source.logical_path if source.respond_to?(:logical_path)
         path = compute_public_path(source, options.merge(:body => true))
         options[:body] ? "#{path}?body=1" : path
       end
