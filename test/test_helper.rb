@@ -45,6 +45,18 @@ class HelperTest < Test::Unit::TestCase
       @view.javascript_include_tag("static.js")
     assert_equal %(<script src="/assets/static.js" type="text/javascript"></script>),
       @view.javascript_include_tag(:static)
+
+    assert_equal %(<script src="/elsewhere.js" type="text/javascript"></script>),
+      @view.javascript_include_tag("/elsewhere.js")
+    assert_equal %(<script src="/script1.js" type="text/javascript"></script>\n<script src="/assets/script2.js" type="text/javascript"></script>),
+      @view.javascript_include_tag("/script1.js", "script2.js")
+
+    assert_equal %(<script src="http://example.com/script" type="text/javascript"></script>),
+      @view.javascript_include_tag("http://example.com/script")
+    assert_equal %(<script src="http://example.com/script.js" type="text/javascript"></script>),
+      @view.javascript_include_tag("http://example.com/script.js")
+    assert_equal %(<script src="//example.com/script.js" type="text/javascript"></script>),
+      @view.javascript_include_tag("//example.com/script.js")
   end
 
   def test_stylesheet_link_tag
@@ -54,6 +66,18 @@ class HelperTest < Test::Unit::TestCase
       @view.stylesheet_link_tag("static.css")
     assert_equal %(<link href="/assets/static.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag(:static)
+
+    assert_equal %(<link href="/elsewhere.css" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag("/elsewhere.css")
+    assert_equal %(<link href="/style1.css" media="screen" rel="stylesheet" type="text/css" />\n<link href="/assets/style2.css" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag("/style1.css", "style2.css")
+
+    assert_equal %(<link href="http://www.example.com/styles/style" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag("http://www.example.com/styles/style")
+    assert_equal %(<link href="http://www.example.com/styles/style.css" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag("http://www.example.com/styles/style.css")
+    assert_equal %(<link href="//www.example.com/styles/style.css" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag("//www.example.com/styles/style.css")
   end
 end
 
