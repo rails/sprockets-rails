@@ -57,8 +57,16 @@ module Sprockets
       end
 
       def asset_path(source, options = {})
-        path = compute_public_path(source, options.merge(:body => true))
-        options[:body] ? "#{path}?body=1" : path
+        dir = ::Rails.application.config.assets.prefix
+        source = source.to_s
+        return source if source =~ URI_REGEXP
+        anchor, source = source[/(#.+)$/], source.sub(/(#.+)$/, '')
+        options[:ext] = 'js' if options[:type] == :javascript
+        options[:ext] = 'css' if options[:type] == :stylesheet
+        source = rewrite_extension(source, dir, options[:ext]) if options[:ext]
+        source = rewrite_asset_path(source, dir, options)
+        source = rewrite_host_and_protocol(source, options[:protocol])
+        "#{source}#{anchor}"
       end
       alias_method :path_to_asset, :asset_path
 
@@ -73,19 +81,6 @@ module Sprockets
           else
             false
           end
-        end
-
-        def compute_public_path(source, options = {})
-          dir = ::Rails.application.config.assets.prefix
-          source = source.to_s
-          return source if source =~ URI_REGEXP
-          anchor, source = source[/(#.+)$/], source.sub(/(#.+)$/, '')
-          options[:ext] = 'js' if options[:type] == :javascript
-          options[:ext] = 'css' if options[:type] == :stylesheet
-          source = rewrite_extension(source, dir, options[:ext]) if options[:ext]
-          source = rewrite_asset_path(source, dir, options)
-          source = rewrite_host_and_protocol(source, options[:protocol])
-          "#{source}#{anchor}"
         end
 
         def rewrite_extension(source, dir, ext)
