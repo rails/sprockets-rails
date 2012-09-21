@@ -178,7 +178,11 @@ end
 class DebugHelperTest < HelperTest
   def setup
     super
-    Rails.application.config.assets.debug = true
+    @view.class_eval do
+      def debug_assets?
+        true
+      end
+    end
   end
 
   def test_javascript_include_tag

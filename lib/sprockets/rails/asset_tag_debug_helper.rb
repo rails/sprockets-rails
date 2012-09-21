@@ -44,6 +44,11 @@ module Sprockets
           super
         end
       end
+
+      private
+        def debug_assets?
+          defined?(@controller) && @controller && params[:debug_assets]
+        end
     end
   end
 end

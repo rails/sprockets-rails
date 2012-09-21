@@ -30,18 +30,6 @@ module Sprockets
       alias_method :path_to_asset, :asset_path
 
       private
-        def debug_assets?
-          return unless sprockets_compile?
-
-          if ::Rails.application.config.assets.debug
-            true
-          elsif defined?(@controller) && @controller && params[:debug_assets]
-            true
-          else
-            false
-          end
-        end
-
         def rewrite_extension(source, dir, ext)
           source_ext = File.extname(source)
           if ext && source_ext != ".#{ext}"

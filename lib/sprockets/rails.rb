@@ -39,6 +39,12 @@ module Sprockets
       initializer "sprockets.environment", :group => :all do |app|
         config = app.config
 
+        config_helpers = Module.new do
+          def debug_assets?
+            ::Rails.application.config.assets.debug || super
+          end
+        end
+
         app.assets = Sprockets::Environment.new(app.root.to_s) do |env|
           env.version = ::Rails.env + "-#{config.assets.version}"
 
@@ -52,9 +58,7 @@ module Sprockets
 
           env.context_class.class_eval do
             include ::Sprockets::Rails::Helper
-            # def asset_path(path, options = {})
-            #   compute_public_path(path, options)
-            # end
+            include config_helpers
           end
         end
 
@@ -63,6 +67,7 @@ module Sprockets
 
         ActiveSupport.on_load(:action_view) do
           include ::Sprockets::Rails::Helper
+          include config_helpers
         end
       end
 
