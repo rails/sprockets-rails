@@ -61,7 +61,7 @@ module Sprockets
           env.version = ::Rails.env + "-#{config.assets.version}"
 
           if config.assets.cache_store != false
-            env.cache = ActiveSupport::Cache.lookup_store(config.assets.cache_store) || ::Rails.cache
+            env.cache = ActiveSupport::Cache.lookup_store([:file_store, "#{config.root}/tmp/cache/assets/#{::Rails.env}"])
           end
 
           env.context_class.class_eval do
