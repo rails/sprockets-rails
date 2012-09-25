@@ -28,7 +28,6 @@ class HelperTest < Test::Unit::TestCase
     Rails.application.config.action_controller = ActiveSupport::OrderedOptions.new
     Rails.application.config.assets = ActiveSupport::OrderedOptions.new
     Rails.application.config.assets.compile = true
-    Rails.application.config.assets.digest = false
     Rails.application.config.assets.prefix = "/assets"
 
     @view = ActionView::Base.new
@@ -95,7 +94,7 @@ end
 class NoDigestHelperTest < HelperTest
   def setup
     super
-    Rails.application.config.assets.digest = false
+    @view.digest_assets = false
   end
 
   def test_javascript_include_tag
@@ -136,7 +135,7 @@ end
 class DigestHelperTest < HelperTest
   def setup
     super
-    Rails.application.config.assets.digest = true
+    @view.digest_assets = true
   end
 
   def test_javascript_include_tag

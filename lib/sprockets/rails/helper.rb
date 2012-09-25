@@ -13,20 +13,21 @@ module Sprockets
       include AssetTagHelper
       include AssetTagDebugHelper
 
-      protected
-        def compute_asset_path(path, options = {})
-          if digest_path = lookup_assets_digest_path(path)
-            path = digest_path if digest_assets?
-            File.join(assets_prefix, path)
+      def compute_asset_path(path, options = {})
+        if digest_path = lookup_assets_digest_path(path)
+          path = digest_path if digest_assets?
+          File.join(assets_prefix, path)
           else
-            super
-          end
+          super
         end
+      end
 
-        def digest_assets?
-          ::Rails.application.config.assets.digest
-        end
+      attr_accessor :digest_assets
+      def digest_assets?
+        digest_assets || false
+      end
 
+      protected
         def assets_prefix
           ::Rails.application.config.assets.prefix
         end

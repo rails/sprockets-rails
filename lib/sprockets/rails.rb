@@ -43,6 +43,10 @@ module Sprockets
           def debug_assets?
             ::Rails.application.config.assets.debug || super
           end
+
+          def digest_assets?
+            ::Rails.application.config.assets.digest
+          end
         end
 
         app.assets = Sprockets::Environment.new(app.root.to_s) do |env|
