@@ -55,6 +55,9 @@ module Sprockets
           define_method :assets_manifest do
             config.assets.manifest
           end
+          define_method :assets_environment do
+            app.assets
+          end
         end
 
         app.assets = Sprockets::Environment.new(app.root.to_s) do |env|

@@ -23,13 +23,13 @@ class HelperTest < Test::Unit::TestCase
     @assets = Sprockets::Environment.new
     @assets.append_path FIXTURES_PATH
 
-    Rails.application.assets = @assets
     Rails.application.config = ActiveSupport::OrderedOptions.new
     Rails.application.config.action_controller = ActiveSupport::OrderedOptions.new
     Rails.application.config.assets = ActiveSupport::OrderedOptions.new
 
     @view = ActionView::Base.new
     @view.extend Sprockets::Rails::Helper
+    @view.assets_environment = @assets
     @view.assets_prefix = "/assets"
   end
 
