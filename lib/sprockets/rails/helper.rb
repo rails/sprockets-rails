@@ -42,7 +42,7 @@ module Sprockets
             end
           end
 
-          if compile_assets?
+          if compile_assets? && assets_environment
             if asset = assets_environment[logical_path]
               return asset.digest_path
             end
