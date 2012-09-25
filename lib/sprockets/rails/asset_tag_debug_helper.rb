@@ -45,10 +45,13 @@ module Sprockets
         end
       end
 
+      attr_accessor :debug_assets
+      def debug_assets?
+        debug_assets ||
+          (defined?(@controller) && @controller && params[:debug_assets])
+      end
+
       private
-        def debug_assets?
-          defined?(@controller) && @controller && params[:debug_assets]
-        end
 
         def lookup_asset_for_path(path, options = {})
           return unless path = expand_source_extension(path, options)

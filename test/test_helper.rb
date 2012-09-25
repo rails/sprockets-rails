@@ -176,11 +176,7 @@ end
 class DebugHelperTest < HelperTest
   def setup
     super
-    @view.class_eval do
-      def debug_assets?
-        true
-      end
-    end
+    @view.debug_assets = true
   end
 
   def test_javascript_include_tag
