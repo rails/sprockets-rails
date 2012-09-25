@@ -109,7 +109,7 @@ module Sprockets
         end
 
         def rewrite_host_and_protocol(source, protocol = nil)
-          host = compute_asset_host(::Rails.application.config.action_controller.asset_host, source)
+          host = compute_asset_host(config.asset_host, source)
           if host && host !~ URI_REGEXP
             if protocol == :request && !@controller.respond_to?(:request)
               host = nil
