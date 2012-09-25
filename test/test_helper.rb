@@ -8,8 +8,17 @@ class HelperTest < Test::Unit::TestCase
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   def setup
-    @assets = Sprockets::Environment.new
+    assets = @assets = Sprockets::Environment.new
     @assets.append_path FIXTURES_PATH
+    @assets.context_class.class_eval do
+      include ::Sprockets::Rails::Helper
+      define_method :assets_environment do
+        assets
+      end
+      define_method :assets_prefix do
+        "/assets"
+      end
+    end
 
     @view = ActionView::Base.new
     @view.extend Sprockets::Rails::Helper
@@ -78,6 +87,11 @@ class NoDigestHelperTest < HelperTest
   def setup
     super
     @view.digest_assets = false
+    @assets.context_class.class_eval do
+      define_method :digest_assets do
+        false
+      end
+    end
   end
 
   def test_javascript_include_tag
@@ -113,12 +127,22 @@ class NoDigestHelperTest < HelperTest
 
     assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
   end
+
+  def test_asset_url
+    assert_equal "var url = '/assets/foo.js';\n", @assets["url.js"].to_s
+    assert_equal "p { background: url(/images/logo.png); }\n", @assets["url.css"].to_s
+  end
 end
 
 class DigestHelperTest < HelperTest
   def setup
     super
     @view.digest_assets = true
+    @assets.context_class.class_eval do
+      define_method :digest_assets do
+        true
+      end
+    end
   end
 
   def test_javascript_include_tag
@@ -153,6 +177,11 @@ class DigestHelperTest < HelperTest
     super
 
     assert_equal "/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css", @view.stylesheet_path("foo")
+  end
+
+  def test_asset_url
+    assert_equal "var url = '/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js';\n", @assets["url.js"].to_s
+    assert_equal "p { background: url(/images/logo.png); }\n", @assets["url.css"].to_s
   end
 end
 
