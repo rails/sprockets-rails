@@ -31,8 +31,21 @@ module Sprockets
         }.join("\n").html_safe
       end
 
+      URI_REGEXP = %r{^[-a-z]+://|^(?:cid|data):|^//}
+
       def asset_path(source, options = {})
-        raise NotImplementedError
+        source = source.to_s
+        return source if source =~ URI_REGEXP
+
+        anchor, source = source[/(#.+)$/], source.sub(/(#.+)$/, '')
+        source = expand_source_extension(source, options)
+
+        if source[0] != ?/
+          source = compute_asset_path(source, options)
+        end
+        source = rewrite_host_and_protocol(source, options[:protocol])
+
+        "#{source}#{anchor}"
       end
       alias_method :path_to_asset, :asset_path
 
@@ -65,6 +78,54 @@ module Sprockets
         path_to_asset(source, :type => :stylesheet)
       end
       alias_method :path_to_stylesheet, :stylesheet_path
+
+      PUBLIC_DIRECTORIES = {
+        :javascript => '/javascripts',
+        :stylesheet => '/stylesheets',
+        :image      => '/images'
+      }
+
+      def compute_asset_path(source, options = {})
+        if dir = PUBLIC_DIRECTORIES[options[:type]]
+          source = File.join(dir, source)
+        end
+        source
+      end
+
+      private
+        ASSET_EXTENSIONS = {
+          :javascript => '.js',
+          :stylesheet => '.css',
+        }
+
+        def expand_source_extension(path, options = {})
+          path = path.to_s
+          return nil if path =~ URI_REGEXP
+          if File.extname(path).empty? && (ext = ASSET_EXTENSIONS[options[:type]])
+            "#{path}#{ext}"
+          else
+            path
+          end
+        end
+
+        def rewrite_host_and_protocol(source, protocol = nil)
+          host = compute_asset_host(::Rails.application.config.action_controller.asset_host, source)
+          if host && host !~ URI_REGEXP
+            if protocol == :request && !@controller.respond_to?(:request)
+              host = nil
+            else
+              case protocol
+              when :relative
+                "//#{host}"
+              when :request
+                "#{@controller.request.protocol}#{host}"
+              else
+                "#{protocol}://#{host}"
+              end
+            end
+          end
+          host ? "#{host}#{source}" : source
+        end
     end
   end
 end
