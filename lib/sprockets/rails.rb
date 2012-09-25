@@ -40,16 +40,14 @@ module Sprockets
         config = app.config
 
         config_helpers = Module.new do
-          def debug_assets?
-            ::Rails.application.config.assets.debug || super
+          define_method :debug_assets? do
+            config.assets.debug || super
           end
-
-          def digest_assets?
-            ::Rails.application.config.assets.digest
+          define_method :digest_assets?  do
+            config.assets.digest
           end
-
-          def compile_assets?
-            ::Rails.application.config.assets.compile
+          define_method :compile_assets? do
+            config.assets.compile
           end
         end
 
