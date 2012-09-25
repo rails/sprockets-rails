@@ -32,13 +32,9 @@ module Sprockets
         compile_assets || true
       end
 
-      attr_accessor :assets_prefix
+      attr_accessor :assets_prefix, :assets_manifest
 
       protected
-        def assets_manifest
-          ::Rails.application.config.assets.manifest
-        end
-
         def assets_environment
           ::Rails.application.assets
         end
