@@ -27,7 +27,6 @@ class HelperTest < Test::Unit::TestCase
     Rails.application.config = ActiveSupport::OrderedOptions.new
     Rails.application.config.action_controller = ActiveSupport::OrderedOptions.new
     Rails.application.config.assets = ActiveSupport::OrderedOptions.new
-    Rails.application.config.assets.compile = true
 
     @view = ActionView::Base.new
     @view.extend Sprockets::Rails::Helper
