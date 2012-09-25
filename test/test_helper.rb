@@ -28,10 +28,10 @@ class HelperTest < Test::Unit::TestCase
     Rails.application.config.action_controller = ActiveSupport::OrderedOptions.new
     Rails.application.config.assets = ActiveSupport::OrderedOptions.new
     Rails.application.config.assets.compile = true
-    Rails.application.config.assets.prefix = "/assets"
 
     @view = ActionView::Base.new
     @view.extend Sprockets::Rails::Helper
+    @view.assets_prefix = "/assets"
   end
 
   def test_javascript_include_tag

@@ -16,7 +16,7 @@ module Sprockets
       def compute_asset_path(path, options = {})
         if digest_path = lookup_assets_digest_path(path)
           path = digest_path if digest_assets?
-          File.join(assets_prefix, path)
+          File.join(assets_prefix || "/", path)
           else
           super
         end
@@ -32,11 +32,9 @@ module Sprockets
         compile_assets || true
       end
 
-      protected
-        def assets_prefix
-          ::Rails.application.config.assets.prefix
-        end
+      attr_accessor :assets_prefix
 
+      protected
         def assets_manifest
           ::Rails.application.config.assets.manifest
         end
