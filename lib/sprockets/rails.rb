@@ -41,7 +41,7 @@ module Sprockets
 
         config_helpers = Module.new do
           define_method :debug_assets? do
-            config.assets.debug || super
+            config.assets.debug || super()
           end
           define_method :digest_assets?  do
             config.assets.digest
