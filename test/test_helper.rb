@@ -3,28 +3,12 @@ require 'test/unit'
 require 'action_view'
 require 'sprockets/rails/helper'
 
-# Stub Rails
-# All this needs to be fixed
-module Rails
-  class Application
-    attr_accessor :assets, :config
-  end
-  @@application = Application.new
-
-  def self.application
-    @@application
-  end
-end
-
 class HelperTest < Test::Unit::TestCase
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   def setup
     @assets = Sprockets::Environment.new
     @assets.append_path FIXTURES_PATH
-
-    Rails.application.config = ActiveSupport::OrderedOptions.new
-    Rails.application.config.action_controller = ActiveSupport::OrderedOptions.new
 
     @view = ActionView::Base.new
     @view.extend Sprockets::Rails::Helper
