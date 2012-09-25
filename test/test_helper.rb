@@ -3,6 +3,7 @@ require 'test/unit'
 require 'action_view'
 require 'sprockets'
 require 'sprockets/rails/helper'
+require 'active_support/core_ext/class/attribute_accessors'
 
 class HelperTest < Test::Unit::TestCase
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
@@ -12,18 +13,14 @@ class HelperTest < Test::Unit::TestCase
     @assets.append_path FIXTURES_PATH
     @assets.context_class.class_eval do
       include ::Sprockets::Rails::Helper
-      define_method :assets_environment do
-        assets
-      end
-      define_method :assets_prefix do
-        "/assets"
-      end
+      cattr_accessor :assets_prefix, :digest_assets
+      alias_method :assets_environment, :environment
     end
 
     @view = ActionView::Base.new
     @view.extend Sprockets::Rails::Helper
     @view.assets_environment = @assets
-    @view.assets_prefix = "/assets"
+    @assets.context_class.assets_prefix = @view.assets_prefix = "/assets"
   end
 
   def test_javascript_include_tag
@@ -87,11 +84,7 @@ class NoDigestHelperTest < HelperTest
   def setup
     super
     @view.digest_assets = false
-    @assets.context_class.class_eval do
-      define_method :digest_assets do
-        false
-      end
-    end
+    @assets.context_class.digest_assets = false
   end
 
   def test_javascript_include_tag
@@ -138,11 +131,7 @@ class DigestHelperTest < HelperTest
   def setup
     super
     @view.digest_assets = true
-    @assets.context_class.class_eval do
-      define_method :digest_assets do
-        true
-      end
-    end
+    @assets.context_class.digest_assets = true
   end
 
   def test_javascript_include_tag
