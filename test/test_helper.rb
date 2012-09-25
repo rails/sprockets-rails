@@ -231,7 +231,7 @@ class ManifestHelperTest < HelperTest
     @manifest.assets["foo.css"] = "foo-127cf1c7ad8ff496ba75fdb067e070c9.css"
 
     @view.digest_assets = true
-    @view.compile_assets = false
+    @view.assets_environment = nil
     @view.assets_manifest = @manifest
   end
 

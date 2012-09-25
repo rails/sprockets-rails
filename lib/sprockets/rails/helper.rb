@@ -27,11 +27,6 @@ module Sprockets
         digest_assets.nil? ? false : digest_assets
       end
 
-      attr_accessor :compile_assets
-      def compile_assets?
-        compile_assets.nil? ? true : compile_assets
-      end
-
       attr_accessor :assets_prefix, :assets_environment, :assets_manifest
 
       protected
@@ -42,8 +37,8 @@ module Sprockets
             end
           end
 
-          if compile_assets? && assets_environment
-            if asset = assets_environment[logical_path]
+          if environment = assets_environment
+            if asset = environment[logical_path]
               return asset.digest_path
             end
           end

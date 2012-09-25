@@ -46,9 +46,6 @@ module Sprockets
           define_method :digest_assets?  do
             config.assets.digest
           end
-          define_method :compile_assets? do
-            config.assets.compile
-          end
           define_method :assets_prefix do
             config.assets.prefix
           end
@@ -56,7 +53,7 @@ module Sprockets
             config.assets.manifest
           end
           define_method :assets_environment do
-            app.assets
+            app.assets if config.assets.compile
           end
         end
 
