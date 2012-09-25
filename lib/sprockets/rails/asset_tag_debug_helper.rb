@@ -52,7 +52,6 @@ module Sprockets
       end
 
       private
-
         def lookup_asset_for_path(path, options = {})
           return unless path = expand_source_extension(path, options)
           assets_environment[path]
