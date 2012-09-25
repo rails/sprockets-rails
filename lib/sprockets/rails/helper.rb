@@ -27,6 +27,11 @@ module Sprockets
         digest_assets || false
       end
 
+      attr_accessor :compile_assets
+      def compile_assets?
+        compile_assets || true
+      end
+
       protected
         def assets_prefix
           ::Rails.application.config.assets.prefix
@@ -40,10 +45,6 @@ module Sprockets
           ::Rails.application.assets
         end
 
-        def assets_compile?
-          ::Rails.application.config.assets.compile
-        end
-
         def lookup_assets_digest_path(logical_path)
           if manifest = assets_manifest
             if digest_path = manifest.assets[logical_path]
@@ -51,7 +52,7 @@ module Sprockets
             end
           end
 
-          if assets_compile?
+          if compile_assets?
             if asset = assets_environment[logical_path]
               return asset.digest_path
             end

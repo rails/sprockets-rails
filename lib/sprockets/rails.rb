@@ -47,6 +47,10 @@ module Sprockets
           def digest_assets?
             ::Rails.application.config.assets.digest
           end
+
+          def compile_assets?
+            ::Rails.application.config.assets.compile
+          end
         end
 
         app.assets = Sprockets::Environment.new(app.root.to_s) do |env|
