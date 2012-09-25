@@ -24,12 +24,12 @@ module Sprockets
 
       attr_accessor :digest_assets
       def digest_assets?
-        digest_assets || false
+        digest_assets.nil? ? false : digest_assets
       end
 
       attr_accessor :compile_assets
       def compile_assets?
-        compile_assets || true
+        compile_assets.nil? ? true : compile_assets
       end
 
       attr_accessor :assets_prefix, :assets_environment, :assets_manifest

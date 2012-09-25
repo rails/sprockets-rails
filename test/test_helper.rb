@@ -1,6 +1,7 @@
 require 'test/unit'
 
 require 'action_view'
+require 'sprockets'
 require 'sprockets/rails/helper'
 
 class HelperTest < Test::Unit::TestCase
@@ -189,5 +190,53 @@ class DebugHelperTest < HelperTest
     super
 
     assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
+  end
+end
+
+class ManifestHelperTest < HelperTest
+  def setup
+    super
+
+    @manifest = Sprockets::Manifest.new(@assets, FIXTURES_PATH)
+    @manifest.assets["foo.js"] = "foo-5c3f9cc9c6ed0702c58b03531d71982c.js"
+    @manifest.assets["foo.css"] = "foo-127cf1c7ad8ff496ba75fdb067e070c9.css"
+
+    @view.digest_assets = true
+    @view.compile_assets = false
+    @view.assets_manifest = @manifest
+  end
+
+  def test_javascript_include_tag
+    super
+
+    assert_equal %(<script src="/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js" type="text/javascript"></script>),
+      @view.javascript_include_tag("foo")
+    assert_equal %(<script src="/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js" type="text/javascript"></script>),
+      @view.javascript_include_tag("foo.js")
+    assert_equal %(<script src="/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js" type="text/javascript"></script>),
+      @view.javascript_include_tag(:foo)
+  end
+
+  def test_stylesheet_link_tag
+    super
+
+    assert_equal %(<link href="/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag("foo")
+    assert_equal %(<link href="/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag("foo.css")
+    assert_equal %(<link href="/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css" media="screen" rel="stylesheet" type="text/css" />),
+      @view.stylesheet_link_tag(:foo)
+  end
+
+  def test_javascript_path
+    super
+
+    assert_equal "/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js", @view.javascript_path("foo")
+  end
+
+  def test_stylesheet_path
+    super
+
+    assert_equal "/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css", @view.stylesheet_path("foo")
   end
 end
