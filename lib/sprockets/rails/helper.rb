@@ -17,7 +17,7 @@ module Sprockets
         if digest_path = lookup_assets_digest_path(path)
           path = digest_path if digest_assets?
           File.join(assets_prefix || "/", path)
-          else
+        else
           super
         end
       end
