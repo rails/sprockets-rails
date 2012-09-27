@@ -43,7 +43,8 @@ namespace :assets do
       config = ::Rails.application.config
       config.assets.compile = true
       config.assets.digest  = digest unless digest.nil?
-      config.assets.digests = {}
+      config.assets.digest_files   ||= {}
+      config.assets.source_digests ||= {}
 
       original_assets = Sprockets::Rails::Bootstrap.original_assets
       env = if !config.assets.digest && original_assets
@@ -55,18 +56,38 @@ namespace :assets do
         Rails.application.assets
       end
 
-      target   = File.join(::Rails.public_path, config.assets.prefix)
-      compiler = Sprockets::Rails::StaticCompiler.new(env,
-                                                      target,
-                                                      config.assets.precompile,
-                                                      :digest => config.assets.digest,
-                                                      :manifest => digest.nil?)
-      compiler.compile
+      target = File.join(::Rails.public_path, config.assets.prefix)
+
+      # If processing non-digest assets, and compiled digest files are
+      # present, then generate non-digest assets from existing assets.
+      # It is assumed that `assets:precompile:nondigest` won't be run manually
+      # if assets have been previously compiled with digests.
+      if !config.assets.digest && config.assets.digest_files.any?
+        generator = Sprockets::Rails::StaticNonDigestGenerator.new(env, target, config.assets.precompile,
+          :digest_files => config.assets.digest_files)
+        generator.generate
+      else
+        compiler = Sprockets::Rails::StaticCompiler.new(env, target, config.assets.precompile,
+          :digest         => config.assets.digest,
+          :manifest       => digest.nil?,
+          :digest_files   => config.assets.digest_files,
+          :source_digests => config.assets.source_digests)
+        compiler.compile
+      end
     end
 
-    task :all do
-      Rake::Task["assets:precompile:primary"].invoke
-      Rake::Task["assets:precompile:nondigest"].invoke if ::Rails.application.config.assets.digest
+    task :all => ["assets:cache:clean"] do
+      internal_precompile
+      if ::Rails.application.config.assets.digest
+        internal_precompile(false)
+
+        # Other gems may want to add hooks to run after the 'assets:precompile:***' tasks.
+        # Since we aren't running separate rake tasks anymore,
+        # we need to manually invoke the extra actions.
+        %w(primary nondigest).each do |asset_type|
+          Rake::Task["assets:precompile:#{asset_type}"].actions[1..-1].each &:call
+        end
+      end
     end
 
     task :primary => ["assets:cache:clean"] do
