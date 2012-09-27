@@ -153,9 +153,14 @@ module ApplicationTests
       precompile!
       manifest = "#{app_path}/public/assets/manifest.yml"
 
-      assets = YAML.load_file(manifest)
-      assert_match(/application-([0-z]+)\.js/, assets["application.js"])
-      assert_match(/application-([0-z]+)\.css/, assets["application.css"])
+      digests = YAML.load_file(manifest)
+      digest_files, source_digests = digests[:digest_files], digests[:source_digests]
+
+      assert_match(/application-([0-z]+)\.js/,  digest_files["application.js"])
+      assert_match(/application-([0-z]+)\.css/, digest_files["application.css"])
+
+      assert_match(/[0-z]+/, source_digests["application.js"])
+      assert_match(/[0-z]+/, source_digests["application.css"])
     end
 
     test "the manifest file should be saved by default in the same assets folder" do
@@ -167,8 +172,8 @@ module ApplicationTests
       precompile!
 
       manifest = "#{app_path}/public/x/manifest.yml"
-      assets = YAML.load_file(manifest)
-      assert_match(/application-([0-z]+)\.js/, assets["application.js"])
+      digest_files = YAML.load_file(manifest)[:digest_files]
+      assert_match(/application-([0-z]+)\.js/, digest_files["application.js"])
     end
 
     test "precompile does not append asset digests when config.assets.digest is false" do
@@ -183,9 +188,9 @@ module ApplicationTests
 
       manifest = "#{app_path}/public/assets/manifest.yml"
 
-      assets = YAML.load_file(manifest)
-      assert_equal "application.js", assets["application.js"]
-      assert_equal "application.css", assets["application.css"]
+      digest_files = YAML.load_file(manifest)[:digest_files]
+      assert_equal "application.js", digest_files["application.js"]
+      assert_equal "application.css", digest_files["application.css"]
     end
 
     test "assets do not require any assets group gem when manifest file is present" do
@@ -196,8 +201,8 @@ module ApplicationTests
       precompile!
 
       manifest = "#{app_path}/public/assets/manifest.yml"
-      assets = YAML.load_file(manifest)
-      asset_path = assets["application.js"]
+      digest_files = YAML.load_file(manifest)[:digest_files]
+      asset_path = digest_files["application.js"]
 
       require "#{app_path}/config/environment"
 
@@ -236,7 +241,7 @@ module ApplicationTests
     test "assets raise AssetNotPrecompiledError when manifest file is present and requested file isn't precompiled if digest is disabled" do
       app_file "app/views/posts/index.html.erb", "<%= javascript_include_tag 'app' %>"
       add_to_config "config.assets.compile = false"
-      add_to_config "config.assets.digests = false"
+      add_to_config "config.assets.digest_files = false"
 
       app_file "config/routes.rb", <<-RUBY
         AppTemplate::Application.routes.draw do
@@ -286,9 +291,9 @@ module ApplicationTests
       app_file "app/assets/images/rails.png", "image changed"
 
       precompile!
-      assets = YAML.load_file(manifest)
+      digest_files = YAML.load_file(manifest)[:digest_files]
 
-      assert_not_equal asset_path, assets["application.css"]
+      assert_not_equal asset_path, digest_files["application.css"]
     end
 
     test "precompile appends the md5 hash to files referenced with asset_path and run in production as default even using RAILS_GROUPS=assets" do
@@ -395,7 +400,7 @@ module ApplicationTests
       assert_no_match(/<script src="\/assets\/xmlhr-([0-z]+)\.js"><\/script>/, last_response.body)
     end
 
-    test "assets aren't concatened when compile is true is on and debug_assets params is true" do
+    test "assets aren't concatenated when compile is on and debug_assets params is true" do
       app_with_assets_in_view
       add_to_env_config "production", "config.assets.compile  = true"
       add_to_env_config "production", "config.assets.allow_debugging = true"
