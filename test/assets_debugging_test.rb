@@ -39,8 +39,9 @@ module ApplicationTests
       capture(:stdout) do
         Dir.chdir(app_path){ `bundle exec rake assets:precompile` }
       end
-      require "#{app_path}/config/environment"
+      assert_equal 0, $?.exitstatus, 'assets:precompile failed'
 
+      require "#{app_path}/config/environment"
       class ::PostsController < ActionController::Base ; end
 
       # the debug_assets params isn't used if compile is off
