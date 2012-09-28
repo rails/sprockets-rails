@@ -18,7 +18,9 @@ module Sprockets
         manifest = {}
         env.each_logical_path(paths) do |logical_path|
           if asset = env.find_asset(logical_path)
-            manifest[logical_path] = write_asset(asset)
+            digest_path = write_asset(asset)
+            manifest[asset.logical_path] = digest_path
+            manifest[aliased_path_for(asset.logical_path)] = digest_path
           end
         end
         write_manifest(manifest) if @manifest
@@ -42,6 +44,14 @@ module Sprockets
 
       def path_for(asset)
         @digest ? asset.digest_path : asset.logical_path
+      end
+
+      def aliased_path_for(logical_path)
+        if File.basename(logical_path).start_with?('index')
+          logical_path.sub(/\/index([^\/]+)$/, '\1')
+        else
+          logical_path.sub(/\.([^\/]+)$/, '/index.\1')
+        end
       end
     end
   end
