@@ -9,4 +9,6 @@ gem 'journey', :git => 'git://github.com/rails/journey'
 gem "uglifier", :require => false
 gem "mocha", :require => false
 gem "jquery-rails"
+gem 'coffee-rails', :git => 'git://github.com/rails/coffee-rails'
+gem "turbolinks"
 gem 'debugger' if !ENV['TRAVIS'] && RUBY_VERSION < '2.0'
