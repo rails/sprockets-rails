@@ -19,7 +19,7 @@ module Sprockets
       end
 
       def manifest
-        @app.config.assets.manifest
+        @app.assets_manifest
       end
 
       def assets
@@ -27,7 +27,7 @@ module Sprockets
       end
 
       def output
-        File.join(::Rails.public_path, app.config.assets.prefix)
+        File.join(::Rails.public_path, @app.config.assets.prefix)
       end
 
       def define

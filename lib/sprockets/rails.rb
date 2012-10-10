@@ -2,8 +2,69 @@ require 'sprockets'
 require 'action_controller/railtie'
 require 'sprockets/rails/helper'
 
+module Rails
+  class Application < Engine
+    # Returns Sprockets::Environment for app config.
+    def assets
+      return unless config.assets.compile
+
+      return @assets if defined? @assets
+
+      @assets = Sprockets::Environment.new(root.to_s) do |env|
+        env.version = ::Rails.env + "-#{config.assets.version}"
+
+        if config.assets.cache_store != false
+          path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"
+          env.cache = ActiveSupport::Cache.lookup_store([:file_store, path])
+        end
+
+        config.assets.paths.each do |path|
+          env.append_path(path)
+        end
+
+        env.js_compressor  = config.assets.js_compressor
+        env.css_compressor = config.assets.css_compressor
+
+        app = self
+        env.context_class.class_eval do
+          include ::Sprockets::Rails::Helper
+          define_method(:_rails_app) { app }
+        end
+      end
+    end
+
+    def assets_manifest
+      return @assets_manifest if defined? @assets_manifest
+      path = File.join(::Rails.public_path, config.assets.prefix)
+      @assets_manifest = Sprockets::Manifest.new(assets, path)
+    end
+  end
+end
+
 module Sprockets
   module Rails
+    module Config
+      def debug_assets?
+        _rails_app.config.assets.debug || super
+      end
+
+      def digest_assets?
+        _rails_app.config.assets.digest
+      end
+
+      def assets_prefix
+        _rails_app.config.assets.prefix
+      end
+
+      def assets_manifest
+        _rails_app.assets_manifest
+      end
+
+      def assets_environment
+        _rails_app.assets
+      end
+    end
+
     class Railtie < ::Rails::Railtie
       rake_tasks do |app|
         require 'sprockets/rails/task'
@@ -11,64 +72,21 @@ module Sprockets
       end
 
       initializer "sprockets.environment" do |app|
-        config = app.config
-
-        config_helpers = Module.new do
-          define_method :debug_assets? do
-            config.assets.debug || super()
-          end
-          define_method :digest_assets?  do
-            config.assets.digest
-          end
-          define_method :assets_prefix do
-            config.assets.prefix
-          end
-          define_method :assets_manifest do
-            config.assets.manifest
-          end
-          define_method :assets_environment do
-            app.assets
-          end
-        end
-
-        if config.assets.compile
-          app.assets = Sprockets::Environment.new(app.root.to_s) do |env|
-            env.version = ::Rails.env + "-#{config.assets.version}"
-
-            if config.assets.cache_store != false
-              env.cache = ActiveSupport::Cache.lookup_store([:file_store, "#{config.root}/tmp/cache/assets/#{::Rails.env}"])
-            end
-
-            env.context_class.class_eval do
-              include ::Sprockets::Rails::Helper
-              include config_helpers
-            end
-          end
-        end
-
-        manifest_path = File.join(::Rails.public_path, config.assets.prefix)
-        config.assets.manifest = Manifest.new(app.assets, manifest_path)
-
         ActiveSupport.on_load(:action_view) do
           include ::Sprockets::Rails::Helper
-          include config_helpers
+          include Config
+          define_method(:_rails_app) { app }
         end
       end
 
       config.after_initialize do |app|
         return unless app.assets
 
-        config = app.config
-        config.assets.paths.each { |path| app.assets.append_path(path) }
-
-        app.assets.js_compressor  = config.assets.js_compressor
-        app.assets.css_compressor = config.assets.css_compressor
-
         app.routes.prepend do
-          mount app.assets => config.assets.prefix
+          mount app.assets => app.config.assets.prefix
         end
 
-        if config.assets.digest
+        if app.config.assets.digest
           app.assets = app.assets.index
         end
       end
