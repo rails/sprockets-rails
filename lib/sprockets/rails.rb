@@ -33,7 +33,7 @@ module Rails
 
     def assets_manifest
       return @assets_manifest if defined? @assets_manifest
-      path = File.join(::Rails.public_path, config.assets.prefix)
+      path = File.join(root, "public", config.assets.prefix)
       @assets_manifest = Sprockets::Manifest.new(assets, path)
     end
   end

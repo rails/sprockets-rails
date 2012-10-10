@@ -23,7 +23,7 @@ module Sprockets
       end
 
       def output
-        File.join(::Rails.public_path, @app.config.assets.prefix)
+        File.join(@app.root, "public", @app.config.assets.prefix)
       end
 
       def define
