@@ -67,13 +67,8 @@ module Sprockets
 
         config.assets.paths.each { |path| app.assets.append_path(path) }
 
-        if compressor = config.assets.js_compressor
-          app.assets.js_compressor = compressor
-        end
-
-        if compressor = config.assets.css_compressor
-          app.assets.css_compressor = compressor
-        end
+        app.assets.js_compressor  = config.assets.js_compressor
+        app.assets.css_compressor = config.assets.css_compressor
 
         if config.assets.compile
           app.routes.prepend do
