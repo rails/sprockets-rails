@@ -5,18 +5,12 @@ require 'sprockets/rails/helper'
 module Sprockets
   module Rails
     class Railtie < ::Rails::Railtie
-      rake_tasks do
+      rake_tasks do |app|
         require 'sprockets/rails/task'
-
-        Task.new do |t|
-          t.environment = ::Rails.application.assets
-          t.logger      = ::Rails.logger
-          t.assets      = ::Rails.application.config.assets.precompile
-          t.manifest    = ::Rails.application.config.manifest
-        end
+        Task.new(app)
       end
 
-      initializer "sprockets.environment", :group => :all do |app|
+      initializer "sprockets.environment" do |app|
         config = app.config
 
         config_helpers = Module.new do
