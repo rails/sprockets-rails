@@ -1,5 +1,4 @@
 require 'sprockets'
-require 'fileutils'
 require 'action_controller/railtie'
 require 'sprockets/rails/helper'
 
@@ -7,32 +6,15 @@ module Sprockets
   module Rails
     class Railtie < ::Rails::Railtie
       rake_tasks do
-        namespace :assets do
-          desc "Compile all the assets named in config.assets.precompile"
-          task :precompile => :environment do
-            config = ::Rails.application.config
-            env    = ::Rails.application.assets
-            config.assets.manifest.compile(config.assets.precompile)
-          end
+        require 'sprockets/rails/task'
 
-          namespace :precompile do
-            task :all do
-              warn "rake assets:precompile:all is deprecated, just use rake assets:precompile"
-              Rake::Task["assets:precompile"].invoke
-            end
-          end
+        Task.new do |t|
+          t.environment = ::Rails.application.assets
+          t.logger      = ::Rails.logger
+          t.assets      = ::Rails.application.config.assets.precompile
 
-          desc "Remove old compiled assets"
-          task :clean => :environment do
-            config = ::Rails.application.config
-            config.assets.manifest.clean
-          end
-
-          desc "Remove compiled assets"
-          task :clobber => :environment do
-            config = ::Rails.application.config
-            config.assets.manifest.clobber
-          end
+          # TODO: Expose public setter in Sprockets
+          t.instance_variable_set "@manifest", ::Rails.application.config.manifest
         end
       end
 
