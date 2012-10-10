@@ -1,5 +1,4 @@
 require 'action_view'
-require 'active_support/core_ext/file'
 require 'sprockets'
 
 require 'sprockets/rails/asset_host_helper'
