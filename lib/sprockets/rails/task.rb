@@ -10,10 +10,6 @@ module Sprockets
         super()
       end
 
-      def logger
-        ::Rails.logger
-      end
-
       def environment
         @app.assets
       end
