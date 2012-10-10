@@ -13,10 +13,8 @@ module Rails
       @assets = Sprockets::Environment.new(root.to_s) do |env|
         env.version = ::Rails.env + "-#{config.assets.version}"
 
-        if config.assets.cache_store != false
-          path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"
-          env.cache = ActiveSupport::Cache.lookup_store([:file_store, path])
-        end
+        path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"
+        env.cache = Sprockets::Cache::FileStore.new(path)
 
         config.assets.paths.each do |path|
           env.append_path(path)
