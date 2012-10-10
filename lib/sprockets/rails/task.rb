@@ -4,7 +4,7 @@ require 'sprockets'
 
 module Sprockets
   module Rails
-    class Task < SprocketsTask
+    class Task < Rake::SprocketsTask
       def define
         namespace :assets do
           desc "Compile all the assets named in config.assets.precompile"
