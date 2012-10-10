@@ -12,9 +12,7 @@ module Sprockets
           t.environment = ::Rails.application.assets
           t.logger      = ::Rails.logger
           t.assets      = ::Rails.application.config.assets.precompile
-
-          # TODO: Expose public setter in Sprockets
-          t.instance_variable_set "@manifest", ::Rails.application.config.manifest
+          t.manifest    = ::Rails.application.config.manifest
         end
       end
 
