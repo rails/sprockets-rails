@@ -6,8 +6,6 @@ module Rails
   class Application < Engine
     # Returns Sprockets::Environment for app config.
     def assets
-      return unless config.assets.compile
-
       return @assets if defined? @assets
 
       @assets = Sprockets::Environment.new(root.to_s) do |env|
@@ -37,12 +35,6 @@ module Rails
 
       @assets
     end
-
-    def assets_manifest
-      return @assets_manifest if defined? @assets_manifest
-      path = File.join(root, "public", config.assets.prefix)
-      @assets_manifest = Sprockets::Manifest.new(assets, path)
-    end
   end
 end
 
@@ -54,23 +46,30 @@ module Sprockets
 
         Task.new do |t|
           t.environment = lambda { app.assets }
-          t.manifest    = lambda { app.assets_manifest }
+          t.output      = File.join(app.root, 'public', app.config.assets.prefix)
           t.assets      = app.config.assets.precompile
         end
       end
 
       config.after_initialize do |app|
+        manifest_path = File.join(app.root, 'public', app.config.assets.prefix)
+
         ActiveSupport.on_load(:action_view) do
           include ::Sprockets::Rails::Helper
 
           self.debug_assets       = app.config.assets.debug
           self.digest_assets      = app.config.assets.digest
           self.assets_prefix      = app.config.assets.prefix
-          self.assets_environment = app.assets
-          self.assets_manifest    = app.assets_manifest
+
+          if app.config.assets.compile
+            self.assets_environment = app.assets
+            self.assets_manifest    = ::Sprockets::Manifest.new(app.assets, manifest_path)
+          else
+            self.assets_manifest = ::Sprockets::Manifest.new(manifest_path)
+          end
         end
 
-        if app.assets
+        if app.config.assets.compile
           app.routes.prepend do
             mount app.assets => app.config.assets.prefix
           end
