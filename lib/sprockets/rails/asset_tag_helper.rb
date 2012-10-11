@@ -7,36 +7,6 @@ module Sprockets
     # Nothing Rails or Sprockets specific in here. It'd be nice if
     # this is what the stock Rails module used.
     module AssetTagHelper
-      # Simplified version of javascript_include_tag. Does not any
-      # concatenation.
-      #
-      # http://apidock.com/rails/ActionView/Helpers/AssetTagHelper/javascript_include_tag
-      def javascript_include_tag(*sources)
-        options = sources.extract_options!.stringify_keys
-        sources.uniq.map { |source|
-          tag_options = {
-            "src" => path_to_javascript(source)
-          }.merge(options)
-          content_tag(:script, "", tag_options)
-        }.join("\n").html_safe
-      end
-
-      # Simplified version of stylesheet_link_tag. Does not any
-      # concatenation.
-      #
-      # http://apidock.com/rails/ActionView/Helpers/AssetTagHelper/stylesheet_link_tag
-      def stylesheet_link_tag(*sources)
-        options = sources.extract_options!.stringify_keys
-        sources.uniq.map { |source|
-          tag_options = {
-            "rel" => "stylesheet",
-            "media" => "screen",
-            "href" => path_to_stylesheet(source)
-          }.merge(options)
-          tag(:link, tag_options)
-        }.join("\n").html_safe
-      end
-
       URI_REGEXP = %r{^[-a-z]+://|^(?:cid|data):|^//}
 
       def asset_path(source, options = {})

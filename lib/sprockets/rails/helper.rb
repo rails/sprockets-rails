@@ -9,6 +9,11 @@ require 'sprockets/rails/asset_tag_helper'
 module Sprockets
   module Rails
     module Helper
+      if ActionPack::VERSION::MAJOR < 4
+        require 'sprockets/rails/legacy_asset_tag_helper'
+        include LegacyAssetTagHelper
+      end
+
       include AssetHostHelper
       include AssetTagHelper
 
