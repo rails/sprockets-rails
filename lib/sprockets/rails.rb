@@ -31,7 +31,7 @@ module Rails
         env.context_class.digest_assets = config.assets.digest
       end
 
-      if config.action_controller.perform_caching
+      if config.cache_classes
         @assets = @assets.index
       end
 
