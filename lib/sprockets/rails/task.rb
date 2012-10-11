@@ -14,13 +14,6 @@ module Sprockets
             end
           end
 
-          namespace :precompile do
-            task :all do
-              warn "rake assets:precompile:all is deprecated, just use rake assets:precompile"
-              Rake::Task["assets:precompile"].invoke
-            end
-          end
-
           desc "Remove old compiled assets"
           task :clean => :environment do
             with_logger do
