@@ -90,11 +90,11 @@ module Sprockets
                 super(path_to_javascript(a.logical_path, :debug => true), options)
               end
             else
-              super(source)
+              super(source, options)
             end
           }.join("\n").html_safe
         else
-          super
+          super(*sources, options)
         end
       end
 
@@ -111,11 +111,11 @@ module Sprockets
                 super(path_to_stylesheet(a.logical_path, :debug => true), options)
               end
             else
-              super(source)
+              super(source, options)
             end
           }.join("\n").html_safe
         else
-          super
+          super(*sources, options)
         end
       end
 
