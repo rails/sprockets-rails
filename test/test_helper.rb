@@ -3,24 +3,26 @@ require 'test/unit'
 require 'action_view'
 require 'sprockets'
 require 'sprockets/rails/helper'
-require 'active_support/core_ext/class/attribute_accessors'
 
 class HelperTest < Test::Unit::TestCase
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
+
+  # class ActionView::Base
+  #   include ::Sprockets::Rails::Helper
+  # end
 
   def setup
     assets = @assets = Sprockets::Environment.new
     @assets.append_path FIXTURES_PATH
     @assets.context_class.class_eval do
       include ::Sprockets::Rails::Helper
-      cattr_accessor :assets_prefix, :digest_assets
-      alias_method :assets_environment, :environment
     end
+    @assets.context_class.assets_prefix = "/assets"
 
     @view = ActionView::Base.new
-    @view.extend Sprockets::Rails::Helper
+    @view.extend ::Sprockets::Rails::Helper
     @view.assets_environment = @assets
-    @assets.context_class.assets_prefix = @view.assets_prefix = "/assets"
+    @view.assets_prefix = "/assets"
 
     @foo_js_digest  = @assets['foo.js'].digest
     @foo_css_digest = @assets['foo.css'].digest

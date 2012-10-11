@@ -1,6 +1,8 @@
 require 'action_view'
 require 'sprockets'
 
+require 'active_support/core_ext/class/attribute'
+
 require 'sprockets/rails/asset_host_helper'
 require 'sprockets/rails/asset_tag_helper'
 
@@ -9,6 +11,27 @@ module Sprockets
     module Helper
       include AssetHostHelper
       include AssetTagHelper
+
+      VIEW_ACCESSORS = [:assets_environment, :assets_manifest,
+                        :assets_prefix, :digest_assets, :debug_assets]
+
+      def self.included(klass)
+        if klass < Sprockets::Context
+          klass.class_eval do
+            alias_method :assets_environment, :environment
+            def assets_manifest; end
+            class_attribute :assets_prefix, :digest_assets
+          end
+        else
+          klass.class_attribute(*VIEW_ACCESSORS)
+        end
+      end
+
+      def self.extended(obj)
+        obj.class_eval do
+          attr_accessor(*VIEW_ACCESSORS)
+        end
+      end
 
       def compute_asset_path(path, options = {})
         if digest_path = lookup_assets_digest_path(path)
@@ -63,18 +86,14 @@ module Sprockets
         end
       end
 
-      attr_accessor :digest_assets
       def digest_assets?
         digest_assets.nil? ? false : digest_assets
       end
 
-      attr_accessor :debug_assets
       def debug_assets?
         debug_assets ||
           (defined?(@controller) && @controller && params[:debug_assets])
       end
-
-      attr_accessor :assets_prefix, :assets_environment, :assets_manifest
 
       protected
         def lookup_assets_digest_path(logical_path)
@@ -92,8 +111,9 @@ module Sprockets
         end
 
         def lookup_asset_for_path(path, options = {})
+          return unless env = assets_environment
           return unless path = expand_source_extension(path, options)
-          assets_environment[path]
+          env[path]
         end
     end
   end
