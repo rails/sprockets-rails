@@ -29,6 +29,12 @@ module Rails
           define_method(:_rails_app) { app }
         end
       end
+
+      if config.action_controller.perform_caching
+        @assets = @assets.index
+      end
+
+      @assets
     end
 
     def assets_manifest
@@ -87,10 +93,6 @@ module Sprockets
 
         app.routes.prepend do
           mount app.assets => app.config.assets.prefix
-        end
-
-        if app.config.assets.digest
-          app.assets = app.assets.index
         end
       end
     end
