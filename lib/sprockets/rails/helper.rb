@@ -125,7 +125,7 @@ module Sprockets
 
       def debug_assets?
         debug_assets ||
-          (defined?(@controller) && @controller && params[:debug_assets])
+          (defined?(@controller) && !controller.nil? && controller.params[:debug_assets])
       end
 
       protected
