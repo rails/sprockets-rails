@@ -126,6 +126,11 @@ class NoDigestHelperTest < HelperTest
     assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
   end
 
+  def test_asset_digest
+    assert_equal nil, @view.asset_digest("foo.js")
+    assert_equal nil, @view.asset_digest("foo.css")
+  end
+
   def test_asset_url
     assert_equal "var url = '/assets/foo.js';\n", @assets["url.js"].to_s
     assert_equal "p { background: url(/images/logo.png); }\n", @assets["url.css"].to_s
@@ -171,6 +176,16 @@ class DigestHelperTest < HelperTest
     super
 
     assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
+  end
+
+  def test_asset_digest
+    assert_equal @foo_js_digest, @view.asset_digest("foo.js")
+    assert_equal @foo_css_digest, @view.asset_digest("foo.css")
+  end
+
+  def test_asset_digest_path
+    assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
+    assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
   end
 
   def test_asset_url
@@ -222,7 +237,7 @@ class ManifestHelperTest < HelperTest
 
     @manifest = Sprockets::Manifest.new(@assets, FIXTURES_PATH)
     @manifest.assets["foo.js"] = "foo-#{@foo_js_digest}.js"
-    @manifest.assets["foo.css"] = "foo-#{@foo_js_digest}.css"
+    @manifest.assets["foo.css"] = "foo-#{@foo_css_digest}.css"
 
     @view.digest_assets = true
     @view.assets_environment = nil
@@ -243,11 +258,11 @@ class ManifestHelperTest < HelperTest
   def test_stylesheet_link_tag
     super
 
-    assert_equal %(<link href="/assets/foo-#{@foo_js_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("foo")
-    assert_equal %(<link href="/assets/foo-#{@foo_js_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("foo.css")
-    assert_equal %(<link href="/assets/foo-#{@foo_js_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag(:foo)
   end
 
@@ -260,6 +275,16 @@ class ManifestHelperTest < HelperTest
   def test_stylesheet_path
     super
 
-    assert_equal "/assets/foo-#{@foo_js_digest}.css", @view.stylesheet_path("foo")
+    assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
+  end
+
+  def test_asset_digest_path
+    assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
+    assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
+  end
+
+  def test_asset_digest
+    assert_equal @foo_js_digest, @view.asset_digest("foo.js")
+    assert_equal @foo_css_digest, @view.asset_digest("foo.css")
   end
 end

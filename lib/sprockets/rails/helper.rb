@@ -34,12 +34,46 @@ module Sprockets
       end
 
       def compute_asset_path(path, options = {})
-        if digest_path = lookup_assets_digest_path(path)
+        if digest_path = asset_digest_path(path)
           path = digest_path if digest_assets?
           path += "?body=1" if options[:debug]
           File.join(assets_prefix || "/", path)
         else
           super
+        end
+      end
+
+      # Get digest for asset path.
+      #
+      # path    - String path
+      # options - Hash options
+      #
+      # Returns String Hex digest or nil if digests are disabled.
+      def asset_digest(path, options = {})
+        return unless digest_assets?
+
+        if digest_path = asset_digest_path(path, options)
+          digest_path[/-(.+)\./, 1]
+        end
+      end
+
+      # Expand asset path to digested form.
+      #
+      # path    - String path
+      # options - Hash options
+      #
+      # Returns String path or nil if no asset was found.
+      def asset_digest_path(path, options = {})
+        if manifest = assets_manifest
+          if digest_path = manifest.assets[path]
+            return digest_path
+          end
+        end
+
+        if environment = assets_environment
+          if asset = environment[path]
+            return asset.digest_path
+          end
         end
       end
 
@@ -95,20 +129,6 @@ module Sprockets
       end
 
       protected
-        def lookup_assets_digest_path(logical_path)
-          if manifest = assets_manifest
-            if digest_path = manifest.assets[logical_path]
-              return digest_path
-            end
-          end
-
-          if environment = assets_environment
-            if asset = environment[logical_path]
-              return asset.digest_path
-            end
-          end
-        end
-
         def lookup_asset_for_path(path, options = {})
           return unless env = assets_environment
           return unless path = expand_source_extension(path, options)
