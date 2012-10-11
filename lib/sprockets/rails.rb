@@ -90,10 +90,10 @@ module Sprockets
       end
 
       config.after_initialize do |app|
-        return unless app.assets
-
-        app.routes.prepend do
-          mount app.assets => app.config.assets.prefix
+        if app.assets
+          app.routes.prepend do
+            mount app.assets => app.config.assets.prefix
+          end
         end
       end
     end
