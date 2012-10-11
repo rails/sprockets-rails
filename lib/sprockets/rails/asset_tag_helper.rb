@@ -49,33 +49,33 @@ module Sprockets
       end
       alias_method :path_to_asset, :asset_path
 
-      def image_path(source)
-        path_to_asset(source, :type => :image)
+      def image_path(source, options = {})
+        path_to_asset(source, {:type => :image}.merge(options))
       end
       alias_method :path_to_image, :image_path
 
-      def video_path(source)
-        path_to_asset(source, :type => :video)
+      def video_path(source, options = {})
+        path_to_asset(source, {:type => :video}.merge(options))
       end
       alias_method :path_to_video, :video_path
 
-      def audio_path(source)
-        path_to_asset(source, :type => :audio)
+      def audio_path(source, options = {})
+        path_to_asset(source, {:type => :audio}.merge(options))
       end
       alias_method :path_to_audio, :audio_path
 
-      def font_path(source)
-        path_to_asset(source, :type => :font)
+      def font_path(source, options = {})
+        path_to_asset(source, {:type => :font}.merge(options))
       end
       alias_method :path_to_font, :font_path
 
-      def javascript_path(source)
-        path_to_asset(source, :type => :javascript)
+      def javascript_path(source, options = {})
+        path_to_asset(source, {:type => :javascript}.merge(options))
       end
       alias_method :path_to_javascript, :javascript_path
 
-      def stylesheet_path(source)
-        path_to_asset(source, :type => :stylesheet)
+      def stylesheet_path(source, options = {})
+        path_to_asset(source, {:type => :stylesheet}.merge(options))
       end
       alias_method :path_to_stylesheet, :stylesheet_path
 

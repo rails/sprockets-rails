@@ -36,6 +36,7 @@ module Sprockets
       def compute_asset_path(path, options = {})
         if digest_path = lookup_assets_digest_path(path)
           path = digest_path if digest_assets?
+          path += "?body=1" if options[:debug]
           File.join(assets_prefix || "/", path)
         else
           super
@@ -52,7 +53,7 @@ module Sprockets
           sources.map { |source|
             if asset = lookup_asset_for_path(source, :type => :javascript)
               asset.to_a.map do |a|
-                super(path_to_javascript(a.logical_path)+"?body=1", options)
+                super(path_to_javascript(a.logical_path, :debug => true), options)
               end
             else
               super(source)
@@ -73,7 +74,7 @@ module Sprockets
           sources.map { |source|
             if asset = lookup_asset_for_path(source, :type => :stylesheet)
               asset.to_a.map do |a|
-                super(path_to_stylesheet(a.logical_path)+"?body=1", options)
+                super(path_to_stylesheet(a.logical_path, :debug => true), options)
               end
             else
               super(source)
