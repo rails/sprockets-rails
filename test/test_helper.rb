@@ -21,6 +21,9 @@ class HelperTest < Test::Unit::TestCase
     @view.extend Sprockets::Rails::Helper
     @view.assets_environment = @assets
     @assets.context_class.assets_prefix = @view.assets_prefix = "/assets"
+
+    @foo_js_digest  = @assets['foo.js'].digest
+    @foo_css_digest = @assets['foo.css'].digest
   end
 
   def test_javascript_include_tag
@@ -137,39 +140,39 @@ class DigestHelperTest < HelperTest
   def test_javascript_include_tag
     super
 
-    assert_equal %(<script src="/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js" type="text/javascript"></script>),
+    assert_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" type="text/javascript"></script>),
       @view.javascript_include_tag("foo")
-    assert_equal %(<script src="/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js" type="text/javascript"></script>),
+    assert_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" type="text/javascript"></script>),
       @view.javascript_include_tag("foo.js")
-    assert_equal %(<script src="/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js" type="text/javascript"></script>),
+    assert_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" type="text/javascript"></script>),
       @view.javascript_include_tag(:foo)
   end
 
   def test_stylesheet_link_tag
     super
 
-    assert_equal %(<link href="/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("foo")
-    assert_equal %(<link href="/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("foo.css")
-    assert_equal %(<link href="/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag(:foo)
   end
 
   def test_javascript_path
     super
 
-    assert_equal "/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js", @view.javascript_path("foo")
+    assert_equal "/assets/foo-#{@foo_js_digest}.js", @view.javascript_path("foo")
   end
 
   def test_stylesheet_path
     super
 
-    assert_equal "/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css", @view.stylesheet_path("foo")
+    assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
   end
 
   def test_asset_url
-    assert_equal "var url = '/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js';\n", @assets["url.js"].to_s
+    assert_equal "var url = '/assets/foo-#{@foo_js_digest}.js';\n", @assets["url.js"].to_s
     assert_equal "p { background: url(/images/logo.png); }\n", @assets["url.css"].to_s
   end
 end
@@ -216,8 +219,8 @@ class ManifestHelperTest < HelperTest
     super
 
     @manifest = Sprockets::Manifest.new(@assets, FIXTURES_PATH)
-    @manifest.assets["foo.js"] = "foo-5c3f9cc9c6ed0702c58b03531d71982c.js"
-    @manifest.assets["foo.css"] = "foo-127cf1c7ad8ff496ba75fdb067e070c9.css"
+    @manifest.assets["foo.js"] = "foo-#{@foo_js_digest}.js"
+    @manifest.assets["foo.css"] = "foo-#{@foo_js_digest}.css"
 
     @view.digest_assets = true
     @view.assets_environment = nil
@@ -227,34 +230,34 @@ class ManifestHelperTest < HelperTest
   def test_javascript_include_tag
     super
 
-    assert_equal %(<script src="/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js" type="text/javascript"></script>),
+    assert_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" type="text/javascript"></script>),
       @view.javascript_include_tag("foo")
-    assert_equal %(<script src="/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js" type="text/javascript"></script>),
+    assert_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" type="text/javascript"></script>),
       @view.javascript_include_tag("foo.js")
-    assert_equal %(<script src="/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js" type="text/javascript"></script>),
+    assert_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" type="text/javascript"></script>),
       @view.javascript_include_tag(:foo)
   end
 
   def test_stylesheet_link_tag
     super
 
-    assert_equal %(<link href="/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_js_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("foo")
-    assert_equal %(<link href="/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_js_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag("foo.css")
-    assert_equal %(<link href="/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css" media="screen" rel="stylesheet" type="text/css" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_js_digest}.css" media="screen" rel="stylesheet" type="text/css" />),
       @view.stylesheet_link_tag(:foo)
   end
 
   def test_javascript_path
     super
 
-    assert_equal "/assets/foo-5c3f9cc9c6ed0702c58b03531d71982c.js", @view.javascript_path("foo")
+    assert_equal "/assets/foo-#{@foo_js_digest}.js", @view.javascript_path("foo")
   end
 
   def test_stylesheet_path
     super
 
-    assert_equal "/assets/foo-127cf1c7ad8ff496ba75fdb067e070c9.css", @view.stylesheet_path("foo")
+    assert_equal "/assets/foo-#{@foo_js_digest}.css", @view.stylesheet_path("foo")
   end
 end
