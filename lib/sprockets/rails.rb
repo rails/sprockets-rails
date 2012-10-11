@@ -26,6 +26,7 @@ module Rails
         app = self
         env.context_class.class_eval do
           include ::Sprockets::Rails::Helper
+          include ::Sprockets::Rails::Config
           define_method(:_rails_app) { app }
         end
       end
