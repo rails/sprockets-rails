@@ -49,9 +49,9 @@ class HelperTest < Test::Unit::TestCase
       @view.javascript_include_tag("//example.com/script.js")
 
     assert_equal %(<script defer="defer" src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", :defer => true)
+      @view.javascript_include_tag("static", :defer => "defer")
     assert_equal %(<script async="async" src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", :async => true)
+      @view.javascript_include_tag("static", :async => "async")
   end
 
   def test_stylesheet_link_tag
