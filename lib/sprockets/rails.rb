@@ -66,7 +66,12 @@ module Sprockets
     class Railtie < ::Rails::Railtie
       rake_tasks do |app|
         require 'sprockets/rails/task'
-        Task.new(app)
+
+        Task.new do |t|
+          t.environment = lambda { app.assets }
+          t.manifest    = lambda { app.assets_manifest }
+          t.assets      = app.config.assets.precompile
+        end
       end
 
       initializer "sprockets.environment" do |app|

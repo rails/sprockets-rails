@@ -5,27 +5,6 @@ require 'sprockets'
 module Sprockets
   module Rails
     class Task < Rake::SprocketsTask
-      def initialize(app)
-        @app = app
-        super()
-      end
-
-      def environment
-        @app.assets
-      end
-
-      def manifest
-        @app.assets_manifest
-      end
-
-      def assets
-        @app.config.assets.precompile
-      end
-
-      def output
-        File.join(@app.root, "public", @app.config.assets.prefix)
-      end
-
       def define
         namespace :assets do
           desc "Compile all the assets named in config.assets.precompile"
