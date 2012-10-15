@@ -27,6 +27,7 @@ module Rails
         end
         env.context_class.assets_prefix = config.assets.prefix
         env.context_class.digest_assets = config.assets.digest
+        env.context_class.config        = config.action_controller
       end
 
       if config.cache_classes
