@@ -9,10 +9,6 @@ module Sprockets
     module Helper
       if defined? ActionView::Helpers::AssetUrlHelper
         include ActionView::Helpers::AssetUrlHelper
-
-        # TMP
-        require 'sprockets/rails/legacy_asset_url_helper'
-        include LegacyAssetUrlHelper
       else
         require 'sprockets/rails/legacy_asset_url_helper'
         require 'sprockets/rails/legacy_asset_tag_helper'
