@@ -7,6 +7,8 @@ module Sprockets
         extend ActiveSupport::Concern
         include ActionView::Helpers::AssetTagHelper
 
+        class AssetNotPrecompiledError < StandardError; end
+
         def javascript_include_tag(*sources)
           options = sources.extract_options!
           debug   = options.delete(:debug)  { debug_assets? }
