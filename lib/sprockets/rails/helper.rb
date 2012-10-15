@@ -122,16 +122,23 @@ module Sprockets
         end
       end
 
+      # Disable fingerprint digest linking. Usually the default during
+      # development. Though, in the future this will go away and all
+      # Sprockets links will be digest ones.
       def digest_assets?
         digest_assets.nil? ? false : digest_assets
       end
 
+      # Enable split asset debugging. Eventually will be deprecated
+      # and replaced by source maps in Sprockets 3.x.
       def debug_assets?
         debug_assets ||
           (defined?(@controller) && !controller.nil? && controller.params[:debug_assets])
       end
 
       protected
+        # Internal method to support multifile debugging. Will
+        # eventually be removed w/ Sprockets 3.x.
         def lookup_asset_for_path(path, options = {})
           return unless env = assets_environment
           path = path.to_s
