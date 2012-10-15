@@ -5,6 +5,8 @@ require 'sprockets'
 module Sprockets
   module Rails
     class Task < Rake::SprocketsTask
+      attr_accessor :cache_path
+
       def define
         namespace :assets do
           desc "Compile all the assets named in config.assets.precompile"
@@ -25,6 +27,7 @@ module Sprockets
           task :clobber => :environment do
             with_logger do
               manifest.clobber
+              rm_rf cache_path if cache_path
             end
           end
         end
