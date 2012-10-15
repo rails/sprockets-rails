@@ -21,7 +21,6 @@ module Rails
         env.js_compressor  = config.assets.js_compressor
         env.css_compressor = config.assets.css_compressor
 
-        app = self
         env.context_class.class_eval do
           include ::Sprockets::Rails::Helper
         end
