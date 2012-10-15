@@ -211,20 +211,20 @@ class SprocketsHelperTest < ActiveSupport::TestCase
 
   test "javascript path through asset_path" do
     assert_match %r{/assets/application-[0-9a-f]+.js},
-      asset_path(:application, :ext => "js")
+      asset_path(:application, :type => :javascript)
 
     assert_match %r{/assets/xmlhr-[0-9a-f]+.js},
-      asset_path("xmlhr", :ext => "js")
+      asset_path("xmlhr", :type => :javascript)
     assert_match %r{/assets/dir/xmlhr-[0-9a-f]+.js},
-      asset_path("dir/xmlhr.js", :ext => "js")
+      asset_path("dir/xmlhr.js", :type => :javascript)
 
     assert_equal "/dir/xmlhr.js",
-      asset_path("/dir/xmlhr", :ext => "js")
+      asset_path("/dir/xmlhr", :type => :javascript)
 
     assert_equal "http://www.example.com/js/xmlhr",
-      asset_path("http://www.example.com/js/xmlhr", :ext => "js")
+      asset_path("http://www.example.com/js/xmlhr", :type => :javascript)
     assert_equal "http://www.example.com/js/xmlhr.js",
-      asset_path("http://www.example.com/js/xmlhr.js", :ext => "js")
+      asset_path("http://www.example.com/js/xmlhr.js", :type => :javascript)
   end
 
   test "javascript include tag" do
@@ -266,16 +266,16 @@ class SprocketsHelperTest < ActiveSupport::TestCase
   end
 
   test "stylesheet path through asset_path" do
-    assert_match %r{/assets/application-[0-9a-f]+.css}, asset_path(:application, :ext => "css")
+    assert_match %r{/assets/application-[0-9a-f]+.css}, asset_path(:application, :type => :stylesheet)
 
-    assert_match %r{/assets/style-[0-9a-f]+.css}, asset_path("style", :ext => "css")
-    assert_match %r{/assets/dir/style-[0-9a-f]+.css}, asset_path("dir/style.css", :ext => "css")
-    assert_equal "/dir/style.css", asset_path("/dir/style.css", :ext => "css")
+    assert_match %r{/assets/style-[0-9a-f]+.css}, asset_path("style", :type => :stylesheet)
+    assert_match %r{/assets/dir/style-[0-9a-f]+.css}, asset_path("dir/style.css", :type => :stylesheet)
+    assert_equal "/dir/style.css", asset_path("/dir/style.css", :type => :stylesheet)
 
     assert_equal "http://www.example.com/css/style",
-      asset_path("http://www.example.com/css/style", :ext => "css")
+      asset_path("http://www.example.com/css/style", :type => :stylesheet)
     assert_equal "http://www.example.com/css/style.css",
-      asset_path("http://www.example.com/css/style.css", :ext => "css")
+      asset_path("http://www.example.com/css/style.css", :type => :stylesheet)
   end
 
   test "stylesheet link tag" do
@@ -327,14 +327,14 @@ class SprocketsHelperTest < ActiveSupport::TestCase
 
   test "alternate asset prefix" do
     stubs(:asset_prefix).returns("/themes/test")
-    assert_match %r{/themes/test/style-[0-9a-f]+.css}, asset_path("style", :ext => "css")
+    assert_match %r{/themes/test/style-[0-9a-f]+.css}, asset_path("style", :type => :stylesheet)
   end
 
   test "alternate asset environment" do
     assets = Sprockets::Environment.new
     assets.append_path(FIXTURES.join("alternate/stylesheets"))
     stubs(:asset_environment).returns(assets)
-    assert_match %r{/assets/style-[0-9a-f]+.css}, asset_path("style", :ext => "css")
+    assert_match %r{/assets/style-[0-9a-f]+.css}, asset_path("style", :type => :stylesheet)
   end
 
   test "alternate hash based on environment" do
@@ -342,10 +342,10 @@ class SprocketsHelperTest < ActiveSupport::TestCase
     assets.version = 'development'
     assets.append_path(FIXTURES.join("alternate/stylesheets"))
     stubs(:asset_environment).returns(assets)
-    dev_path = asset_path("style", :ext => "css")
+    dev_path = asset_path("style", :type => :stylesheet)
 
     assets.version = 'production'
-    prod_path = asset_path("style", :ext => "css")
+    prod_path = asset_path("style", :type => :stylesheet)
 
     assert_not_equal prod_path, dev_path
   end

@@ -16,10 +16,10 @@ module Sprockets
           sources.collect do |source|
             if debug && asset = asset_for(source, 'js')
               asset.to_a.map { |dep|
-                super(dep.pathname.to_s, { :src => path_to_asset(dep.logical_path, :ext => 'js', :body => true, :digest => digest) }.merge!(options))
+                super(dep.pathname.to_s, { :src => path_to_asset(dep.logical_path, :type => :javascript, :body => true, :digest => digest) }.merge!(options))
               }
             else
-              super(source.to_s, { :src => path_to_asset(source, :ext => 'js', :body => body, :digest => digest) }.merge!(options))
+              super(source.to_s, { :src => path_to_asset(source, :type => :javascript, :body => body, :digest => digest) }.merge!(options))
             end
           end.uniq.join("\n").html_safe
         end
@@ -33,10 +33,10 @@ module Sprockets
           sources.collect do |source|
             if debug && asset = asset_for(source, 'css')
               asset.to_a.map { |dep|
-                super(dep.pathname.to_s, { :href => path_to_asset(dep, :ext => 'css', :body => true, :protocol => :request, :digest => digest) }.merge!(options))
+                super(dep.pathname.to_s, { :href => path_to_asset(dep, :type => :stylesheet, :body => true, :protocol => :request, :digest => digest) }.merge!(options))
               }
             else
-              super(source.to_s, { :href => path_to_asset(source, :ext => 'css', :body => body, :protocol => :request, :digest => digest) }.merge!(options))
+              super(source.to_s, { :href => path_to_asset(source, :type => :stylesheet, :body => body, :protocol => :request, :digest => digest) }.merge!(options))
             end
           end.uniq.join("\n").html_safe
         end
