@@ -4,6 +4,8 @@ module Sprockets
   module Rails
     # Backports of AssetTagHelper methods for Rails 2.x and 3.x.
     module LegacyAssetTagHelper
+      include ActionView::Helpers::TagHelper
+
       def javascript_include_tag(*sources)
         options = sources.extract_options!.stringify_keys
         sources.uniq.map { |source|
