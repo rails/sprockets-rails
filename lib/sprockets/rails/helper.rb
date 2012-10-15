@@ -38,7 +38,7 @@ module Sprockets
 
       def compute_asset_path(path, options = {})
         if digest_path = asset_digest_path(path)
-          path = digest_path if digest_assets?
+          path = digest_path if digest_assets
           path += "?body=1" if options[:debug]
           File.join(assets_prefix || "/", path)
         else
@@ -53,7 +53,7 @@ module Sprockets
       #
       # Returns String Hex digest or nil if digests are disabled.
       def asset_digest(path, options = {})
-        return unless digest_assets?
+        return unless digest_assets
 
         if digest_path = asset_digest_path(path, options)
           digest_path[/-(.+)\./, 1]
@@ -86,7 +86,7 @@ module Sprockets
       def javascript_include_tag(*sources)
         options = sources.extract_options!.stringify_keys
 
-        if debug_assets?
+        if request_debug_assets?
           sources.map { |source|
             if asset = lookup_asset_for_path(source, :type => :javascript)
               asset.to_a.map do |a|
@@ -107,7 +107,7 @@ module Sprockets
       def stylesheet_link_tag(*sources)
         options = sources.extract_options!.stringify_keys
 
-        if debug_assets?
+        if request_debug_assets?
           sources.map { |source|
             if asset = lookup_asset_for_path(source, :type => :stylesheet)
               asset.to_a.map do |a|
@@ -122,21 +122,13 @@ module Sprockets
         end
       end
 
-      # Disable fingerprint digest linking. Usually the default during
-      # development. Though, in the future this will go away and all
-      # Sprockets links will be digest ones.
-      def digest_assets?
-        digest_assets.nil? ? false : digest_assets
-      end
-
-      # Enable split asset debugging. Eventually will be deprecated
-      # and replaced by source maps in Sprockets 3.x.
-      def debug_assets?
-        debug_assets ||
-          (defined?(@controller) && !controller.nil? && controller.params[:debug_assets])
-      end
-
       protected
+        # Enable split asset debugging. Eventually will be deprecated
+        # and replaced by source maps in Sprockets 3.x.
+        def request_debug_assets?
+          debug_assets || (defined?(controller) && controller && params[:debug_assets])
+        end
+
         # Internal method to support multifile debugging. Will
         # eventually be removed w/ Sprockets 3.x.
         def lookup_asset_for_path(path, options = {})
