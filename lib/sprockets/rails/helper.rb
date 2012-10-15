@@ -23,7 +23,7 @@ module Sprockets
           klass.class_eval do
             alias_method :assets_environment, :environment
             def assets_manifest; end
-            class_attribute :assets_prefix, :digest_assets
+            class_attribute :config, :assets_prefix, :digest_assets
           end
         else
           klass.class_attribute(*VIEW_ACCESSORS)

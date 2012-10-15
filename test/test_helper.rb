@@ -17,17 +17,21 @@ class HelperTest < Test::Unit::TestCase
     @assets.context_class.class_eval do
       include ::Sprockets::Rails::Helper
     end
-    @assets.context_class.assets_prefix = "/assets"
 
     @view = ActionView::Base.new
     @view.extend ::Sprockets::Rails::Helper
     @view.assets_environment = @assets
     @view.assets_prefix = "/assets"
 
+    @assets.context_class.assets_prefix = @view.assets_prefix
+    @assets.context_class.config = @view.config
+
     @foo_js_digest  = @assets['foo.js'].digest
     @foo_css_digest = @assets['foo.css'].digest
   end
+end
 
+class NoHostHelperTest < HelperTest
   def test_javascript_include_tag
     assert_equal %(<script src="/javascripts/static.js"></script>),
       @view.javascript_include_tag("static")
@@ -107,7 +111,61 @@ class HelperTest < Test::Unit::TestCase
   end
 end
 
-class NoDigestHelperTest < HelperTest
+class RelativeHostHelperTest < HelperTest
+  def setup
+    super
+
+    @view.config.asset_host = "assets.example.com"
+  end
+
+  def test_javascript_path
+    assert_equal "//assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
+    assert_equal "//assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
+    assert_equal "//assets.example.com/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
+    assert_equal "//assets.example.com/super/xmlhr.js", @view.javascript_path("/super/xmlhr")
+
+    assert_equal "//assets.example.com/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr.js?foo=1")
+    assert_equal "//assets.example.com/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr?foo=1")
+    assert_equal "//assets.example.com/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr.js#hash")
+    assert_equal "//assets.example.com/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr#hash")
+    assert_equal "//assets.example.com/javascripts/xmlhr.js?foo=1#hash", @view.javascript_path("xmlhr.js?foo=1#hash")
+
+    assert_equal %(<script src="//assets.example.com/assets/foo.js"></script>),
+      @view.javascript_include_tag("foo")
+    assert_equal %(<script src="//assets.example.com/assets/foo.js"></script>),
+      @view.javascript_include_tag("foo.js")
+    assert_equal %(<script src="//assets.example.com/assets/foo.js"></script>),
+      @view.javascript_include_tag(:foo)
+  end
+
+  def test_stylesheet_path
+    assert_equal "//assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank")
+    assert_equal "//assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank.css")
+    assert_equal "//assets.example.com/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
+    assert_equal "//assets.example.com/subdir/subdir.css", @view.stylesheet_path("/subdir/subdir.css")
+
+    assert_equal "//assets.example.com/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank.css?foo=1")
+    assert_equal "//assets.example.com/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank?foo=1")
+    assert_equal "//assets.example.com/stylesheets/bank.css#hash", @view.stylesheet_path("bank.css#hash")
+    assert_equal "//assets.example.com/stylesheets/bank.css#hash", @view.stylesheet_path("bank#hash")
+    assert_equal "//assets.example.com/stylesheets/bank.css?foo=1#hash", @view.stylesheet_path("bank.css?foo=1#hash")
+
+    assert_equal %(<link href="//assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("foo")
+    assert_equal %(<link href="//assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("foo.css")
+    assert_equal %(<link href="//assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag(:foo)
+  end
+
+  def test_asset_url
+    assert_equal "var url = '//assets.example.com/assets/foo.js';\n", @assets["url.js"].to_s
+    assert_equal "p { background: url(//assets.example.com/images/logo.png); }\n", @assets["url.css"].to_s
+  end
+end
+
+
+class NoDigestHelperTest < NoHostHelperTest
   def setup
     super
     @view.digest_assets = false
@@ -159,7 +217,7 @@ class NoDigestHelperTest < HelperTest
   end
 end
 
-class DigestHelperTest < HelperTest
+class DigestHelperTest < NoHostHelperTest
   def setup
     super
     @view.digest_assets = true
@@ -216,7 +274,7 @@ class DigestHelperTest < HelperTest
   end
 end
 
-class DebugHelperTest < HelperTest
+class DebugHelperTest < NoHostHelperTest
   def setup
     super
     @view.debug_assets = true
@@ -253,7 +311,7 @@ class DebugHelperTest < HelperTest
   end
 end
 
-class ManifestHelperTest < HelperTest
+class ManifestHelperTest < NoHostHelperTest
   def setup
     super
 
