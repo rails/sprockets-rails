@@ -3,18 +3,19 @@ require File.expand_path(File.dirname(__FILE__) + "/test_helper")
 class SprocketsHelperTest < ActiveSupport::TestCase
   include Sprockets::Rails::Helpers::RailsHelper
 
-  attr_accessor :assets, :controller, :params
+  attr_accessor :assets, :controller, :params, :request
 
   class MockRequest
     def protocol() 'http://' end
     def ssl?() false end
     def host_with_port() 'localhost' end
     def script_name() nil end
+    def base_url() 'http://www.example.com' end
   end
 
   def setup
     @controller         = BasicController.new
-    @controller.request = MockRequest.new
+    @controller.request = @request = MockRequest.new
 
     @assets = Sprockets::Environment.new
     @assets.append_path(FIXTURES.join("app/javascripts"))
@@ -119,20 +120,6 @@ class SprocketsHelperTest < ActiveSupport::TestCase
       asset_path("logo.png")
   end
 
-  test "stylesheets served without a controller in scope cannot access the request" do
-    @controller = nil
-    @config.asset_host = Proc.new do |asset, request|
-      fail "This should not have been called."
-    end
-    assert_raises ActionView::MissingRequestError do
-      asset_path("logo.png")
-    end
-    @config.asset_host = method :compute_host
-    assert_raises ActionView::MissingRequestError do
-      asset_path("logo.png")
-    end
-  end
-
   test "image_tag" do
     assert_dom_equal '<img alt="Xml" src="/assets/xml.png" />', image_tag("xml.png")
   end
@@ -176,7 +163,6 @@ class SprocketsHelperTest < ActiveSupport::TestCase
   end
 
   test "stylesheets served without a controller in do not use asset hosts when the default protocol is :request" do
-    @controller = nil
     @config.asset_host = "assets-%d.example.com"
     @config.default_asset_host_protocol = :request
     @config.perform_caching = true
@@ -192,7 +178,6 @@ class SprocketsHelperTest < ActiveSupport::TestCase
   end
 
   test "asset path with relative url root when controller isn't present but relative_url_root is" do
-    @controller = nil
     @config.relative_url_root = "/collaboration/hieraki"
     assert_equal "/collaboration/hieraki/images/logo.gif",
      asset_path("/images/logo.gif")
@@ -279,6 +264,8 @@ class SprocketsHelperTest < ActiveSupport::TestCase
   end
 
   test "stylesheet link tag" do
+    @request = nil
+
     assert_match %r{<link href="/assets/application-[0-9a-f]+.css" media="screen" rel="stylesheet" />},
       stylesheet_link_tag(:application)
     assert_match %r{<link href="/assets/application-[0-9a-f]+.css" media="screen" rel="stylesheet" />},
@@ -306,9 +293,6 @@ class SprocketsHelperTest < ActiveSupport::TestCase
 
     assert_match %r{\A<link href="/assets/style-[0-9a-f]+.css" media="screen" rel="stylesheet" />\Z},
       stylesheet_link_tag("style", "style")
-
-    assert_match %r{\A<link href="/assets/style-[0-9a-f]+.ext" media="screen" rel="stylesheet" />\Z},
-      stylesheet_link_tag("style.ext")
 
     assert_match %r{\A<link href="/assets/style.min-[0-9a-f]+.css" media="screen" rel="stylesheet" />\Z},
       stylesheet_link_tag("style.min")

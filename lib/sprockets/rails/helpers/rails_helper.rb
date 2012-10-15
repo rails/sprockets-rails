@@ -14,12 +14,12 @@ module Sprockets
           digest  = options.delete(:digest) { digest_assets? }
 
           sources.collect do |source|
-            if debug && asset = asset_for(source, 'js')
+            if debug && asset = asset_for(source, :type => :javascript)
               asset.to_a.map { |dep|
-                super(dep.pathname.to_s, { :src => path_to_asset(dep.logical_path, :type => :javascript, :body => true, :digest => digest) }.merge!(options))
+                super(dep.pathname.to_s, { :src => path_to_javascript(dep.logical_path, :body => true, :digest => digest) }.merge!(options))
               }
             else
-              super(source.to_s, { :src => path_to_asset(source, :type => :javascript, :body => body, :digest => digest) }.merge!(options))
+              super(source.to_s, { :src => path_to_javascript(source, :body => body, :digest => digest) }.merge!(options))
             end
           end.uniq.join("\n").html_safe
         end
@@ -31,12 +31,12 @@ module Sprockets
           digest  = options.delete(:digest) { digest_assets? }
 
           sources.collect do |source|
-            if debug && asset = asset_for(source, 'css')
+            if debug && asset = asset_for(source, :type => :stylesheet)
               asset.to_a.map { |dep|
-                super(dep.pathname.to_s, { :href => path_to_asset(dep, :type => :stylesheet, :body => true, :protocol => :request, :digest => digest) }.merge!(options))
+                super(dep.pathname.to_s, { :href => path_to_stylesheet(dep.logical_path, :body => true, :protocol => :request, :digest => digest) }.merge!(options))
               }
             else
-              super(source.to_s, { :href => path_to_asset(source, :type => :stylesheet, :body => body, :protocol => :request, :digest => digest) }.merge!(options))
+              super(source.to_s, { :href => path_to_stylesheet(source, :body => body, :protocol => :request, :digest => digest) }.merge!(options))
             end
           end.uniq.join("\n").html_safe
         end
@@ -53,9 +53,11 @@ module Sprockets
       private
         # Retrieve the asset path on disk, for processed files +ext+ should
         # contain the final extension (e.g. +js+ for  <tt>*.js.coffee</tt>).
-        def asset_for(source, ext)
+        def asset_for(source, options)
           source = source.to_s
-          source = "#{source}#{ext}" if File.extname(source).empty?
+          if extname = compute_asset_extname(source, options)
+            source = "#{source}#{extname}"
+          end
           asset_environment[source]
         rescue Sprockets::FileOutsidePaths
           nil
