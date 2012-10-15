@@ -23,6 +23,12 @@ class HelperTest < Test::Unit::TestCase
     @view.assets_environment = @assets
     @view.assets_prefix = "/assets"
 
+    # Rails 2.x
+    unless @view.respond_to?(:config)
+      @view.class_eval { attr_accessor :config }
+      @view.config = Struct.new(:asset_host).new
+    end
+
     @assets.context_class.assets_prefix = @view.assets_prefix
     @assets.context_class.config = @view.config
 

@@ -62,7 +62,13 @@ module Sprockets
 
       def compute_asset_host(source = "", options = {})
         request = self.request if respond_to?(:request)
-        host = config.asset_host if defined? config.asset_host
+
+        if defined? config
+          host = config.asset_host
+        elsif defined? ActionController::Base.asset_host
+          host = ActionController::Base.asset_host
+        end
+
         host ||= request.base_url if request && options[:protocol] == :request
         return unless host
 
@@ -78,7 +84,7 @@ module Sprockets
         if host =~ URI_REGEXP
           host
         else
-          protocol = options[:protocol] || config.default_asset_host_protocol || (request ? :request : :relative)
+          protocol = options[:protocol] || (request ? :request : :relative)
           case protocol
           when :relative
             "//#{host}"
