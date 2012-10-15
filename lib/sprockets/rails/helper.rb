@@ -4,19 +4,21 @@ require 'sprockets'
 
 require 'active_support/core_ext/class/attribute'
 
-require 'sprockets/rails/asset_host_helper'
-require 'sprockets/rails/asset_tag_helper'
-
 module Sprockets
   module Rails
     module Helper
-      if ActionPack::VERSION::MAJOR < 4
+      if defined? ActionView::Helpers::AssetUrlHelper
+        include ActionView::Helpers::AssetUrlHelper
+
+        # TMP
+        require 'sprockets/rails/legacy_asset_url_helper'
+        include LegacyAssetUrlHelper
+      else
+        require 'sprockets/rails/legacy_asset_url_helper'
         require 'sprockets/rails/legacy_asset_tag_helper'
+        include LegacyAssetUrlHelper
         include LegacyAssetTagHelper
       end
-
-      include AssetHostHelper
-      include AssetTagHelper
 
       VIEW_ACCESSORS = [:assets_environment, :assets_manifest,
                         :assets_prefix, :digest_assets, :debug_assets]
@@ -137,7 +139,10 @@ module Sprockets
       protected
         def lookup_asset_for_path(path, options = {})
           return unless env = assets_environment
-          return unless path = expand_source_extension(path, options)
+          path = path.to_s
+          if extname = compute_asset_extname(path, options)
+            path = "#{path}#{extname}"
+          end
           env[path]
         end
     end
