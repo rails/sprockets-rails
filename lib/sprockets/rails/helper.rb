@@ -1,4 +1,3 @@
-require 'action_pack/version'
 require 'action_view'
 require 'sprockets'
 
