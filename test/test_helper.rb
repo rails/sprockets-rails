@@ -85,6 +85,12 @@ class HelperTest < Test::Unit::TestCase
     assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
     assert_equal "/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
     assert_equal "/super/xmlhr.js", @view.javascript_path("/super/xmlhr")
+
+    assert_equal "/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr.js?foo=1")
+    assert_equal "/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr?foo=1")
+    assert_equal "/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr.js#hash")
+    assert_equal "/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr#hash")
+    assert_equal "/javascripts/xmlhr.js?foo=1#hash", @view.javascript_path("xmlhr.js?foo=1#hash")
   end
 
   def test_stylesheet_path
@@ -92,6 +98,12 @@ class HelperTest < Test::Unit::TestCase
     assert_equal "/stylesheets/bank.css", @view.stylesheet_path("bank.css")
     assert_equal "/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
     assert_equal "/subdir/subdir.css", @view.stylesheet_path("/subdir/subdir.css")
+
+    assert_equal "/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank.css?foo=1")
+    assert_equal "/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank?foo=1")
+    assert_equal "/stylesheets/bank.css#hash", @view.stylesheet_path("bank.css#hash")
+    assert_equal "/stylesheets/bank.css#hash", @view.stylesheet_path("bank#hash")
+    assert_equal "/stylesheets/bank.css?foo=1#hash", @view.stylesheet_path("bank.css?foo=1#hash")
   end
 end
 
