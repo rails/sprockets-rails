@@ -44,7 +44,7 @@ module Sprockets
     rake_tasks do |app|
       require 'sprockets/rails/task'
 
-      Task.new do |t|
+      Sprockets::Rails::Task.new do |t|
         t.environment = lambda { app.assets }
         t.output      = File.join(app.root, 'public', app.config.assets.prefix)
         t.assets      = app.config.assets.precompile
@@ -56,7 +56,7 @@ module Sprockets
       manifest_path = File.join(app.root, 'public', app.config.assets.prefix)
 
       ActiveSupport.on_load(:action_view) do
-        include ::Sprockets::Rails::Helper
+        include Sprockets::Rails::Helper
 
         self.debug_assets       = app.config.assets.debug
         self.digest_assets      = app.config.assets.digest
@@ -64,9 +64,9 @@ module Sprockets
 
         if app.config.assets.compile
           self.assets_environment = app.assets
-          self.assets_manifest    = ::Sprockets::Manifest.new(app.assets, manifest_path)
+          self.assets_manifest    = Sprockets::Manifest.new(app.assets, manifest_path)
         else
-          self.assets_manifest = ::Sprockets::Manifest.new(manifest_path)
+          self.assets_manifest = Sprockets::Manifest.new(manifest_path)
         end
       end
 
