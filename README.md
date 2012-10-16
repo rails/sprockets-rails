@@ -12,6 +12,25 @@ gem 'sprockets-rails', :require => 'sprockets/railtie'
 Or alternatively `require 'sprockets/railtie'` in your `config/application.rb` if you have Bundler auto-require disabled.
 
 
+## Usage
+
+
+### Rake task
+
+**`rake assets:precompile`**
+
+Deployment task that compiles any assets listed in `config.assets.precompile` to `public/assets`.
+
+**`rake assets:clean`**
+
+Only removes old assets (keeps the most recent 3 copies) from `public/assets`. Useful when doing rolling deploys that may still be serving old assets while the new ones are being compiled.
+
+**`rake assets:clobber`**
+
+Nuke `public/assets` and clear the Sprockets file system cache.
+
+
+
 ## Complementary plugins
 
 The following plugins provide some extras for the Sprockets Asset Pipeline.
