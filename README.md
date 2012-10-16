@@ -47,6 +47,50 @@ end
 Also see [Sprockest::Rails::Task](https://github.com/josh/sprockets-rails/blob/master/lib/sprockets/rails/task.rb) and [Rake::SprocketsTask](https://github.com/sstephenson/sprockets/blob/master/lib/rake/sprocketstask.rb).
 
 
+### Initializer options
+
+**`config.assets.precompile`**
+
+Add additional assets to compile on deploy. Defaults to `application.js`, `application.css` and any other non-js/css file under `app/assets`.
+
+**`config.assets.paths`**
+
+Add additional load paths to this Array. Rails includes `app/assets` and `vendor/assets` for you already. Plugins might want to add their custom paths to to this.
+
+**`config.assets.version`**
+
+Set a custom cache buster string. Changing it will cause all assets to recompile on the next build.
+
+``` ruby
+config.assets.version = 'v1'
+# after installing a new plugin, change loads paths
+config.assets.version = 'v2'
+```
+
+**`config.assets.prefix`**
+
+Defaults to `/assets`. Changes the directory to compile assets to.
+
+**`config.assets.digest`**
+
+Link to undigest asset filenames. This option will eventually go away. Unless when `compile` is disabled.
+
+**`config.assets.debug`**
+
+Enable expanded asset debugging mode. Individual files will be served to make referencing filenames in the web console easier. This feature will eventually be deprecated and replaced by Source Maps in Sprockets 3.x.
+
+**`config.assets.compile`**
+
+Enables Sprockest compile environment. If disabled, `Rails.application.assets` will be unavailable to any ActionView helpers. View helpers will depend on assets being precompiled to `public/assets` in order to link to them. You can still access the environment by directly calling `Rails.application.assets`.
+
+**`config.assets.js_compressor`**
+
+Assign JS compressor. Currently supports `:uglify`, `:closure` and `:yui`.
+
+**`config.assets.css_compressor`**
+
+Assign CSS compressor. Currently supports `:sass` and `:yui`.
+
 
 ## Complementary plugins
 
