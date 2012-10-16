@@ -29,6 +29,23 @@ Only removes old assets (keeps the most recent 3 copies) from `public/assets`. U
 
 Nuke `public/assets` and clear the Sprockets file system cache.
 
+#### Customize
+
+If the basic tasks don't do all that you need, its straight forward to redefined them and replace them with something more specific to your app.
+
+You can also redefine the task with the built in task generator.
+
+``` ruby
+require 'sprockets/rails/task'
+Sprockets::Rails::Task.new do |t|
+  t.environment = lambda { Rails.application.assets }
+  t.assets = %w( application.js application.css )
+  t.keep = 5
+end
+```
+
+Also see [Sprockest::Rails::Task](https://github.com/josh/sprockets-rails/blob/master/lib/sprockets/rails/task.rb) and [Rake::SprocketsTask](https://github.com/sstephenson/sprockets/blob/master/lib/rake/sprocketstask.rb).
+
 
 
 ## Complementary plugins
