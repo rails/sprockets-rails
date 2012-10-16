@@ -19,7 +19,7 @@ The following plugins provide some extras for the Sprockets Asset Pipeline.
 * [coffee-rails](https://github.com/rails/coffee-rails)
 * [sass-rails](https://github.com/rails/sass-rails)
 
-**NOTE** That these plugins are optional. The core coffee-script, sass, less, uglify, (any many more) are built into Sprockets itself. Many of these plugins only provide generators and extra helpers. You can probably get by without them.
+**NOTE** That these plugins are optional. The core coffee-script, sass, less, uglify, (any many more) features are built into Sprockets itself. Many of these plugins only provide generators and extra helpers. You can probably get by without them.
 
 
 ## Changes from Rails 3.x
