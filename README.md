@@ -3,6 +3,15 @@
 Alternative Sprockets Rails plugin.
 
 
+## Installation
+
+``` ruby
+gem 'sprockets-rails', :require => 'sprockets/railtie'
+```
+
+Or alternatively `require 'sprockets/railtie'` in your `config/application.rb` if you have Bundler auto-require disabled.
+
+
 ## Changes from Rails 3.x
 
 * Only compiles digest filenames. Static non-digest assets should simply live in public/.
