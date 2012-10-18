@@ -14,6 +14,7 @@ class TestBoot < Test::Unit::TestCase
     # Can't seem to get initialize to run w/o this
     require 'action_controller/railtie'
     require 'active_support/dependencies'
+    require 'tzinfo'
 
     ENV['RAILS_ENV'] = 'test'
 
