@@ -35,6 +35,9 @@ class HelperTest < Test::Unit::TestCase
     @foo_js_digest  = @assets['foo.js'].digest
     @foo_css_digest = @assets['foo.css'].digest
   end
+
+  def test_truth
+  end
 end
 
 class NoHostHelperTest < HelperTest
