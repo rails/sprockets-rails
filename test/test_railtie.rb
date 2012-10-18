@@ -2,13 +2,7 @@ require 'test/unit'
 require 'active_support'
 require 'active_support/testing/isolation'
 
-require 'rails'
-require 'active_support/dependencies'
-
-require 'sprockets'
-require 'sprockets/railtie'
-
-class TestRailtie < Test::Unit::TestCase
+class TestBoot < Test::Unit::TestCase
   include ActiveSupport::Testing::Isolation
 
   ROOT = File.expand_path("../../tmp/app", __FILE__)
@@ -16,6 +10,11 @@ class TestRailtie < Test::Unit::TestCase
   attr_reader :app
 
   def setup
+    require 'rails'
+    # Can't seem to get initialize to run w/o this
+    require 'action_controller/railtie'
+    require 'active_support/dependencies'
+
     ENV['RAILS_ENV'] = 'test'
 
     FileUtils.mkdir_p ROOT
@@ -29,8 +28,15 @@ class TestRailtie < Test::Unit::TestCase
     @app.config.active_support.deprecation = :notify
   end
 
-  def test_boot
+  def test_initialize
     app.initialize!
+  end
+end
+
+class TestRailtie < TestBoot
+  def setup
+    require 'sprockets/railtie'
+    super
   end
 
   def test_defaults
