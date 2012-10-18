@@ -89,6 +89,9 @@ Invokes block with environment when the environment is initialized. Allows direc
 
 ``` ruby
 config.assets.configure do |env|
+  env.js_compressor  = :uglify # or :closure, :yui
+  env.css_compressor = :sass   # or :yui
+
   require 'my_processor'
   env.register_preprocessor 'application/javascript', MyProcessor
 
@@ -97,14 +100,6 @@ config.assets.configure do |env|
   env.cache = ActiveSupport::Cache::FileStore.new("tmp/cache/assets")
 end
 ```
-
-**`config.assets.js_compressor`**
-
-Assign JS compressor. Currently supports `:uglify`, `:closure` and `:yui`.
-
-**`config.assets.css_compressor`**
-
-Assign CSS compressor. Currently supports `:sass` and `:yui`.
 
 
 ## Complementary plugins
