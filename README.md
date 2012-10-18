@@ -83,6 +83,21 @@ Enable expanded asset debugging mode. Individual files will be served to make re
 
 Enables Sprockest compile environment. If disabled, `Rails.application.assets` will be unavailable to any ActionView helpers. View helpers will depend on assets being precompiled to `public/assets` in order to link to them. You can still access the environment by directly calling `Rails.application.assets`.
 
+**`config.assets.configure`**
+
+Invokes block with environment when the environment is initialized. Allows direct access to the environment instance and lets you lazily load libraries only needed for asset compiling.
+
+``` ruby
+config.assets.configure do |env|
+  require 'my_processor'
+  env.register_preprocessor 'application/javascript', MyProcessor
+
+  env.logger = Rails.logger
+
+  env.cache = ActiveSupport::Cache::FileStore.new("tmp/cache/assets")
+end
+```
+
 **`config.assets.js_compressor`**
 
 Assign JS compressor. Currently supports `:uglify`, `:closure` and `:yui`.
