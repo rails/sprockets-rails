@@ -135,6 +135,17 @@ $ bundle exec rake test
 [![Build Status](https://secure.travis-ci.org/rails/sprockets-rails.png)](http://travis-ci.org/rails/sprockets-rails)
 
 
+## Releases
+
+sprockets-rails 2.x will primarily target sprockets 2.x. And future versions will target the corresponding sprockets release line.
+
+The minor and patch version will be updated according to [semver](http://semver.org/).
+
+* Any new APIs or config options that don't break compatibility will be in a minor release
+* Any time the sprockets depedency is bumped, there will be a new minor release
+* Simple bug fixes will be patch releases
+
+
 ## License
 
 Copyright &copy; 2012 Joshua Peek.
