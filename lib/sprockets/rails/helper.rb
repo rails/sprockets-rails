@@ -9,10 +9,10 @@ module Sprockets
       if defined? ActionView::Helpers::AssetUrlHelper
         include ActionView::Helpers::AssetUrlHelper
       else
-        require 'sprockets/rails/legacy_asset_url_helper'
         require 'sprockets/rails/legacy_asset_tag_helper'
-        include LegacyAssetUrlHelper
+        require 'sprockets/rails/legacy_asset_url_helper'
         include LegacyAssetTagHelper
+        include LegacyAssetUrlHelper
       end
 
       VIEW_ACCESSORS = [:assets_environment, :assets_manifest,
