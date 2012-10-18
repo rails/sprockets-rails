@@ -3,8 +3,6 @@ require 'active_support'
 require 'active_support/testing/isolation'
 
 require 'rails'
-# Rails initializers depends on AC and doesn't bother requiring it
-require 'action_controller/railtie'
 require 'active_support/dependencies'
 
 require 'sprockets'
