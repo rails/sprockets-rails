@@ -1,5 +1,6 @@
 source :rubygems
 gemspec :path => "./../.."
 
-gem "actionpack", "~> 3.1.0"
-gem "railties", "~> 3.1.0"
+# Patch 3-1-stable to allow new sprockets
+gem "actionpack", "~> 3.1.0", :github => "josh/rails", :branch => "3-1-stable-sprockets"
+gem "railties", "~> 3.1.0", :github => "josh/rails", :branch => "3-1-stable-sprockets"
