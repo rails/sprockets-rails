@@ -115,7 +115,7 @@ The following plugins provide some extras for the Sprockets Asset Pipeline.
 
 Usual bundler workflow.
 
-``` ruby
+``` shell
 $ git clone https://github.com/rails/sprockets-rails.git
 $ cd sprockets-rails/
 $ bundle install
