@@ -18,6 +18,8 @@ class TestRailtie < Test::Unit::TestCase
   attr_reader :app
 
   def setup
+    ENV['RAILS_ENV'] = 'test'
+
     FileUtils.mkdir_p ROOT
     Dir.chdir ROOT
 
@@ -40,7 +42,7 @@ class TestRailtie < Test::Unit::TestCase
     assert_kind_of Sprockets::Environment, env
 
     assert_equal ROOT, env.root
-    assert_equal "development-", env.version
+    assert_equal "test-", env.version
     assert env.cache
     assert_equal [], env.paths
     assert_nil env.js_compressor
