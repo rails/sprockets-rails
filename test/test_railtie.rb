@@ -65,4 +65,20 @@ class TestRailtie < TestBoot
     assert_equal ["#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
       env.paths.sort
   end
+
+  def test_configure
+    app.configure do
+      config.assets.configure do |env|
+        env.append_path "javascripts"
+      end
+      config.assets.configure do |env|
+        env.append_path "stylesheets"
+      end
+    end
+    app.initialize!
+
+    assert env = app.assets
+    assert_equal ["#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
+      env.paths.sort
+  end
 end
