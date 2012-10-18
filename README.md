@@ -111,6 +111,20 @@ The following plugins provide some extras for the Sprockets Asset Pipeline.
 * Two cleanup tasks. `rake assets:clean` is now a safe cleanup that only removes older assets that are no longer used. While `rake assets:clobber` nukes the entire `public/assets` directory and clears your filesystem cache. The clean task allows for rolling deploys that may still be linking to an old asset while the new assets are being built.
 
 
+## Contributing
+
+Usual bundler workflow.
+
+``` ruby
+$ git clone https://github.com/rails/sprockets-rails.git
+$ cd sprockets-rails/
+$ bundle install
+$ bundle exec rake test
+```
+
+[![Build Status](https://secure.travis-ci.org/rails/sprockets-rails.png)](http://travis-ci.org/rails/sprockets-rails)
+
+
 ## License
 
 Copyright &copy; 2012 Joshua Peek.
