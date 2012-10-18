@@ -41,6 +41,19 @@ end
 
 module Sprockets
   class Railtie < ::Rails::Railtie
+    LOOSE_APP_ASSETS = lambda do |path, filename|
+      filename =~ /app\/assets/ && !%w(.js .css).include?(File.extname(path))
+    end
+
+    config.assets = ActiveSupport::OrderedOptions.new
+    config.assets.paths      = []
+    config.assets.prefix     = "/assets"
+    config.assets.precompile = [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
+    config.assets.version    = ''
+    config.assets.debug      = false
+    config.assets.compile    = true
+    config.assets.digest     = false
+
     rake_tasks do |app|
       require 'sprockets/rails/task'
 
@@ -71,8 +84,14 @@ module Sprockets
       end
 
       if app.config.assets.compile
-        app.routes.prepend do
-          mount app.assets => app.config.assets.prefix
+        if app.routes.respond_to?(:prepend)
+          app.routes.prepend do
+            mount app.assets => app.config.assets.prefix
+          end
+        else
+          app.routes.draw do
+            mount app.assets => app.config.assets.prefix
+          end
         end
       end
     end

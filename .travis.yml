@@ -2,9 +2,8 @@ rvm:
   - 1.9.3
 
 env:
-  - ACTIONPACK_VERSION=2.3.14
-  - ACTIONPACK_VERSION=3.0.17
-  - ACTIONPACK_VERSION=master
+  - RAILS_VERSION=3.0.17
+  - RAILS_VERSION=master
 
 notifications:
   email: false
