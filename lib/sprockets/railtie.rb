@@ -108,10 +108,6 @@ module Sprockets
           app.routes.prepend do
             mount app.assets => app.config.assets.prefix
           end
-        else
-          app.routes.draw do
-            mount app.assets => app.config.assets.prefix
-          end
         end
       end
     end
