@@ -6,6 +6,7 @@ class TestBoot < Test::Unit::TestCase
   include ActiveSupport::Testing::Isolation
 
   ROOT = File.expand_path("../../tmp/app", __FILE__)
+  FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   attr_reader :app
 
@@ -80,5 +81,24 @@ class TestRailtie < TestBoot
     assert env = app.assets
     assert_equal ["#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
       env.paths.sort
+  end
+
+  def test_action_view_helper
+    app.configure do
+      config.assets.paths << FIXTURES_PATH
+    end
+    app.initialize!
+
+    assert app.assets.paths.include?(FIXTURES_PATH)
+
+    assert_equal false, ActionView::Base.debug_assets
+    assert_equal false, ActionView::Base.digest_assets
+    assert_equal "/assets", ActionView::Base.assets_prefix
+    assert_equal app.assets, ActionView::Base.assets_environment
+    assert_match %r{public/assets/manifest-.*.json}, ActionView::Base.assets_manifest.path
+
+    @view = ActionView::Base.new
+    assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
+    assert_equal "/assets/foo.js", @view.javascript_path("foo")
   end
 end
