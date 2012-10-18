@@ -14,5 +14,10 @@ gemfile:
   - test/gemfiles/Gemfile.rails-3.2.x
   - test/gemfiles/Gemfile.rails-edge
 
+matrix:
+  exclude:
+    - rvm: 1.9.2
+      gemfile: test/gemfiles/Gemfile.rails-edge
+
 notifications:
   email: false
