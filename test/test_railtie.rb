@@ -68,6 +68,10 @@ class TestRailtie < TestBoot
   end
 
   def test_configure
+    # cache this out before app.initialize! since that's what rake tasks do,
+    # and we want to ensure configurations are reflected there.
+    assert env = app.assets
+
     app.configure do
       config.assets.configure do |env|
         env.append_path "javascripts"
@@ -75,11 +79,13 @@ class TestRailtie < TestBoot
       config.assets.configure do |env|
         env.append_path "stylesheets"
       end
+      initializer "afterwards" do
+        config.assets.paths += ["extra"]
+      end
     end
     app.initialize!
 
-    assert env = app.assets
-    assert_equal ["#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
+    assert_equal ["#{ROOT}/extra", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
       env.paths.sort
   end
 
