@@ -15,40 +15,21 @@ module Rails
     end
 
     # Returns Sprockets::Environment for app config.
-    def assets
-      return @assets if defined? @assets
-
-      @assets = Sprockets::Environment.new(root.to_s) do |env|
-        env.version = ::Rails.env + "-#{config.assets.version}"
-
+    def assets_environment
+      @assets_environment ||= Sprockets::Environment.new(root.to_s) do |env|
         path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"
         env.cache = Sprockets::Cache::FileStore.new(path)
-
-        config.assets.paths.each do |path|
-          env.append_path(path)
-        end
-
-        env.js_compressor  = config.assets.js_compressor
-        env.css_compressor = config.assets.css_compressor
 
         env.context_class.class_eval do
           include ::Sprockets::Rails::Helper
         end
-        env.context_class.assets_prefix = config.assets.prefix
-        env.context_class.digest_assets = config.assets.digest
-        env.context_class.config        = config.action_controller
-
-        config.assets._blocks.each do |block|
-          block.call env
-        end
       end
-
-      if config.cache_classes
-        @assets = @assets.index
-      end
-
-      @assets
     end
+
+    def assets
+      @assets ||= assets_environment
+    end
+    attr_writer :assets
   end
 end
 
@@ -78,7 +59,7 @@ module Sprockets
       require 'sprockets/rails/task'
 
       Sprockets::Rails::Task.new do |t|
-        t.environment = lambda { app.assets }
+        t.environment = lambda { app.assets_environment }
         t.output      = File.join(app.root, 'public', app.config.assets.prefix)
         t.assets      = app.config.assets.precompile
         t.cache_path  = "#{app.config.root}/tmp/cache/assets"
@@ -86,6 +67,29 @@ module Sprockets
     end
 
     config.after_initialize do |app|
+      assets_environment = app.assets_environment
+
+      app.config.assets.paths.each do |path|
+        app.assets.append_path(path)
+      end
+
+      assets_environment.version = ::Rails.env + "-#{app.config.assets.version}"
+
+      assets_environment.js_compressor  = app.config.assets.js_compressor
+      assets_environment.css_compressor = app.config.assets.css_compressor
+
+      assets_environment.context_class.assets_prefix = app.config.assets.prefix
+      assets_environment.context_class.digest_assets = app.config.assets.digest
+      assets_environment.context_class.config        = app.config.action_controller
+
+      app.config.assets._blocks.each do |block|
+        block.call assets_environment
+      end
+
+      if app.config.cache_classes
+        app.assets = assets_environment.index
+      end
+
       manifest_path = File.join(app.root, 'public', app.config.assets.prefix)
 
       ActiveSupport.on_load(:action_view) do
