@@ -34,9 +34,6 @@ module Rails
         env.context_class.class_eval do
           include ::Sprockets::Rails::Helper
         end
-        env.context_class.assets_prefix = config.assets.prefix
-        env.context_class.digest_assets = config.assets.digest
-        env.context_class.config        = config.action_controller
       end
 
       @assets
@@ -84,9 +81,16 @@ module Sprockets
       ActiveSupport.on_load(:action_view) do
         include Sprockets::Rails::Helper
 
-        self.debug_assets       = app.config.assets.debug
-        self.digest_assets      = app.config.assets.digest
-        self.assets_prefix      = app.config.assets.prefix
+        # Copy relevant config to AV context
+        self.debug_assets  = app.config.assets.debug
+        self.digest_assets = app.config.assets.digest
+        self.assets_prefix = app.config.assets.prefix
+
+        # Copy over to Sprockets as well
+        context = app.assets.context_class
+        context.assets_prefix = app.config.assets.prefix
+        context.digest_assets = app.config.assets.digest
+        context.config        = app.config.action_controller
 
         if app.config.assets.compile
           self.assets_environment = app.assets
