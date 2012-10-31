@@ -87,6 +87,18 @@ class TestRailtie < TestBoot
       env.paths.sort
   end
 
+  def test_compressors
+    app.configure do
+      config.assets.js_compressor  = :uglifier
+      config.assets.css_compressor = :sass
+    end
+    app.initialize!
+
+    assert env = app.assets
+    assert_equal Sprockets::UglifierCompressor, env.js_compressor
+    assert_equal Sprockets::SassCompressor, env.css_compressor
+  end
+
   def test_configure
     app.configure do
       config.assets.configure do |env|

@@ -28,15 +28,10 @@ module Rails
           env.append_path(path)
         end
 
-        env.js_compressor  = config.assets.js_compressor
-        env.css_compressor = config.assets.css_compressor
-
         env.context_class.class_eval do
           include ::Sprockets::Rails::Helper
         end
       end
-
-      @assets
     end
     attr_writer :assets
   end
@@ -99,6 +94,9 @@ module Sprockets
           self.assets_manifest = Sprockets::Manifest.new(manifest_path)
         end
       end
+
+      app.assets.js_compressor  = app.config.assets.js_compressor
+      app.assets.css_compressor = app.config.assets.css_compressor
 
       # Run app.assets.configure blocks
       app.config.assets._blocks.each do |block|
