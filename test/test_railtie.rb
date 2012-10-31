@@ -55,6 +55,26 @@ class TestRailtie < TestBoot
     assert_nil env.css_compressor
   end
 
+  def test_app_asset_available_when_compile
+    assert_equal true, app.config.assets.compile
+
+    app.initialize!
+
+    assert env = app.assets
+  end
+
+  def test_app_asset_available_when_no_compile
+    app.configure do
+      config.assets.compile = false
+    end
+
+    assert_equal false, app.config.assets.compile
+
+    app.initialize!
+
+    assert env = app.assets
+  end
+
   def test_copies_paths
     app.configure do
       config.assets.paths << "javascripts"
