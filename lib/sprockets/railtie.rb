@@ -19,7 +19,7 @@ module Rails
       return @assets if defined? @assets
 
       @assets = Sprockets::Environment.new(root.to_s) do |env|
-        env.version = ::Rails.env + "-#{config.assets.version}"
+        env.version = ::Rails.env
 
         path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"
         env.cache = Sprockets::Cache::FileStore.new(path)
@@ -50,7 +50,7 @@ module Sprockets
     config.assets.paths      = []
     config.assets.prefix     = "/assets"
     config.assets.precompile = [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
-    config.assets.version    = ''
+    config.assets.version    = ""
     config.assets.debug      = false
     config.assets.compile    = true
     config.assets.digest     = false
@@ -70,6 +70,10 @@ module Sprockets
       config = app.config
 
       manifest_path = File.join(app.root, 'public', config.assets.prefix)
+
+      unless config.assets.version.blank?
+        app.assets.version += "-#{config.assets.version}"
+      end
 
       # Copy config.assets.paths to Sprockets
       config.assets.paths.each do |path|
