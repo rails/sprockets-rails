@@ -37,10 +37,6 @@ module Rails
         env.context_class.assets_prefix = config.assets.prefix
         env.context_class.digest_assets = config.assets.digest
         env.context_class.config        = config.action_controller
-
-        config.assets._blocks.each do |block|
-          block.call env
-        end
       end
 
       @assets
@@ -98,6 +94,11 @@ module Sprockets
         else
           self.assets_manifest = Sprockets::Manifest.new(manifest_path)
         end
+      end
+
+      # Run app.assets.configure blocks
+      app.config.assets._blocks.each do |block|
+        block.call app.assets
       end
 
       # No more configuration changes at this point.
