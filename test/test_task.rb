@@ -18,8 +18,10 @@ class TestTask < Test::Unit::TestCase
 
     @manifest = Sprockets::Manifest.new(@assets, @dir)
 
+    @environment_ran = false
     # Stub Rails environment task
     @rake.define_task Rake::Task, :environment do
+      @environment_ran = true
     end
 
     Sprockets::Rails::Task.new do |t|
@@ -38,30 +40,39 @@ class TestTask < Test::Unit::TestCase
   end
 
   def test_precompile
+    assert !@environment_ran
+
     digest_path = @assets['foo.js'].digest_path
     assert !File.exist?("#{@dir}/#{digest_path}")
 
     @rake['assets:precompile'].invoke
 
+    assert @environment_ran
     assert Dir["#{@dir}/manifest-*.json"].first
     assert File.exist?("#{@dir}/#{digest_path}")
   end
 
   def test_clobber
+    assert !@environment_ran
     digest_path = @assets['foo.js'].digest_path
 
     @rake['assets:precompile'].invoke
     assert File.exist?("#{@dir}/#{digest_path}")
+
+    assert @environment_ran
 
     @rake['assets:clobber'].invoke
     assert !File.exist?("#{@dir}/#{digest_path}")
   end
 
   def test_clean
+    assert !@environment_ran
     digest_path = @assets['foo.js'].digest_path
 
     @rake['assets:precompile'].invoke
     assert File.exist?("#{@dir}/#{digest_path}")
+
+    assert @environment_ran
 
     @rake['assets:clean'].invoke
     assert File.exist?("#{@dir}/#{digest_path}")
