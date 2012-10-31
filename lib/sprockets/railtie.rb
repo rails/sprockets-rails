@@ -71,23 +71,25 @@ module Sprockets
     end
 
     config.after_initialize do |app|
-      manifest_path = File.join(app.root, 'public', app.config.assets.prefix)
+      config = app.config
+
+      manifest_path = File.join(app.root, 'public', config.assets.prefix)
 
       ActiveSupport.on_load(:action_view) do
         include Sprockets::Rails::Helper
 
         # Copy relevant config to AV context
-        self.debug_assets  = app.config.assets.debug
-        self.digest_assets = app.config.assets.digest
-        self.assets_prefix = app.config.assets.prefix
+        self.debug_assets  = config.assets.debug
+        self.digest_assets = config.assets.digest
+        self.assets_prefix = config.assets.prefix
 
         # Copy over to Sprockets as well
         context = app.assets.context_class
-        context.assets_prefix = app.config.assets.prefix
-        context.digest_assets = app.config.assets.digest
-        context.config        = app.config.action_controller
+        context.assets_prefix = config.assets.prefix
+        context.digest_assets = config.assets.digest
+        context.config        = config.action_controller
 
-        if app.config.assets.compile
+        if config.assets.compile
           self.assets_environment = app.assets
           self.assets_manifest    = Sprockets::Manifest.new(app.assets, manifest_path)
         else
@@ -95,11 +97,11 @@ module Sprockets
         end
       end
 
-      app.assets.js_compressor  = app.config.assets.js_compressor
-      app.assets.css_compressor = app.config.assets.css_compressor
+      app.assets.js_compressor  = config.assets.js_compressor
+      app.assets.css_compressor = config.assets.css_compressor
 
       # Run app.assets.configure blocks
-      app.config.assets._blocks.each do |block|
+      config.assets._blocks.each do |block|
         block.call app.assets
       end
 
@@ -107,14 +109,14 @@ module Sprockets
       # With cache classes on, Sprockets won't check the FS when files
       # change. Preferable in production when the FS only changes on
       # deploys when the app restarts.
-      if app.config.cache_classes
+      if config.cache_classes
         app.assets = app.assets.index
       end
 
-      if app.config.assets.compile
+      if config.assets.compile
         if app.routes.respond_to?(:prepend)
           app.routes.prepend do
-            mount app.assets => app.config.assets.prefix
+            mount app.assets => config.assets.prefix
           end
         end
       end
