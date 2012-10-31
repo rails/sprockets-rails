@@ -43,12 +43,9 @@ module Rails
         end
       end
 
-      if config.cache_classes
-        @assets = @assets.index
-      end
-
       @assets
     end
+    attr_writer :assets
   end
 end
 
@@ -109,6 +106,14 @@ module Sprockets
             mount app.assets => app.config.assets.prefix
           end
         end
+      end
+
+      # No more configuration changes at this point.
+      # With cache classes on, Sprockets won't check the FS when files
+      # change. Preferable in production when the FS only changes on
+      # deploys when the app restarts.
+      if app.config.cache_classes
+        app.assets = app.assets.index
       end
     end
   end

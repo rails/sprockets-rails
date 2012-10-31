@@ -103,6 +103,16 @@ class TestRailtie < TestBoot
       env.paths.sort
   end
 
+  def test_environment_is_frozen_if_caching_classes
+    app.configure do
+      config.cache_classes = true
+    end
+    app.initialize!
+
+    assert env = app.assets
+    assert_kind_of Sprockets::Index, env
+  end
+
   def test_action_view_helper
     app.configure do
       config.assets.paths << FIXTURES_PATH
