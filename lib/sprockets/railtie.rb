@@ -24,10 +24,6 @@ module Rails
         path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"
         env.cache = Sprockets::Cache::FileStore.new(path)
 
-        config.assets.paths.each do |path|
-          env.append_path(path)
-        end
-
         env.context_class.class_eval do
           include ::Sprockets::Rails::Helper
         end
@@ -74,6 +70,11 @@ module Sprockets
       config = app.config
 
       manifest_path = File.join(app.root, 'public', config.assets.prefix)
+
+      # Copy config.assets.paths to Sprockets
+      config.assets.paths.each do |path|
+        app.assets.append_path path
+      end
 
       ActiveSupport.on_load(:action_view) do
         include Sprockets::Rails::Helper
