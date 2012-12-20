@@ -31,7 +31,7 @@ Nuke `public/assets` and clear the Sprockets file system cache.
 
 #### Customize
 
-If the basic tasks don't do all that you need, its straight forward to redefined them and replace them with something more specific to your app.
+If the basic tasks don't do all that you need, it's straight forward to redefine them and replace them with something more specific to your app.
 
 You can also redefine the task with the built in task generator.
 
