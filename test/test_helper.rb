@@ -296,6 +296,8 @@ class DebugHelperTest < NoHostHelperTest
       @view.javascript_include_tag(:foo)
     assert_equal %(<script src="/assets/foo.js?body=1"></script>\n<script src="/assets/bar.js?body=1"></script>),
       @view.javascript_include_tag(:bar)
+    assert_equal %(<script src="/assets/dependency.js?body=1"></script>\n<script src="/assets/file1.js?body=1"></script>\n<script src="/assets/file2.js?body=1"></script>),
+      @view.javascript_include_tag(:file1, :file2)
   end
 
   def test_stylesheet_link_tag
@@ -305,6 +307,8 @@ class DebugHelperTest < NoHostHelperTest
       @view.stylesheet_link_tag(:foo)
     assert_equal %(<link href="/assets/foo.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/bar.css?body=1" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:bar)
+    assert_equal %(<link href="/assets/dependency.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file1.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file2.css?body=1" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag(:file1, :file2)
   end
 
   def test_javascript_path

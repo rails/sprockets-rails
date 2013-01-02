@@ -95,7 +95,7 @@ module Sprockets
             else
               super(source, options)
             end
-          }.join("\n").html_safe
+          }.flatten.uniq.join("\n").html_safe
         else
           sources.push(options)
           super(*sources)
@@ -117,7 +117,7 @@ module Sprockets
             else
               super(source, options)
             end
-          }.join("\n").html_safe
+          }.flatten.uniq.join("\n").html_safe
         else
           sources.push(options)
           super(*sources)
