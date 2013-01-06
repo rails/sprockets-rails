@@ -14,6 +14,8 @@ module Rails
       end
     end
 
+    # Undefine Rails' assets method before redefining it, to avoid warnings.
+    undef_method :assets
     # Returns Sprockets::Environment for app config.
     def assets
       return @assets if defined? @assets
@@ -29,7 +31,6 @@ module Rails
         end
       end
     end
-    attr_writer :assets
   end
 end
 
