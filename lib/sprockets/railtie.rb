@@ -3,19 +3,18 @@ require 'rails/railtie'
 require 'action_controller/railtie'
 require 'sprockets'
 require 'sprockets/rails/helper'
+require 'active_support/core_ext/module/remove_method'
 
 module Rails
   class Application
     # Hack: We need to remove Rails' built in config.assets so we can
     # do our own thing.
     class Configuration
-      if instance_methods.map(&:to_sym).include?(:assets)
-        undef_method :assets
-      end
+      remove_possible_method :assets
     end
 
     # Undefine Rails' assets method before redefining it, to avoid warnings.
-    undef_method :assets
+    remove_possible_method :assets
     # Returns Sprockets::Environment for app config.
     def assets
       return @assets if defined? @assets
