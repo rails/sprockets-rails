@@ -1,9 +1,9 @@
 require 'rails'
 require 'rails/railtie'
 require 'action_controller/railtie'
+require 'active_support/core_ext/module/remove_method'
 require 'sprockets'
 require 'sprockets/rails/helper'
-require 'active_support/core_ext/module/remove_method'
 
 module Rails
   class Application
@@ -15,6 +15,8 @@ module Rails
 
     # Undefine Rails' assets method before redefining it, to avoid warnings.
     remove_possible_method :assets
+    remove_possible_method :assets=
+
     # Returns Sprockets::Environment for app config.
     def assets
       return @assets if defined? @assets
@@ -30,6 +32,7 @@ module Rails
         end
       end
     end
+    attr_writer :assets
   end
 end
 
