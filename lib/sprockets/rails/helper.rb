@@ -1,6 +1,5 @@
 require 'action_view'
 require 'sprockets'
-
 require 'active_support/core_ext/class/attribute'
 
 module Sprockets
