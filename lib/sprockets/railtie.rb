@@ -61,7 +61,7 @@ module Sprockets
     rake_tasks do |app|
       require 'sprockets/rails/task'
 
-      Sprockets::Rails::Task.new do |t|
+      app.config.assets._task = Sprockets::Rails::Task.new do |t|
         t.environment = lambda { app.assets }
         t.output      = File.join(app.root, 'public', app.config.assets.prefix)
         t.assets      = app.config.assets.precompile
@@ -82,6 +82,9 @@ module Sprockets
       config.assets.paths.each do |path|
         app.assets.append_path path
       end
+
+      # Copy config.assets.precompile to Sprockets
+      app.config.assets._task.assets = app.config.assets.precompile
 
       ActiveSupport.on_load(:action_view) do
         include Sprockets::Rails::Helper
