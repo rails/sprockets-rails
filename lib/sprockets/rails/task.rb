@@ -16,7 +16,7 @@ module Sprockets
             Bundler.require(:assets) if defined?(Bundler)
 
             # Load full Rails environment if needed
-            if initialize_on_precompile
+            if initialize_on_precompile != false # nil (default) should be treated as true
               Rake::Task['environment'].invoke
             end
           end
