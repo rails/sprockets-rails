@@ -66,6 +66,7 @@ module Sprockets
         t.output      = File.join(app.root, 'public', app.config.assets.prefix)
         t.assets      = app.config.assets.precompile
         t.cache_path  = "#{app.config.root}/tmp/cache/assets"
+        t.initialize_on_precompile = app.config.assets.initialize_on_precompile != false # nil (default) should be treated as true
       end
     end
 

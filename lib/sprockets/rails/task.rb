@@ -5,7 +5,7 @@ require 'sprockets'
 module Sprockets
   module Rails
     class Task < Rake::SprocketsTask
-      attr_accessor :cache_path
+      attr_accessor :cache_path, :initialize_on_precompile
 
       def define
         namespace :assets do
@@ -14,8 +14,11 @@ module Sprockets
           task :environment do
             # Load gems in assets group of Gemfile
             Bundler.require(:assets) if defined?(Bundler)
-            # Load full Rails environment by default
-            Rake::Task['environment'].invoke
+
+            # Load full Rails environment if needed
+            if initialize_on_precompile
+              Rake::Task['environment'].invoke
+            end
           end
 
           desc "Compile all the assets named in config.assets.precompile"
