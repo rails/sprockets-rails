@@ -19,9 +19,7 @@ module Rails
 
     # Returns Sprockets::Environment for app config.
     def assets
-      return @assets if defined? @assets
-
-      @assets = Sprockets::Environment.new(root.to_s) do |env|
+      @assets ||= Sprockets::Environment.new(root.to_s) do |env|
         env.version = ::Rails.env
 
         path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"
