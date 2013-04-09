@@ -81,26 +81,24 @@ module Sprockets
         app.assets.append_path path
       end
 
-      ActiveSupport.on_load(:action_view) do
-        include Sprockets::Rails::Helper
+      include Sprockets::Rails::Helper
 
-        # Copy relevant config to AV context
-        self.debug_assets  = config.assets.debug
-        self.digest_assets = config.assets.digest
-        self.assets_prefix = config.assets.prefix
+      # Copy relevant config to AV context
+      self.debug_assets  = config.assets.debug
+      self.digest_assets = config.assets.digest
+      self.assets_prefix = config.assets.prefix
 
-        # Copy over to Sprockets as well
-        context = app.assets.context_class
-        context.assets_prefix = config.assets.prefix
-        context.digest_assets = config.assets.digest
-        context.config        = config.action_controller
+      # Copy over to Sprockets as well
+      context = app.assets.context_class
+      context.assets_prefix = config.assets.prefix
+      context.digest_assets = config.assets.digest
+      context.config        = config.action_controller
 
-        if config.assets.compile
-          self.assets_environment = app.assets
-          self.assets_manifest    = Sprockets::Manifest.new(app.assets, manifest_path)
-        else
-          self.assets_manifest = Sprockets::Manifest.new(manifest_path)
-        end
+      if config.assets.compile
+        self.assets_environment = app.assets
+        self.assets_manifest    = Sprockets::Manifest.new(app.assets, manifest_path)
+      else
+        self.assets_manifest = Sprockets::Manifest.new(manifest_path)
       end
 
       app.assets.js_compressor  = config.assets.js_compressor
