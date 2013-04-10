@@ -81,7 +81,7 @@ module Sprockets
         app.assets.append_path path
       end
 
-      ActiveSupport.on_load(:action_view) do
+      ActionView::Base.instance_eval do
         include Sprockets::Rails::Helper
 
         # Copy relevant config to AV context
