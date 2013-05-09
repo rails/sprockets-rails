@@ -7,6 +7,26 @@ module Sprockets
     class Task < Rake::SprocketsTask
       attr_accessor :cache_path
 
+      # Overrides assets to use have precompiled assets after loaded environment task
+      # NOTE: Should be removed after this will be merged in Sprocket
+      def assets
+        if @assets.respond_to?(:call)
+          @assets = @assets.call
+        else
+          @assets
+        end
+      end
+
+      # Overrides output to have value after loaded environment task
+      # NOTE: Should be removed after this will be merged in Sprocket
+      def output
+        if @output.respond_to?(:call)
+          @output = @output.call
+        else
+          @output
+        end
+      end
+
       def define
         namespace :assets do
           # Override this task change the loaded dependencies
