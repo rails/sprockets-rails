@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 gemspec :path => "./../.."
 
 # gem "actionpack", "~> 4.0.0"

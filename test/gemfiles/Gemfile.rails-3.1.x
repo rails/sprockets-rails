@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 gemspec :path => "./../.."
 
 # Patch 3-1-stable to allow new sprockets
