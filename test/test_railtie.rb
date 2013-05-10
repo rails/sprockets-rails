@@ -97,7 +97,7 @@ class TestRailtie < TestBoot
     end
 
     Sprockets::Railtie.rake_tasks.map! do |t|
-      lambda { |app| $result = t.call(app) }
+      proc { |app| $result = t.call(app) }
     end
 
     app.load_tasks
