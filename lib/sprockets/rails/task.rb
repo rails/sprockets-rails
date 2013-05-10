@@ -19,7 +19,11 @@ module Sprockets
           desc "Compile all the assets named in config.assets.precompile"
           task :precompile => :environment do
             with_logger do
-              manifest.compile(assets)
+              if ::Rails.env.production?
+                manifest.compile(assets)
+              else
+                puts "Assets should now only be compiled in production mode. Re-run with RAILS_ENV=production."
+              end
             end
           end
 
