@@ -33,6 +33,10 @@ class TestBoot < Test::Unit::TestCase
   def test_initialize
     app.initialize!
   end
+
+  def test_load_tasks
+    app.load_tasks
+  end
 end
 
 class TestRailtie < TestBoot
