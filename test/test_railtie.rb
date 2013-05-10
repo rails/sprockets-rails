@@ -89,11 +89,9 @@ class TestRailtie < TestBoot
 
 
   def test_assets_and_output_changed_after_environment_loaded
-    app.configure do
-      initializer :load_environment_config, :before => :load_environment_hook, :group => :all do
-        config.assets.precompile = %w(something.js)
-        config.assets.prefix     = 'prefix'
-      end
+    app.initializer :load_environment_config, :before => :load_environment_hook, :group => :all do
+      config.assets.precompile = %w(something.js)
+      config.assets.prefix     = 'prefix'
     end
 
     Sprockets::Railtie.rake_tasks.map! do |t|
