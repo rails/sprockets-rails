@@ -57,6 +57,8 @@ module Sprockets
     config.assets.digest     = false
 
     rake_tasks do |app|
+      app ||= ::Rails.application
+
       require 'sprockets/rails/task'
 
       Sprockets::Rails::Task.new do |t|
