@@ -55,6 +55,7 @@ module Sprockets
     config.assets.debug      = false
     config.assets.compile    = true
     config.assets.digest     = false
+    config.assets.enabled    = true
 
     rake_tasks do |app|
       require 'sprockets/rails/task'
