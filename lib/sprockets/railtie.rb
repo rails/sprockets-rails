@@ -57,12 +57,14 @@ module Sprockets
     config.assets.digest     = false
 
     rake_tasks do |app|
+      app ||= ::Rails.application
+
       require 'sprockets/rails/task'
 
       Sprockets::Rails::Task.new do |t|
         t.environment = lambda { app.assets }
-        t.output      = File.join(app.root, 'public', app.config.assets.prefix)
-        t.assets      = app.config.assets.precompile
+        t.output      = lambda { File.join(app.root, 'public', app.config.assets.prefix) }
+        t.assets      = lambda { app.config.assets.precompile }
         t.cache_path  = "#{app.config.root}/tmp/cache/assets"
       end
     end

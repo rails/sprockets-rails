@@ -87,6 +87,24 @@ class TestRailtie < TestBoot
       env.paths.sort
   end
 
+
+  def test_assets_and_output_changed_after_environment_loaded
+    app.initializer :load_environment_config, :before => :load_environment_hook, :group => :all do
+      config.assets.precompile = %w(something.js)
+      config.assets.prefix     = 'prefix'
+    end
+
+    Sprockets::Railtie.rake_tasks.map! do |t|
+      proc { |app| $result = t.call(app) }
+    end
+
+    app.load_tasks
+    app.initialize!
+
+    assert_equal %w(something.js), $result.assets
+    assert_equal File.join(ROOT, 'public/prefix'), $result.output
+  end
+
   def test_compressors
     app.configure do
       config.assets.js_compressor  = :uglifier
