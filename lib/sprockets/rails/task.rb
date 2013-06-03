@@ -5,7 +5,45 @@ require 'sprockets'
 module Sprockets
   module Rails
     class Task < Rake::SprocketsTask
-      attr_accessor :cache_path
+      attr_accessor :app
+
+      def initialize(app = nil)
+        self.app = app
+        super()
+      end
+
+      def environment
+        if app
+          app.assets
+        else
+          super
+        end
+      end
+
+      def output
+        if app
+          File.join(app.root, 'public', app.config.assets.prefix)
+        else
+          super
+        end
+      end
+
+      def assets
+        if app
+          app.config.assets.precompile
+        else
+          super
+        end
+      end
+
+      def cache_path
+        if app
+          "#{app.config.root}/tmp/cache/assets"
+        else
+          @cache_path
+        end
+      end
+      attr_writer :cache_path
 
       def define
         namespace :assets do
