@@ -86,7 +86,7 @@ module Sprockets
       def javascript_include_tag(*sources)
         options = sources.extract_options!.stringify_keys
 
-        if request_debug_assets?
+        if request_debug_assets? && options["debug"] != false
           sources.map { |source|
             if asset = lookup_asset_for_path(source, :type => :javascript)
               asset.to_a.map do |a|
@@ -108,7 +108,7 @@ module Sprockets
       def stylesheet_link_tag(*sources)
         options = sources.extract_options!.stringify_keys
 
-        if request_debug_assets?
+        if request_debug_assets? && options["debug"] != false
           sources.map { |source|
             if asset = lookup_asset_for_path(source, :type => :stylesheet)
               asset.to_a.map do |a|
