@@ -7,6 +7,7 @@ module Sprockets
     module Helper
       if defined? ActionView::Helpers::AssetUrlHelper
         include ActionView::Helpers::AssetUrlHelper
+        include ActionView::Helpers::AssetTagHelper
       else
         require 'sprockets/rails/legacy_asset_tag_helper'
         require 'sprockets/rails/legacy_asset_url_helper'
@@ -22,7 +23,7 @@ module Sprockets
           klass.class_eval do
             alias_method :assets_environment, :environment
             def assets_manifest; end
-            class_attribute :config, :assets_prefix, :digest_assets
+            class_attribute :config, :assets_prefix, :digest_assets, :debug_assets
           end
         else
           klass.class_attribute(*VIEW_ACCESSORS)
