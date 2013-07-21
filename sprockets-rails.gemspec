@@ -4,6 +4,7 @@ Gem::Specification.new do |s|
 
   s.homepage = "https://github.com/rails/sprockets-rails"
   s.summary  = "Sprockets Rails integration"
+  s.license  = "MIT"
 
   s.files = Dir["README.md", "lib/**/*.rb"]
 
