@@ -129,6 +129,8 @@ module Sprockets
         # and replaced by source maps in Sprockets 3.x.
         def request_debug_assets?
           debug_assets || (defined?(controller) && controller && params[:debug_assets])
+        rescue NoMethodError
+          return false
         end
 
         # Internal method to support multifile debugging. Will
