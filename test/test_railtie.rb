@@ -162,4 +162,21 @@ class TestRailtie < TestBoot
     assert_equal false, env.context_class.digest_assets
     assert_equal nil, env.context_class.config.asset_host
   end
+
+  def test_cache_file_store
+    app.initialize!
+
+    assert env = app.assets
+    assert env.cache.is_a? Sprockets::Cache::FileStore
+  end
+
+  def test_cache_memory_store
+    app.configure do
+      config.assets.cache_store = :memory_store
+    end
+    app.initialize!
+
+    assert env = app.assets
+    assert env.cache.is_a? ActiveSupport::Cache::MemoryStore
+  end
 end
