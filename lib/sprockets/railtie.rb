@@ -22,8 +22,14 @@ module Rails
       @assets ||= Sprockets::Environment.new(root.to_s) do |env|
         env.version = ::Rails.env
 
-        path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"
-        env.cache = Sprockets::Cache::FileStore.new(path)
+        if config.assets.cache_store
+          env.cache = ActiveSupport::Cache.lookup_store(config.assets.cache_store)
+        end
+
+        unless env.cache
+          path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"
+          env.cache = Sprockets::Cache::FileStore.new(path)
+        end
 
         env.context_class.class_eval do
           include ::Sprockets::Rails::Helper
