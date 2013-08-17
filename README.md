@@ -46,7 +46,7 @@ end
 
 Each asset task will invoke `assets:environment` first. By default this loads the Rails environment. You can override this task to add or remove dependencies for your specific compilation environment.
 
-Also see [Sprockest::Rails::Task](https://github.com/josh/sprockets-rails/blob/master/lib/sprockets/rails/task.rb) and [Rake::SprocketsTask](https://github.com/sstephenson/sprockets/blob/master/lib/rake/sprocketstask.rb).
+Also see [Sprockets::Rails::Task](https://github.com/josh/sprockets-rails/blob/master/lib/sprockets/rails/task.rb) and [Rake::SprocketsTask](https://github.com/sstephenson/sprockets/blob/master/lib/rake/sprocketstask.rb).
 
 
 ### Initializer options
@@ -83,7 +83,7 @@ Enable expanded asset debugging mode. Individual files will be served to make re
 
 **`config.assets.compile`**
 
-Enables Sprockest compile environment. If disabled, `Rails.application.assets` will be unavailable to any ActionView helpers. View helpers will depend on assets being precompiled to `public/assets` in order to link to them. You can still access the environment by directly calling `Rails.application.assets`.
+Enables Sprockets compile environment. If disabled, `Rails.application.assets` will be unavailable to any ActionView helpers. View helpers will depend on assets being precompiled to `public/assets` in order to link to them. You can still access the environment by directly calling `Rails.application.assets`.
 
 **`config.assets.configure`**
 
