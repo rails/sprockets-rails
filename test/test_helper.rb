@@ -372,6 +372,56 @@ class ManifestHelperTest < NoHostHelperTest
     assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
   end
 
+  def test_public_folder_fallback_works_correctly
+    @view.raise_runtime_errors = true
+    @view.debug_assets       = true
+
+    @view.asset_path("asset-does-not-exist-foo.js")
+    @view.asset_url("asset-does-not-exist-foo.js")
+    @view.stylesheet_link_tag("asset-does-not-exist-foo.js")
+    @view.javascript_include_tag("asset-does-not-exist-foo.js")
+  end
+
+  def test_asset_not_precompiled_error
+    @view.raise_runtime_errors = true
+    @view.precompile         = [ lambda {|logical_path| false } ]
+    @view.assets_environment = @assets
+    @view.debug_assets       = true
+
+    assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.asset_path("foo.js")
+    end
+
+    assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.asset_url("foo.js")
+    end
+
+    assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.javascript_include_tag("foo.js")
+    end
+
+    assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.javascript_include_tag("foo")
+    end
+
+    error = assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.javascript_include_tag(:foo)
+    end
+
+    assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.stylesheet_link_tag("foo.js")
+    end
+
+    @view.precompile  = [ lambda {|logical_path| true } ]
+
+    @view.asset_path("foo.js")
+    @view.asset_url("foo.js")
+    @view.javascript_include_tag("foo.js")
+    @view.javascript_include_tag("foo")
+    @view.javascript_include_tag(:foo)
+    @view.stylesheet_link_tag("foo.js")
+  end
+
   def test_asset_digest_path
     assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
     assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
@@ -384,13 +434,17 @@ class ManifestHelperTest < NoHostHelperTest
 end
 
 class ErrorsInHelpersTest < HelperTest
+
   def test_dependency_error
     @view.raise_runtime_errors = true
+    @view.precompile           = [ lambda {|logical_path| true } ]
+    @view.assets_environment   = @assets
+
     assert_raise Sprockets::Rails::Helper::DependencyError do
-      @assets['error/dependency.js'].to_s
+      @view.asset_path("error/dependency.js")
     end
 
     @view.raise_runtime_errors = false
-    @assets['error/dependency.js'].to_s
+    @view.asset_path("error/dependency.js")
   end
 end

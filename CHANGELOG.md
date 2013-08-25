@@ -1,3 +1,11 @@
+### Master
+
+*   Assets not in the precompile list can be checked for errors by setting
+     `config.assets.raise_runtime_errors  = true` in any environment
+
+     *Richard Schneeman*
+
+
 ### 2.0.1
 
 *   Allow keep value to be specified for `assets:clean` run with args
