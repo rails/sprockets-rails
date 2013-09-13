@@ -162,4 +162,13 @@ class TestRailtie < TestBoot
     assert_equal false, env.context_class.digest_assets
     assert_equal nil, env.context_class.config.asset_host
   end
+
+  def test_manifest_path_respects_rails_public_path
+    app.configure do
+      config.paths['public'] = 'test_public'
+    end
+    app.initialize!
+
+    assert_match %r{test_public/assets/manifest-.*.json}, ActionView::Base.assets_manifest.path
+  end
 end

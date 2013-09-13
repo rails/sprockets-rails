@@ -1,3 +1,5 @@
+
+
 require 'rails'
 require 'rails/railtie'
 require 'action_controller/railtie'
@@ -64,7 +66,7 @@ module Sprockets
     config.after_initialize do |app|
       config = app.config
 
-      manifest_path = File.join(app.root, 'public', config.assets.prefix)
+      manifest_path = File.join(::Rails.public_path, config.assets.prefix)
 
       unless config.assets.version.blank?
         app.assets.version += "-#{config.assets.version}"
