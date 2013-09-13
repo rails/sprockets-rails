@@ -64,7 +64,7 @@ module Sprockets
     config.after_initialize do |app|
       config = app.config
 
-      manifest_path = File.join(::Rails.public_path, config.assets.prefix)
+      manifest_path = File.join(config.paths['public'].first, config.assets.prefix)
 
       unless config.assets.version.blank?
         app.assets.version += "-#{config.assets.version}"
