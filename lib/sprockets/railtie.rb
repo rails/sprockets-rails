@@ -1,5 +1,3 @@
-
-
 require 'rails'
 require 'rails/railtie'
 require 'action_controller/railtie'
