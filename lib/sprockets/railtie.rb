@@ -55,6 +55,7 @@ module Sprockets
     config.assets.debug      = false
     config.assets.compile    = true
     config.assets.digest     = false
+    config.assets.manifest   = nil
 
     rake_tasks do |app|
       require 'sprockets/rails/task'
@@ -64,7 +65,8 @@ module Sprockets
     config.after_initialize do |app|
       config = app.config
 
-      manifest_path = File.join(app.root, 'public', config.assets.prefix)
+      assets_dir = File.join(app.root, 'public', config.assets.prefix)
+      manifest_file_path = config.assets.manifest
 
       unless config.assets.version.blank?
         app.assets.version += "-#{config.assets.version}"
@@ -91,9 +93,9 @@ module Sprockets
 
         if config.assets.compile
           self.assets_environment = app.assets
-          self.assets_manifest    = Sprockets::Manifest.new(app.assets, manifest_path)
+          self.assets_manifest    = Sprockets::Manifest.new(app.assets, assets_dir, manifest_file_path)
         else
-          self.assets_manifest = Sprockets::Manifest.new(manifest_path)
+          self.assets_manifest = Sprockets::Manifest.new(assets_dir, manifest_file_path)
         end
       end
 

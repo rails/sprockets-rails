@@ -10,6 +10,9 @@ module Sprockets
       def initialize(app = nil)
         self.app = app
         super()
+        if app
+          @manifest = lambda { Sprockets::Manifest.new(index, output, app.config.assets.manifest) }
+        end
       end
 
       def environment
