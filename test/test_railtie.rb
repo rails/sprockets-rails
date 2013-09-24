@@ -162,4 +162,26 @@ class TestRailtie < TestBoot
     assert_equal false, env.context_class.digest_assets
     assert_equal nil, env.context_class.config.asset_host
   end
+
+  def test_manifest_option_when_compile_is_true
+    manifest_path = File.join(Dir.pwd, 'foobar', "manifest-#{SecureRandom.hex(16)}.json")
+    app.configure do
+      config.assets.compile = true
+      config.assets.manifest = manifest_path
+    end
+    app.initialize!
+
+    assert_match manifest_path, ActionView::Base.assets_manifest.path
+  end
+
+  def test_manifest_option_when_compile_is_false
+    manifest_path = File.join(Dir.pwd, 'foobar', "manifest-#{SecureRandom.hex(16)}.json")
+    app.configure do
+      config.assets.compile = false
+      config.assets.manifest = manifest_path
+    end
+    app.initialize!
+
+    assert_match manifest_path, ActionView::Base.assets_manifest.path
+  end
 end
