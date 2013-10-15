@@ -58,6 +58,7 @@ module Sprockets
 
     rake_tasks do |app|
       require 'sprockets/rails/task'
+      app ||= ::Rails.application
       Sprockets::Rails::Task.new(app)
     end
 
