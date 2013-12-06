@@ -5,6 +5,14 @@ require 'active_support/core_ext/class/attribute'
 module Sprockets
   module Rails
     module Helper
+      class DependencyError <StandardError
+        def initialize(path, dep)
+          msg = "Asset depends on '#{dep}' to generate properly but has not declared the dependency\n"
+          msg << "Please add: `//= depend_on_asset \"#{dep}\"` to '#{path}'"
+          super msg
+        end
+      end
+
       if defined? ActionView::Helpers::AssetUrlHelper
         include ActionView::Helpers::AssetUrlHelper
         include ActionView::Helpers::AssetTagHelper
@@ -36,7 +44,14 @@ module Sprockets
         end
       end
 
+      def check_dependencies!(dep)
+        return unless @_dependency_assets
+        return if     @_dependency_assets.detect { |asset| asset.include?(dep) }
+        raise DependencyError.new(self.pathname, dep)
+      end
+
       def compute_asset_path(path, options = {})
+        check_dependencies!(path)
         if digest_path = asset_digest_path(path)
           path = digest_path if digest_assets
           path += "?body=1" if options[:debug]

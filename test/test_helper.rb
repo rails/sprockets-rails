@@ -21,7 +21,7 @@ class HelperTest < Test::Unit::TestCase
     @view = ActionView::Base.new
     @view.extend ::Sprockets::Rails::Helper
     @view.assets_environment = @assets
-    @view.assets_prefix = "/assets"
+    @view.assets_prefix      = "/assets"
 
     # Rails 2.x
     unless @view.respond_to?(:config)
@@ -30,10 +30,11 @@ class HelperTest < Test::Unit::TestCase
     end
 
     @assets.context_class.assets_prefix = @view.assets_prefix
-    @assets.context_class.config = @view.config
+    @assets.context_class.config        = @view.config
 
     @foo_js_digest  = @assets['foo.js'].digest
     @foo_css_digest = @assets['foo.css'].digest
+    @logo_digest    = @assets["logo.png"].digest
   end
 
   def test_truth
@@ -169,7 +170,7 @@ class RelativeHostHelperTest < HelperTest
 
   def test_asset_url
     assert_equal "var url = '//assets.example.com/assets/foo.js';\n", @assets["url.js"].to_s
-    assert_equal "p { background: url(//assets.example.com/images/logo.png); }\n", @assets["url.css"].to_s
+    assert_equal "p { background: url(//assets.example.com/assets/logo.png); }\n", @assets["url.css"].to_s
   end
 end
 
@@ -222,7 +223,7 @@ class NoDigestHelperTest < NoHostHelperTest
 
   def test_asset_url
     assert_equal "var url = '/assets/foo.js';\n", @assets["url.js"].to_s
-    assert_equal "p { background: url(/images/logo.png); }\n", @assets["url.css"].to_s
+    assert_equal "p { background: url(/assets/logo.png); }\n", @assets["url.css"].to_s
   end
 end
 
@@ -279,7 +280,7 @@ class DigestHelperTest < NoHostHelperTest
 
   def test_asset_url
     assert_equal "var url = '/assets/foo-#{@foo_js_digest}.js';\n", @assets["url.js"].to_s
-    assert_equal "p { background: url(/images/logo.png); }\n", @assets["url.css"].to_s
+    assert_equal "p { background: url(/assets/logo-#{@logo_digest}.png); }\n", @assets["url.css"].to_s
   end
 end
 
@@ -379,5 +380,13 @@ class ManifestHelperTest < NoHostHelperTest
   def test_asset_digest
     assert_equal @foo_js_digest, @view.asset_digest("foo.js")
     assert_equal @foo_css_digest, @view.asset_digest("foo.css")
+  end
+end
+
+class ErrorsInHelpersTest < HelperTest
+  def test_dependency_error
+    assert_raise Sprockets::Rails::Helper::DependencyError do
+      @assets['error/dependency.js'].to_s
+    end
   end
 end
