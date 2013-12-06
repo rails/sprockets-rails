@@ -10,3 +10,8 @@ gemfile:
 
 notifications:
   email: false
+  campfire:
+    on_success: change
+    on_failure: always
+    rooms:
+      - secure: "RkdRnCTQkmW7izb9+p9XB8pDrj7XiwHaOXQtEw29U7gXQDPqz77QzoL4cKlvMwalW77079Abp4gQpYeLFIZVm2VcVwFW3/6s0kgf3LGssbrF5fPSQnXk6GQGJBRGUyLt0TCi63Y/5DskREtEINbRfKLiDGm8ar/ExFoJzcZIsig="
