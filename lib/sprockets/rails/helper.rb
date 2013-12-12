@@ -44,14 +44,10 @@ module Sprockets
         end
       end
 
-      def check_dependencies!(dep)
-        return unless @_dependency_assets
-        return if     @_dependency_assets.detect { |asset| asset.include?(dep) }
-        raise DependencyError.new(self.pathname, dep)
-      end
-
       def compute_asset_path(path, options = {})
-        check_dependencies!(path)
+        # Check if we are inside Sprockets context before calling check_dependencies!.
+        check_dependencies!(path) if defined?(_dependency_assets)
+
         if digest_path = asset_digest_path(path)
           path = digest_path if digest_assets
           path += "?body=1" if options[:debug]
@@ -140,6 +136,14 @@ module Sprockets
       end
 
       protected
+
+        # Checks if the asset is included in the dependencies list.
+        def check_dependencies!(dep)
+          if !_dependency_assets.detect { |asset| asset.include?(dep) }
+            raise DependencyError.new(self.pathname, dep)
+          end
+        end
+
         # Enable split asset debugging. Eventually will be deprecated
         # and replaced by source maps in Sprockets 3.x.
         def request_debug_assets?
