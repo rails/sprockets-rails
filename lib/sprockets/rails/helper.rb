@@ -5,7 +5,7 @@ require 'active_support/core_ext/class/attribute'
 module Sprockets
   module Rails
     module Helper
-      class DependencyError <StandardError
+      class DependencyError < StandardError
         def initialize(path, dep)
           msg = "Asset depends on '#{dep}' to generate properly but has not declared the dependency\n"
           msg << "Please add: `//= depend_on_asset \"#{dep}\"` to '#{path}'"
