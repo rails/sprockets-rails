@@ -5,6 +5,11 @@ require 'active_support/core_ext/class/attribute'
 module Sprockets
   module Rails
     module Helper
+      # support for Ruby 1.9.3 && Rails 3.0.x
+      @_config = ActiveSupport::InheritableOptions.new({}) unless defined?(ActiveSupport::Configurable::Configuration)
+      include ActiveSupport::Configurable
+      config_accessor :raise_runtime_errors
+
       class DependencyError < StandardError
         def initialize(path, dep)
           msg = "Asset depends on '#{dep}' to generate properly but has not declared the dependency\n"
@@ -139,7 +144,7 @@ module Sprockets
 
         # Checks if the asset is included in the dependencies list.
         def check_dependencies!(dep)
-          if !_dependency_assets.detect { |asset| asset.include?(dep) }
+          if raise_runtime_errors && !_dependency_assets.detect { |asset| asset.include?(dep) }
             raise DependencyError.new(self.pathname, dep)
           end
         end

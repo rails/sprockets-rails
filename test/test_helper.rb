@@ -385,8 +385,12 @@ end
 
 class ErrorsInHelpersTest < HelperTest
   def test_dependency_error
+    @view.raise_runtime_errors = true
     assert_raise Sprockets::Rails::Helper::DependencyError do
       @assets['error/dependency.js'].to_s
     end
+
+    @view.raise_runtime_errors = false
+    @assets['error/dependency.js'].to_s
   end
 end

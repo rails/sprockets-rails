@@ -55,6 +55,10 @@ Also see [Sprockets::Rails::Task](https://github.com/josh/sprockets-rails/blob/m
 
 Add additional assets to compile on deploy. Defaults to `application.js`, `application.css` and any other non-js/css file under `app/assets`.
 
+**`config.assets.raise_runtime_errors`**
+
+Set to `true` to enable additional runtime error checking. Recommended in the `development` environment to minimize unexpected behavior when deploying to `production`.
+
 **`config.assets.paths`**
 
 Add additional load paths to this Array. Rails includes `app/assets` and `vendor/assets` for you already. Plugins might want to add their custom paths to to this.
