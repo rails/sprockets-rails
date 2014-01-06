@@ -1,12 +1,17 @@
 rvm:
   - 1.9.3
   - 2.0.0
+  - 2.1.0
 
 gemfile:
   - test/gemfiles/Gemfile.rails-3.0.x
   - test/gemfiles/Gemfile.rails-3.1.x
   - test/gemfiles/Gemfile.rails-3.2.x
   - test/gemfiles/Gemfile.rails-4.0.x
+
+matrix:
+  allow_failures:
+    - rvm: 2.1.0
 
 notifications:
   email: false
