@@ -4,4 +4,4 @@ gemspec :path => "./../.."
 gem "actionpack", "~> 3.0.0"
 gem "railties", "~> 3.0.0"
 
-gem 'minitest', '~> 4.0'
+gem 'minitest', '= 4.7.3'
