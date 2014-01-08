@@ -5,3 +5,5 @@ gemspec :path => "./../.."
 gem "actionpack", "~> 3.1.0", :github => "josh/rails", :branch => "3-1-stable-sprockets"
 gem "railties", "~> 3.1.0", :github => "josh/rails", :branch => "3-1-stable-sprockets"
 gem "tzinfo"
+
+gem 'minitest', '= 4.7.3'
