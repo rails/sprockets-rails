@@ -8,13 +8,22 @@ module Sprockets
       # support for Ruby 1.9.3 && Rails 3.0.x
       @_config = ActiveSupport::InheritableOptions.new({}) unless defined?(ActiveSupport::Configurable::Configuration)
       include ActiveSupport::Configurable
-      config_accessor :raise_runtime_errors
+      config_accessor :precompile, :assets, :raise_runtime_errors
 
       class DependencyError < StandardError
         def initialize(path, dep)
           msg = "Asset depends on '#{dep}' to generate properly but has not declared the dependency\n"
           msg << "Please add: `//= depend_on_asset \"#{dep}\"` to '#{path}'"
           super msg
+        end
+      end
+
+      class AssetFilteredError < StandardError
+        def initialize(source)
+          msg = "Asset filtered out and will not be served: " <<
+                "add `config.assets.precompile += %w( #{source} )` " <<
+                "to `config/application.rb` and restart your server"
+          super(msg)
         end
       end
 
@@ -62,6 +71,21 @@ module Sprockets
         end
       end
 
+      # Computes the full URL to a asset in the public directory. This
+      # method checks for errors before returning path.
+      def asset_path(source, options = {})
+        check_errors_for(source)
+        path_to_asset(source, options)
+      end
+      alias :path_to_asset_with_errors :asset_path
+
+      # Computes the full URL to a asset in the public directory. This
+      # will use +asset_path+ internally, so most of their behaviors
+      # will be the same.
+      def asset_url(source, options = {})
+        path_to_asset_with_errors(source, options.merge(:protocol => :request))
+      end
+
       # Get digest for asset path.
       #
       # path    - String path
@@ -104,6 +128,7 @@ module Sprockets
 
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
+            check_errors_for(source)
             if asset = lookup_asset_for_path(source, :type => :javascript)
               asset.to_a.map do |a|
                 super(path_to_javascript(a.logical_path, :debug => true), options)
@@ -123,9 +148,9 @@ module Sprockets
       # Eventually will be deprecated and replaced by source maps.
       def stylesheet_link_tag(*sources)
         options = sources.extract_options!.stringify_keys
-
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
+            check_errors_for(source)
             if asset = lookup_asset_for_path(source, :type => :stylesheet)
               asset.to_a.map do |a|
                 super(path_to_stylesheet(a.logical_path, :debug => true), options)
@@ -141,11 +166,30 @@ module Sprockets
       end
 
       protected
-
         # Checks if the asset is included in the dependencies list.
         def check_dependencies!(dep)
           if raise_runtime_errors && !_dependency_assets.detect { |asset| asset.include?(dep) }
             raise DependencyError.new(self.pathname, dep)
+          end
+        end
+
+        # Raise errors when source does not exist or is not in the precompiled list
+        def check_errors_for(source)
+          source = source.to_s
+          return source if !self.raise_runtime_errors || source.blank? || source =~ URI_REGEXP
+          asset = lookup_asset_for_path(source)
+
+          if asset && asset_needs_precompile?(source, asset.pathname.to_s)
+            raise AssetFilteredError.new(source)
+          end
+        end
+
+        # Returns true when an asset will not be available after precompile is run
+        def asset_needs_precompile?(source, filename)
+          if assets_environment && assets_environment.send(:matches_filter, precompile || [], source, filename)
+            false
+          else
+            true
           end
         end
 
