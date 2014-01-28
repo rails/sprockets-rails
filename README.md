@@ -61,7 +61,7 @@ Set to `true` to enable additional runtime error checking. Recommended in the `d
 
 **`config.assets.paths`**
 
-Add additional load paths to this Array. Rails includes `app/assets` and `vendor/assets` for you already. Plugins might want to add their custom paths to to this.
+Add additional load paths to this Array. Rails includes `app/assets` for you already. Plugins might want to add their custom paths to this.
 
 **`config.assets.version`**
 
