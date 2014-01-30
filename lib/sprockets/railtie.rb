@@ -66,8 +66,16 @@ module Sprockets
 
       manifest_path = File.join(app.root, 'public', config.assets.prefix)
 
-      unless config.assets.version.blank?
-        app.assets.version += "-#{config.assets.version}"
+      # Configuration options that should invalidate
+      # the Sprockets cache when changed.
+      version_fragments = [
+        config.assets.version,
+        config.action_controller.relative_url_root,
+        config.action_controller.asset_host
+      ].compact.join('-')
+
+      if version_fragments.present?
+        app.assets.version += "-#{version_fragments}"
       end
 
       # Copy config.assets.paths to Sprockets
