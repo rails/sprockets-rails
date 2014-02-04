@@ -37,7 +37,12 @@ You can also redefine the task with the built in task generator.
 
 ``` ruby
 require 'sprockets/rails/task'
-Sprockets::Rails::Task.new do |t|
+# clean the old tasks
+Rake::Task["assets:environment"].clear
+Rake::Task["assets:precompile"].clear
+Rake::Task["assets:clean"].clear
+Rake::Task["assets:clobber"].clear
+Sprockets::Rails::Task.new(Rails.application) do |t|
   t.environment = lambda { Rails.application.assets }
   t.assets = %w( application.js application.css )
   t.keep = 5
