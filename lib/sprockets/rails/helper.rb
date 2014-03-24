@@ -5,10 +5,21 @@ require 'active_support/core_ext/class/attribute'
 module Sprockets
   module Rails
     module Helper
-      # support for Ruby 1.9.3 && Rails 3.0.x
-      @_config = ActiveSupport::InheritableOptions.new({}) unless defined?(ActiveSupport::Configurable::Configuration)
-      include ActiveSupport::Configurable
-      config_accessor :precompile, :assets, :raise_runtime_errors
+      class << self
+        attr_accessor :precompile, :assets, :raise_runtime_errors
+      end
+
+      def precompile
+        Sprockets::Rails::Helper.precompile
+      end
+
+      def assets
+        Sprockets::Rails::Helper.assets
+      end
+
+      def raise_runtime_errors
+        Sprockets::Rails::Helper.raise_runtime_errors
+      end
 
       class DependencyError < StandardError
         def initialize(path, dep)

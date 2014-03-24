@@ -373,8 +373,8 @@ class ManifestHelperTest < NoHostHelperTest
   end
 
   def test_public_folder_fallback_works_correctly
-    @view.raise_runtime_errors = true
-    @view.debug_assets       = true
+    Sprockets::Rails::Helper.raise_runtime_errors = true
+    @view.debug_assets = true
 
     @view.asset_path("asset-does-not-exist-foo.js")
     @view.asset_url("asset-does-not-exist-foo.js")
@@ -383,8 +383,8 @@ class ManifestHelperTest < NoHostHelperTest
   end
 
   def test_asset_not_precompiled_error
-    @view.raise_runtime_errors = true
-    @view.precompile         = [ lambda {|logical_path| false } ]
+    Sprockets::Rails::Helper.raise_runtime_errors = true
+    Sprockets::Rails::Helper.precompile           = [ lambda {|logical_path| false } ]
     @view.assets_environment = @assets
     @view.debug_assets       = true
 
@@ -412,7 +412,7 @@ class ManifestHelperTest < NoHostHelperTest
       @view.stylesheet_link_tag("foo.js")
     end
 
-    @view.precompile  = [ lambda {|logical_path| true } ]
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| true } ]
 
     @view.asset_path("foo.js")
     @view.asset_url("foo.js")
@@ -436,15 +436,15 @@ end
 class ErrorsInHelpersTest < HelperTest
 
   def test_dependency_error
-    @view.raise_runtime_errors = true
-    @view.precompile           = [ lambda {|logical_path| true } ]
-    @view.assets_environment   = @assets
+    Sprockets::Rails::Helper.raise_runtime_errors = true
+    Sprockets::Rails::Helper.precompile           = [ lambda {|logical_path| true } ]
+    @view.assets_environment                      = @assets
 
     assert_raise Sprockets::Rails::Helper::DependencyError do
       @view.asset_path("error/dependency.js")
     end
 
-    @view.raise_runtime_errors = false
+    Sprockets::Rails::Helper.raise_runtime_errors = false
     @view.asset_path("error/dependency.js")
   end
 end
