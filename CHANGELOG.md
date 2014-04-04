@@ -1,9 +1,13 @@
 ### Master
 
+*   Respect `Rails.public_path` when computing the path to the manifest file.
+
+    *Steven Wisener*
+
 *   Restore `config.assets.manifest` option, which was removed in Rails 4.0.0.
     This change does not affect existing behavior if the option is not set.
 
-     *Johnny Shields*
+    *Johnny Shields*
 
 *   Respect `asset_host` and `relative_url_root` to invalidate cache.
 
