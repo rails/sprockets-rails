@@ -64,7 +64,7 @@ module Sprockets
     config.after_initialize do |app|
       config = app.config
 
-      manifest_path = File.join(app.root, 'public', config.assets.prefix)
+      manifest_path = File.join(config.paths['public'].first, config.assets.prefix)
 
       # Configuration options that should invalidate
       # the Sprockets cache when changed.
