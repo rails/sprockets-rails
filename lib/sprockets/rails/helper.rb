@@ -38,15 +38,8 @@ module Sprockets
         end
       end
 
-      if defined? ActionView::Helpers::AssetUrlHelper
-        include ActionView::Helpers::AssetUrlHelper
-        include ActionView::Helpers::AssetTagHelper
-      else
-        require 'sprockets/rails/legacy_asset_tag_helper'
-        require 'sprockets/rails/legacy_asset_url_helper'
-        include LegacyAssetTagHelper
-        include LegacyAssetUrlHelper
-      end
+      include ActionView::Helpers::AssetUrlHelper
+      include ActionView::Helpers::AssetTagHelper
 
       VIEW_ACCESSORS = [:assets_environment, :assets_manifest,
                         :assets_prefix, :digest_assets, :debug_assets]
