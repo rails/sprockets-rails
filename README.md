@@ -83,6 +83,10 @@ config.assets.version = 'v2'
 
 Defaults to `/assets`. Changes the directory to compile assets to.
 
+**`config.assets.manifest`**
+
+Defines the full path to be used for the asset precompiler's manifest file. Defaults to using the `config.assets.prefix` directory within the public folder.
+
 **`config.assets.digest`**
 
 Link to undigest asset filenames. This option will eventually go away. Unless when `compile` is disabled.

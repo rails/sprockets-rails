@@ -50,6 +50,7 @@ module Sprockets
     config.assets._blocks    = []
     config.assets.paths      = []
     config.assets.prefix     = "/assets"
+    config.assets.manifest   = false
     config.assets.precompile = [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
     config.assets.version    = ""
     config.assets.debug      = false
@@ -64,7 +65,7 @@ module Sprockets
     config.after_initialize do |app|
       config = app.config
 
-      manifest_path = File.join(app.root, 'public', config.assets.prefix)
+      manifest_path = config.assets.manifest || File.join(app.root, 'public', config.assets.prefix)
 
       # Configuration options that should invalidate
       # the Sprockets cache when changed.

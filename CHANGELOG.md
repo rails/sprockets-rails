@@ -1,5 +1,10 @@
 ### Master
 
+*   Restore `config.assets.manifest` option, which was removed in Rails 4.0.0.
+    This change does not affect existing behavior if the option is not set.
+
+     *Johnny Shields*
+
 *   Assets not in the precompile list can be checked for errors by setting
      `config.assets.raise_runtime_errors  = true` in any environment
 

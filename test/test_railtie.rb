@@ -174,4 +174,13 @@ class TestRailtie < TestBoot
     assert_equal false, env.context_class.digest_assets
     assert_equal nil, env.context_class.config.asset_host
   end
+
+  def test_manifest_path
+    app.configure do
+      config.assets.manifest = Rails.root.join('config','foo')
+    end
+    app.initialize!
+
+    assert_match %r{config/foo/manifest-.*.json}, ActionView::Base.assets_manifest.path
+  end
 end
