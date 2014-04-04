@@ -4,6 +4,8 @@ require 'bundler/gem_tasks'
 
 task :default => :test
 
-task :test do
-  exec "testrb test/test_*.rb"
+Rake::TestTask.new(:test) do |t|
+  t.libs << 'lib'
+  t.pattern = 'test/test_*.rb'
+  t.verbose = true
 end

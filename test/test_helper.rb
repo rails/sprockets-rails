@@ -1,10 +1,12 @@
-require 'test/unit'
+require 'minitest/autorun'
 
 require 'action_view'
 require 'sprockets'
 require 'sprockets/rails/helper'
 
-class HelperTest < Test::Unit::TestCase
+Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
+
+class HelperTest < Minitest::Test
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   # class ActionView::Base
@@ -388,27 +390,27 @@ class ManifestHelperTest < NoHostHelperTest
     @view.assets_environment = @assets
     @view.debug_assets       = true
 
-    assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.asset_path("foo.js")
     end
 
-    assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.asset_url("foo.js")
     end
 
-    assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.javascript_include_tag("foo.js")
     end
 
-    assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.javascript_include_tag("foo")
     end
 
-    error = assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+    error = assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.javascript_include_tag(:foo)
     end
 
-    assert_raise(Sprockets::Rails::Helper::AssetFilteredError) do
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.stylesheet_link_tag("foo.js")
     end
 
@@ -440,7 +442,7 @@ class ErrorsInHelpersTest < HelperTest
     Sprockets::Rails::Helper.precompile           = [ lambda {|logical_path| true } ]
     @view.assets_environment                      = @assets
 
-    assert_raise Sprockets::Rails::Helper::DependencyError do
+    assert_raises Sprockets::Rails::Helper::DependencyError do
       @view.asset_path("error/dependency.js")
     end
 

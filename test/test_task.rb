@@ -1,10 +1,12 @@
-require 'test/unit'
+require 'minitest/autorun'
 require 'tmpdir'
 
 require 'sprockets'
 require 'sprockets/rails/task'
 
-class TestTask < Test::Unit::TestCase
+Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
+
+class TestTask < Minitest::Test
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   def setup

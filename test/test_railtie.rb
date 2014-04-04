@@ -1,8 +1,10 @@
-require 'test/unit'
+require 'minitest/autorun'
 require 'active_support'
 require 'active_support/testing/isolation'
 
-class TestBoot < Test::Unit::TestCase
+Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
+
+class TestBoot < Minitest::Test
   include ActiveSupport::Testing::Isolation
 
   ROOT = File.expand_path("../../tmp/app", __FILE__)
