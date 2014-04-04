@@ -5,10 +5,14 @@
 
      *Johnny Shields*
 
-*   Assets not in the precompile list can be checked for errors by setting
-     `config.assets.raise_runtime_errors  = true` in any environment
+*   Respect `asset_host` and `relative_url_root` to invalidate cache.
 
-     *Richard Schneeman*
+    *Lucas Mazza*
+
+*   Assets not in the precompile list can be checked for errors by setting
+    `config.assets.raise_runtime_errors = true` in any environment
+
+    *Richard Schneeman*
 
 
 ### 2.0.1
