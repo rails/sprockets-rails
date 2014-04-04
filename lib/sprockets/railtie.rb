@@ -50,7 +50,7 @@ module Sprockets
     config.assets._blocks    = []
     config.assets.paths      = []
     config.assets.prefix     = "/assets"
-    config.assets.manifest   = false
+    config.assets.manifest   = nil
     config.assets.precompile = [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
     config.assets.version    = ""
     config.assets.debug      = false
