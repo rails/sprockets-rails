@@ -1,4 +1,11 @@
+### 2.1.1
+
+*   Support Rails 3 applications. It was removed in the previous release
+    but it was release inside a 2.1.0 by mistake.
+
 ### 2.1.0
+
+*   Drop support to Rails 3 applications.
 
 *   Respect `Rails.public_path` when computing the path to the manifest file.
 
