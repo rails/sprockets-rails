@@ -187,11 +187,13 @@ class TestRailtie < TestBoot
   end
 
   def test_manifest_path_respects_rails_public_path
-    app.configure do
-      config.paths['public'] = 'test_public'
-    end
-    app.initialize!
+    unless Rails::VERSION::MAJOR == 3 && Rails::VERSION::MINOR == 0
+      app.configure do
+        config.paths['public'] = 'test_public'
+      end
+      app.initialize!
 
-    assert_match %r{test_public/assets/manifest-.*.json}, ActionView::Base.assets_manifest.path
+      assert_match %r{test_public/assets/manifest-.*.json}, ActionView::Base.assets_manifest.path
+    end
   end
 end
