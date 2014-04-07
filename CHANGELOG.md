@@ -1,7 +1,5 @@
 ### 2.1.0
 
-*   Drop support to Rails 3 applications.
-
 *   Respect `Rails.public_path` when computing the path to the manifest file.
 
     *Steven Wisener*
