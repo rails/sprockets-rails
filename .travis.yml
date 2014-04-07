@@ -11,6 +11,27 @@ gemfile:
   - test/gemfiles/Gemfile.rails-4.0.x
   - test/gemfiles/Gemfile.rails-4.1.x
 
+env:
+  - LEGACY=true
+  - LEGACY=false
+
+matrix:
+  exclude:
+    - gemfile: Gemfile
+      env: LEGACY=true
+    - gemfile: test/gemfiles/Gemfile.rails-4.1.x
+      env: LEGACY=true
+    - gemfile: test/gemfiles/Gemfile.rails-4.0.x
+      env: LEGACY=true
+    - gemfile: test/gemfiles/Gemfile.rails-3.0.x
+      env: LEGACY=false
+    - gemfile: test/gemfiles/Gemfile.rails-3.1.x
+      env: LEGACY=false
+    - gemfile: test/gemfiles/Gemfile.rails-3.2.x
+      env: LEGACY=false
+
+script: ./script/test
+
 notifications:
   email: false
   campfire:

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -ev
+
+if [[ "${LEGACY}" != "false" ]]; then
+  bundle exec rake test_legacy
+else
+  bundle exec rake test
+fi
