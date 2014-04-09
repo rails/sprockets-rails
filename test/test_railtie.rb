@@ -39,6 +39,7 @@ end
 
 class TestRailtie < TestBoot
   def setup
+    require 'sprockets/rails'
     require 'sprockets/railtie'
     super
   end
