@@ -1,3 +1,9 @@
+### 2.1.2
+
+*   Doesn't require `depend_on_assset` if any sprockets helper is used.
+
+    *Matthew Draper*
+
 ### 2.1.1
 
 *   Support Rails 3 applications. It was removed in the previous release
