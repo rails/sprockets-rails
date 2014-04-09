@@ -30,6 +30,7 @@ class TestBoot < Minitest::Test
     @app.config.time_zone = 'UTC'
     @app.config.middleware ||= Rails::Configuration::MiddlewareStackProxy.new
     @app.config.active_support.deprecation = :notify
+    ActionView::Base # load ActionView
   end
 
   def test_initialize
