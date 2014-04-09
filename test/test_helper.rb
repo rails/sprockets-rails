@@ -435,18 +435,13 @@ class ManifestHelperTest < NoHostHelperTest
   end
 end
 
-class ErrorsInHelpersTest < HelperTest
+class AutomaticDependenciesFromHelpersTest < HelperTest
 
-  def test_dependency_error
-    Sprockets::Rails::Helper.raise_runtime_errors = true
-    Sprockets::Rails::Helper.precompile           = [ lambda {|logical_path| true } ]
-    @view.assets_environment                      = @assets
+  def test_dependency_added
+    @view.assets_environment = @assets
 
-    assert_raises Sprockets::Rails::Helper::DependencyError do
-      @view.asset_path("error/dependency.js")
-    end
+    @view.asset_path("url.css")
 
-    Sprockets::Rails::Helper.raise_runtime_errors = false
-    @view.asset_path("error/dependency.js")
+    assert_equal ["logo.png", "url.css.erb"], @assets['url.css'].send(:dependency_paths).map {|d| File.basename(d.pathname) }.sort
   end
 end

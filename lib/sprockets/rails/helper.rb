@@ -21,14 +21,6 @@ module Sprockets
         Sprockets::Rails::Helper.raise_runtime_errors
       end
 
-      class DependencyError < StandardError
-        def initialize(path, dep)
-          msg = "Asset depends on '#{dep}' to generate properly but has not declared the dependency\n"
-          msg << "Please add: `//= depend_on_asset \"#{dep}\"` to '#{path}'"
-          super msg
-        end
-      end
-
       class AssetFilteredError < StandardError
         def initialize(source)
           msg = "Asset filtered out and will not be served: " <<
@@ -64,7 +56,7 @@ module Sprockets
 
       def compute_asset_path(path, options = {})
         # Check if we are inside Sprockets context before calling check_dependencies!.
-        check_dependencies!(path) if defined?(_dependency_assets)
+        check_dependencies!(path) if defined?(depend_on)
 
         if digest_path = asset_digest_path(path)
           path = digest_path if digest_assets
@@ -170,11 +162,10 @@ module Sprockets
       end
 
       protected
-        # Checks if the asset is included in the dependencies list.
+        # Ensures the asset is included in the dependencies list.
         def check_dependencies!(dep)
-          if raise_runtime_errors && !_dependency_assets.detect { |asset| asset.include?(dep) }
-            raise DependencyError.new(self.pathname, dep)
-          end
+          depend_on(dep)
+          depend_on_asset(dep)
         end
 
         # Raise errors when source does not exist or is not in the precompiled list
