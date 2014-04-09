@@ -9,10 +9,6 @@ Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
 class HelperTest < Minitest::Test
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
-  # class ActionView::Base
-  #   include ::Sprockets::Rails::Helper
-  # end
-
   def setup
     assets = @assets = Sprockets::Environment.new
     @assets.append_path FIXTURES_PATH
