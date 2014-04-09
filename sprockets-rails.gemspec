@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.add_dependency "actionpack", ">= 4.0"
   s.add_dependency "activesupport", ">= 4.0"
   s.add_development_dependency "rake"
+  s.add_development_dependency "railties", ">= 4.0"
 
   s.author = "Joshua Peek"
   s.email  = "josh@joshpeek.com"
