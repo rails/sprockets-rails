@@ -50,7 +50,7 @@ class TestRailtie < TestBoot
     assert_kind_of Sprockets::Environment, env
 
     assert_equal ROOT, env.root
-    assert_equal "test", env.version
+    assert_equal "test--#{Sprockets::Rails::VERSION}", env.version
     assert env.cache
     assert_equal [], env.paths
     assert_nil env.js_compressor
@@ -108,7 +108,7 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
-    assert_equal "test-v2", env.version
+    assert_equal "test-v2-#{Sprockets::Rails::VERSION}", env.version
   end
 
   def test_version_fragments
@@ -120,7 +120,7 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
-    assert_equal "test-v2-some-path-http://some-cdn.com", env.version
+    assert_equal "test-v2-some-path-http://some-cdn.com-#{Sprockets::Rails::VERSION}", env.version
   end
 
   def test_configure
