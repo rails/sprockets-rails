@@ -24,8 +24,8 @@ module Sprockets
       class AssetFilteredError < StandardError
         def initialize(source)
           msg = "Asset filtered out and will not be served: " <<
-                "add `config.assets.precompile += %w( #{source} )` " <<
-                "to `config/application.rb` and restart your server"
+                "add `Rails.application.config.assets.precompile += %w( #{source} )` " <<
+                "to `config/initializers/assets.rb` and restart your server"
           super(msg)
         end
       end
