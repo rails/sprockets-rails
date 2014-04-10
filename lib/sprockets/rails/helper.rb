@@ -70,7 +70,7 @@ module Sprockets
       # Computes the full URL to a asset in the public directory. This
       # method checks for errors before returning path.
       def asset_path(source, options = {})
-        check_errors_for(source)
+        check_errors_for(source, options)
         path_to_asset(source, options)
       end
       alias :path_to_asset_with_errors :asset_path
@@ -124,7 +124,7 @@ module Sprockets
 
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
-            check_errors_for(source)
+            check_errors_for(source, :type => :javascript)
             if asset = lookup_asset_for_path(source, :type => :javascript)
               asset.to_a.map do |a|
                 super(path_to_javascript(a.logical_path, :debug => true), options)
@@ -146,7 +146,7 @@ module Sprockets
         options = sources.extract_options!.stringify_keys
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
-            check_errors_for(source)
+            check_errors_for(source, :type => :stylesheet)
             if asset = lookup_asset_for_path(source, :type => :stylesheet)
               asset.to_a.map do |a|
                 super(path_to_stylesheet(a.logical_path, :debug => true), options)
@@ -169,13 +169,13 @@ module Sprockets
         end
 
         # Raise errors when source does not exist or is not in the precompiled list
-        def check_errors_for(source)
+        def check_errors_for(source, options)
           source = source.to_s
           return source if !self.raise_runtime_errors || source.blank? || source =~ URI_REGEXP
-          asset = lookup_asset_for_path(source)
+          asset = lookup_asset_for_path(source, options)
 
-          if asset && asset_needs_precompile?(source, asset.pathname.to_s)
-            raise AssetFilteredError.new(source)
+          if asset && asset_needs_precompile?(asset.logical_path, asset.pathname.to_s)
+            raise AssetFilteredError.new(asset.logical_path)
           end
         end
 
