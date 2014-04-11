@@ -1,3 +1,13 @@
+### 2.1.3
+
+*   Correct NameError on Sprockets::Rails::VERSION.
+
+    It turns out `sprockets/railtie` gets required directly, without ever
+    loading `sprockets/rails`.
+
+    *Matthew Draper*
+
+
 ### 2.1.2
 
 *   Fix the precompile checker to to use asset's logical path.
