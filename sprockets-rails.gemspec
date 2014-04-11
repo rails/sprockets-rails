@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "sprockets-rails"
-  s.version = "2.1.2"
+  s.version = "2.1.3"
 
   s.homepage = "https://github.com/rails/sprockets-rails"
   s.summary  = "Sprockets Rails integration"
