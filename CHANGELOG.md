@@ -1,5 +1,9 @@
 ### 2.1.2
 
+*   Fix the precompile checker to to use asset's logical path.
+
+    *Matthew Draper*
+
 *   Doesn't require `depend_on_assset` if any sprockets helper is used.
 
     *Matthew Draper*
