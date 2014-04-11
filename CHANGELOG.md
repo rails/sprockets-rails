@@ -1,3 +1,20 @@
+### 2.1.2
+
+*   Fix the precompile checker to to use asset's logical path.
+
+    *Matthew Draper*
+
+*   Doesn't require `depend_on_assset` if any sprockets helper is used.
+
+    *Matthew Draper*
+
+
+### 2.1.1
+
+*   Support Rails 3 applications. It was removed in the previous release
+    but it was release inside a 2.1.0 by mistake.
+
+
 ### 2.1.0
 
 *   Drop support to Rails 3 applications.
