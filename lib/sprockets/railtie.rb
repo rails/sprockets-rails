@@ -4,6 +4,7 @@ require 'action_controller/railtie'
 require 'active_support/core_ext/module/remove_method'
 require 'sprockets'
 require 'sprockets/rails/helper'
+require 'sprockets/rails/version'
 
 module Rails
   class Application
