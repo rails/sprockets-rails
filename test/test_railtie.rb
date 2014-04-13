@@ -184,7 +184,8 @@ class TestRailtie < TestBoot
     end
     app.initialize!
 
-    assert_match %r{config/foo/manifest-.*.json}, ActionView::Base.assets_manifest.path
+    assert_match %r{config/foo/manifest-.*\.json$}, ActionView::Base.assets_manifest.path
+    assert_match %r{public/assets$}, ActionView::Base.assets_manifest.dir
   end
 
   def test_manifest_path_respects_rails_public_path
@@ -193,6 +194,7 @@ class TestRailtie < TestBoot
     end
     app.initialize!
 
-    assert_match %r{test_public/assets/manifest-.*.json}, ActionView::Base.assets_manifest.path
+    assert_match %r{test_public/assets/manifest-.*\.json$}, ActionView::Base.assets_manifest.path
+    assert_match %r{test_public/assets$}, ActionView::Base.assets_manifest.dir
   end
 end

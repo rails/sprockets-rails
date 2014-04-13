@@ -66,7 +66,7 @@ module Sprockets
     config.after_initialize do |app|
       config = app.config
 
-      manifest_path = config.assets.manifest || File.join(config.paths['public'].first, config.assets.prefix)
+      manifest_assets_path = File.join(config.paths['public'].first, config.assets.prefix)
 
       # Configuration options that should invalidate
       # the Sprockets cache when changed.
@@ -99,9 +99,9 @@ module Sprockets
 
         if config.assets.compile
           self.assets_environment = app.assets
-          self.assets_manifest    = Sprockets::Manifest.new(app.assets, manifest_path)
+          self.assets_manifest    = Sprockets::Manifest.new(app.assets, manifest_assets_path, config.assets.manifest)
         else
-          self.assets_manifest = Sprockets::Manifest.new(manifest_path)
+          self.assets_manifest = Sprockets::Manifest.new(manifest_assets_path, config.assets.manifest)
         end
       end
 
