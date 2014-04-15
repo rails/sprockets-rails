@@ -85,7 +85,7 @@ Defaults to `/assets`. Changes the directory to compile assets to.
 
 **`config.assets.manifest`**
 
-Defines the full path to be used for the asset precompiler's manifest file. Must include filename. Defaults to using the `config.assets.prefix` directory within the public folder.
+Defines the full path to be used for the asset precompiler's manifest file. Defaults to a randomly-generated filename in the `config.assets.prefix` directory within the public folder.
 
 **`config.assets.digest`**
 
