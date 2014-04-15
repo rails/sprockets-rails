@@ -180,11 +180,11 @@ class TestRailtie < TestBoot
 
   def test_manifest_path
     app.configure do
-      config.assets.manifest = Rails.root.join('config','foo')
+      config.assets.manifest = Rails.root.join('config','foo','bar.json')
     end
     app.initialize!
 
-    assert_match %r{config/foo/manifest-.*\.json$}, ActionView::Base.assets_manifest.path
+    assert_match %r{config/foo/bar\.json$}, ActionView::Base.assets_manifest.path
     assert_match %r{public/assets$}, ActionView::Base.assets_manifest.dir
   end
 

@@ -85,7 +85,7 @@ Defaults to `/assets`. Changes the directory to compile assets to.
 
 **`config.assets.manifest`**
 
-Defines the full path to be used for the asset precompiler's manifest file. Defaults to using the `config.assets.prefix` directory within the public folder.
+Defines the full path to be used for the asset precompiler's manifest file. Must include filename. Defaults to using the `config.assets.prefix` directory within the public folder.
 
 **`config.assets.digest`**
 
@@ -134,6 +134,7 @@ The following plugins provide some extras for the Sprockets Asset Pipeline.
 * Unmanaged asset paths and urls fallback to linking to public/. This should make it easier to work with both compiled assets and simple static assets. As a side effect, there will never be any "asset not precompiled errors" when linking to missing assets. They will just link to a public file which may or may not exist.
 * JS and CSS compressors must be explicitly set. Magic detection has been removed to avoid loading compressors in environments where you want to avoid loading any of the asset libraries. Assign `config.assets.js_compressor = :uglify` or `config.assets.css_compressor = :sass` for the standard compressors.
 * The manifest file is now in a JSON format. Since it lives in public/ by default, the initial filename is also randomized to obfuscate public access to the resource.
+* `config.assets.manifest` (if used) must now include the manifest filename, e.g. `Rails.root.join('config/manifest.json')`. It cannot be a directory.
 * Two cleanup tasks. `rake assets:clean` is now a safe cleanup that only removes older assets that are no longer used. While `rake assets:clobber` nukes the entire `public/assets` directory and clears your filesystem cache. The clean task allows for rolling deploys that may still be linking to an old asset while the new assets are being built.
 
 

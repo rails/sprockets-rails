@@ -18,8 +18,8 @@ class TestTask < Minitest::Test
 
     @dir = File.join(Dir::tmpdir, 'rails', 'task')
 
-    @manifest_dir = File.join(Dir::tmpdir, 'rails', 'manifest')
-    @manifest = Sprockets::Manifest.new(@assets, @dir, @manifest_dir)
+    @manifest_file = File.join(Dir::tmpdir, 'rails', 'manifest', 'custom-manifest.json')
+    @manifest = Sprockets::Manifest.new(@assets, @dir, @manifest_file)
 
     @environment_ran = false
     # Stub Rails environment task
@@ -41,8 +41,9 @@ class TestTask < Minitest::Test
     FileUtils.rm_rf(@dir)
     assert Dir["#{@dir}/*"].empty?
 
-    FileUtils.rm_rf(@manifest_dir)
-    assert Dir["#{@manifest_dir}/*"].empty?
+    manifest_dir = File.dirname(@manifest_file)
+    FileUtils.rm_rf(manifest_dir)
+    assert Dir["#{manifest_dir}/*"].empty?
   end
 
   def test_precompile
@@ -54,7 +55,7 @@ class TestTask < Minitest::Test
     @rake['assets:precompile'].invoke
 
     assert @environment_ran
-    assert Dir["#{@manifest_dir}/manifest-*.json"].first
+    assert File.exist?(@manifest_file)
     assert File.exist?("#{@dir}/#{digest_path}")
   end
 
