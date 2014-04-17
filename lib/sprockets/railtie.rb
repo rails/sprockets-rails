@@ -74,7 +74,6 @@ module Sprockets
         app.assets.version,
         config.assets.version,
         config.action_controller.relative_url_root,
-        config.action_controller.asset_host,
         Sprockets::Rails::VERSION,
       ].compact.join('-')
 

@@ -115,13 +115,12 @@ class TestRailtie < TestBoot
   def test_version_fragments
     app.configure do
       config.assets.version = 'v2'
-      config.action_controller.asset_host = 'http://some-cdn.com'
       config.action_controller.relative_url_root = 'some-path'
     end
     app.initialize!
 
     assert env = app.assets
-    assert_equal "test-v2-some-path-http://some-cdn.com-#{Sprockets::Rails::VERSION}", env.version
+    assert_equal "test-v2-some-path-#{Sprockets::Rails::VERSION}", env.version
   end
 
   def test_configure
