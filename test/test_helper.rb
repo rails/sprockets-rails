@@ -380,6 +380,22 @@ class ManifestHelperTest < NoHostHelperTest
     @view.javascript_include_tag("asset-does-not-exist-foo.js")
   end
 
+  def test_absolute_asset_path_error
+    Sprockets::Rails::Helper.raise_runtime_errors = true
+    @view.assets_environment = @assets
+
+    assert_equal "/assets/foo-#{@foo_js_digest}.js", @view.asset_path("foo.js")
+    assert_raises(Sprockets::Rails::Helper::AbsoluteAssetPathError) do
+      @view.asset_path("/assets/foo.js")
+    end
+
+    assert_equal "/unknown.js", @view.asset_path("unknown.js")
+    assert_equal "/assets/unknown.js", @view.asset_path("/assets/unknown.js")
+
+    Sprockets::Rails::Helper.raise_runtime_errors = false
+    assert_equal "/assets/foo.js", @view.asset_path("/assets/foo.js")
+  end
+
   def test_asset_not_precompiled_error
     Sprockets::Rails::Helper.raise_runtime_errors = true
     Sprockets::Rails::Helper.precompile           = [ lambda {|logical_path| false } ]
