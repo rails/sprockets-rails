@@ -370,6 +370,18 @@ class ManifestHelperTest < NoHostHelperTest
     assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
   end
 
+  def test_asset_digest_path
+    assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
+    assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
+  end
+
+  def test_asset_digest
+    assert_equal @foo_js_digest, @view.asset_digest("foo.js")
+    assert_equal @foo_css_digest, @view.asset_digest("foo.css")
+  end
+end
+
+class PrecompileHelperTest < HelperTest
   def test_public_folder_fallback_works_correctly
     Sprockets::Rails::Helper.raise_runtime_errors = true
     @view.debug_assets = true
@@ -434,16 +446,6 @@ class ManifestHelperTest < NoHostHelperTest
     @view.javascript_include_tag("foo")
     @view.javascript_include_tag(:foo)
     @view.stylesheet_link_tag("foo")
-  end
-
-  def test_asset_digest_path
-    assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
-    assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
-  end
-
-  def test_asset_digest
-    assert_equal @foo_js_digest, @view.asset_digest("foo.js")
-    assert_equal @foo_css_digest, @view.asset_digest("foo.css")
   end
 end
 
