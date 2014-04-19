@@ -33,6 +33,8 @@ class HelperTest < Minitest::Test
     @foo_js_digest  = @assets['foo.js'].digest
     @foo_css_digest = @assets['foo.css'].digest
     @logo_digest    = @assets["logo.png"].digest
+
+    Sprockets::Rails::Helper.raise_runtime_errors = false
   end
 
   def test_truth
