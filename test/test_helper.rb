@@ -485,6 +485,15 @@ class PrecompileHelperTest < HelperTest
 
     @view.javascript_include_tag("bar")
   end
+
+  def test_non_javascripts_and_stylesheets
+    loose_app_assets = lambda do |filename|
+      !%w(.js .css).include?(File.extname(filename))
+    end
+    Sprockets::Rails::Helper.precompile = [loose_app_assets, /(?:\/|\\|\A)application\.(css|js)$/]
+
+    @view.asset_path("logo.png")
+  end
 end
 
 class AutomaticDependenciesFromHelpersTest < HelperTest
