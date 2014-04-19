@@ -382,10 +382,13 @@ class ManifestHelperTest < NoHostHelperTest
 end
 
 class PrecompileHelperTest < HelperTest
-  def test_public_folder_fallback_works_correctly
-    Sprockets::Rails::Helper.raise_runtime_errors = true
-    @view.debug_assets = true
+  def setup
+    super
 
+    Sprockets::Rails::Helper.raise_runtime_errors = true
+  end
+
+  def test_public_folder_fallback_works_correctly
     @view.asset_path("asset-does-not-exist-foo.js")
     @view.asset_url("asset-does-not-exist-foo.js")
     @view.stylesheet_link_tag("asset-does-not-exist-foo.js")
@@ -393,10 +396,7 @@ class PrecompileHelperTest < HelperTest
   end
 
   def test_asset_not_precompiled_error
-    Sprockets::Rails::Helper.raise_runtime_errors = true
-    Sprockets::Rails::Helper.precompile           = [ lambda {|logical_path| false } ]
-    @view.assets_environment = @assets
-    @view.debug_assets       = true
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| false } ]
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.asset_path("foo.js")
@@ -470,6 +470,20 @@ class PrecompileHelperTest < HelperTest
     @view.stylesheet_path("foo")
     @view.stylesheet_url("foo")
     @view.stylesheet_link_tag("foo")
+  end
+
+  def test_debug_mode
+    @view.debug_assets = true
+
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| false } ]
+
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.javascript_include_tag("bar")
+    end
+
+    Sprockets::Rails::Helper.precompile = ['bar.js']
+
+    @view.javascript_include_tag("bar")
   end
 end
 
