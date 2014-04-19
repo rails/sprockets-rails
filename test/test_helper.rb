@@ -407,6 +407,14 @@ class PrecompileHelperTest < HelperTest
     end
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.javascript_path("foo")
+    end
+
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.javascript_url("foo")
+    end
+
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.javascript_include_tag("foo.js")
     end
 
@@ -422,9 +430,19 @@ class PrecompileHelperTest < HelperTest
 
     @view.asset_path("foo.js")
     @view.asset_url("foo.js")
+    @view.javascript_path("foo")
+    @view.javascript_url("foo")
     @view.javascript_include_tag("foo.js")
     @view.javascript_include_tag("foo")
     @view.javascript_include_tag(:foo)
+
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.stylesheet_path("foo")
+    end
+
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.stylesheet_url("foo")
+    end
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.stylesheet_link_tag("foo")
@@ -436,15 +454,21 @@ class PrecompileHelperTest < HelperTest
       @view.javascript_include_tag("foo")
     end
 
+    @view.stylesheet_path("foo")
+    @view.stylesheet_url("foo")
     @view.stylesheet_link_tag("foo")
 
     Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| true } ]
 
     @view.asset_path("foo.js")
     @view.asset_url("foo.js")
+    @view.javascript_path("foo")
+    @view.javascript_url("foo")
     @view.javascript_include_tag("foo.js")
     @view.javascript_include_tag("foo")
     @view.javascript_include_tag(:foo)
+    @view.stylesheet_path("foo")
+    @view.stylesheet_url("foo")
     @view.stylesheet_link_tag("foo")
   end
 end
