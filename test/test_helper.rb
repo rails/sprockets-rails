@@ -497,10 +497,7 @@ class PrecompileHelperTest < HelperTest
 end
 
 class AutomaticDependenciesFromHelpersTest < HelperTest
-
   def test_dependency_added
-    @view.asset_path("url.css")
-
     assert_equal ["logo.png", "url.css.erb"], @assets['url.css'].send(:dependency_paths).map {|d| File.basename(d.pathname) }.sort
   end
 end
