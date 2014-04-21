@@ -166,6 +166,7 @@ module Sprockets
         def check_dependencies!(dep)
           depend_on(dep)
           depend_on_asset(dep)
+        rescue Sprockets::FileNotFound
         end
 
         # Raise errors when source does not exist or is not in the precompiled list
