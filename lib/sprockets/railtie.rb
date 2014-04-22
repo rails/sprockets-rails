@@ -74,8 +74,8 @@ module Sprockets
         app.assets.version,
         config.assets.version,
         config.action_controller.relative_url_root,
-        config.action_controller.asset_host,
-        Sprockets::Rails::VERSION,
+        (config.action_controller.asset_host unless config.action_controller.asset_host.respond_to?(:call)),
+        Sprockets::Rails::VERSION
       ].compact.join('-')
 
       # Copy config.assets.paths to Sprockets
