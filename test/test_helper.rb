@@ -33,6 +33,8 @@ class HelperTest < Minitest::Test
     @foo_js_digest  = @assets['foo.js'].digest
     @foo_css_digest = @assets['foo.css'].digest
     @logo_digest    = @assets["logo.png"].digest
+
+    Sprockets::Rails::Helper.raise_runtime_errors = false
   end
 
   def test_truth
@@ -370,10 +372,25 @@ class ManifestHelperTest < NoHostHelperTest
     assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
   end
 
-  def test_public_folder_fallback_works_correctly
-    Sprockets::Rails::Helper.raise_runtime_errors = true
-    @view.debug_assets = true
+  def test_asset_digest_path
+    assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
+    assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
+  end
 
+  def test_asset_digest
+    assert_equal @foo_js_digest, @view.asset_digest("foo.js")
+    assert_equal @foo_css_digest, @view.asset_digest("foo.css")
+  end
+end
+
+class PrecompileHelperTest < HelperTest
+  def setup
+    super
+
+    Sprockets::Rails::Helper.raise_runtime_errors = true
+  end
+
+  def test_public_folder_fallback_works_correctly
     @view.asset_path("asset-does-not-exist-foo.js")
     @view.asset_url("asset-does-not-exist-foo.js")
     @view.stylesheet_link_tag("asset-does-not-exist-foo.js")
@@ -397,10 +414,7 @@ class ManifestHelperTest < NoHostHelperTest
   end
 
   def test_asset_not_precompiled_error
-    Sprockets::Rails::Helper.raise_runtime_errors = true
-    Sprockets::Rails::Helper.precompile           = [ lambda {|logical_path| false } ]
-    @view.assets_environment = @assets
-    @view.debug_assets       = true
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| false } ]
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.asset_path("foo.js")
@@ -408,6 +422,14 @@ class ManifestHelperTest < NoHostHelperTest
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.asset_url("foo.js")
+    end
+
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.javascript_path("foo")
+    end
+
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.javascript_url("foo")
     end
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
@@ -426,9 +448,19 @@ class ManifestHelperTest < NoHostHelperTest
 
     @view.asset_path("foo.js")
     @view.asset_url("foo.js")
+    @view.javascript_path("foo")
+    @view.javascript_url("foo")
     @view.javascript_include_tag("foo.js")
     @view.javascript_include_tag("foo")
     @view.javascript_include_tag(:foo)
+
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.stylesheet_path("foo")
+    end
+
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.stylesheet_url("foo")
+    end
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.stylesheet_link_tag("foo")
@@ -440,31 +472,49 @@ class ManifestHelperTest < NoHostHelperTest
       @view.javascript_include_tag("foo")
     end
 
+    @view.stylesheet_path("foo")
+    @view.stylesheet_url("foo")
     @view.stylesheet_link_tag("foo")
 
     Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| true } ]
 
     @view.asset_path("foo.js")
     @view.asset_url("foo.js")
+    @view.javascript_path("foo")
+    @view.javascript_url("foo")
     @view.javascript_include_tag("foo.js")
     @view.javascript_include_tag("foo")
     @view.javascript_include_tag(:foo)
+    @view.stylesheet_path("foo")
+    @view.stylesheet_url("foo")
     @view.stylesheet_link_tag("foo")
   end
 
-  def test_asset_digest_path
-    assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
-    assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
+  def test_debug_mode
+    @view.debug_assets = true
+
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| false } ]
+
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+      @view.javascript_include_tag("bar")
+    end
+
+    Sprockets::Rails::Helper.precompile = ['bar.js']
+
+    @view.javascript_include_tag("bar")
   end
 
-  def test_asset_digest
-    assert_equal @foo_js_digest, @view.asset_digest("foo.js")
-    assert_equal @foo_css_digest, @view.asset_digest("foo.css")
+  def test_non_javascripts_and_stylesheets
+    loose_app_assets = lambda do |filename|
+      !%w(.js .css).include?(File.extname(filename))
+    end
+    Sprockets::Rails::Helper.precompile = [loose_app_assets, /(?:\/|\\|\A)application\.(css|js)$/]
+
+    @view.asset_path("logo.png")
   end
 end
 
 class AutomaticDependenciesFromHelpersTest < HelperTest
-
   def test_dependency_added
     assert_equal ["logo.png", "url.css.erb"], @assets['url.css'].send(:dependency_paths).map {|d| File.basename(d.pathname) }.sort
   end

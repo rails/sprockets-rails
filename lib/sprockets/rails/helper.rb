@@ -78,17 +78,12 @@ module Sprockets
       # Computes the full URL to a asset in the public directory. This
       # method checks for errors before returning path.
       def asset_path(source, options = {})
-        check_errors_for(source, options)
-        path_to_asset(source, options)
+        unless options[:debug]
+          check_errors_for(source, options)
+        end
+        super(source, options)
       end
-      alias :path_to_asset_with_errors :asset_path
-
-      # Computes the full URL to a asset in the public directory. This
-      # will use +asset_path+ internally, so most of their behaviors
-      # will be the same.
-      def asset_url(source, options = {})
-        path_to_asset_with_errors(source, options.merge(:protocol => :request))
-      end
+      alias :path_to_asset :asset_path
 
       # Get digest for asset path.
       #
