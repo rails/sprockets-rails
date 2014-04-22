@@ -30,6 +30,14 @@ module Sprockets
         end
       end
 
+      class AbsoluteAssetPathError < ArgumentError
+        def initialize(bad_path, good_path, prefix)
+          msg = "Asset names passed to helpers should not include the #{prefix.inspect} prefix. " <<
+                "Instead of #{bad_path.inspect}, use #{good_path.inspect}"
+          super(msg)
+        end
+      end
+
       if defined? ActionView::Helpers::AssetUrlHelper
         include ActionView::Helpers::AssetUrlHelper
         include ActionView::Helpers::AssetTagHelper
@@ -176,14 +184,26 @@ module Sprockets
         rescue Sprockets::FileNotFound
         end
 
-        # Raise errors when source does not exist or is not in the precompiled list
+        # Raise errors when source is not in the precompiled list, or
+        # incorrectly contains the assets_prefix.
         def check_errors_for(source, options)
+          return unless self.raise_runtime_errors
+
           source = source.to_s
-          return source if !self.raise_runtime_errors || source.blank? || source =~ URI_REGEXP
+          return if source.blank? || source =~ URI_REGEXP
+
           asset = lookup_asset_for_path(source, options)
 
           if asset && asset_needs_precompile?(asset.logical_path, asset.pathname.to_s)
             raise AssetFilteredError.new(asset.logical_path)
+          end
+
+          full_prefix = File.join(self.assets_prefix || "/", '')
+          if !asset && source.start_with?(full_prefix)
+            short_path = source[full_prefix.size, source.size]
+            if lookup_asset_for_path(short_path, options)
+              raise AbsoluteAssetPathError.new(source, short_path, full_prefix)
+            end
           end
         end
 
