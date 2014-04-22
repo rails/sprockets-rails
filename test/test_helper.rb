@@ -450,8 +450,11 @@ end
 class AutomaticDependenciesFromHelpersTest < HelperTest
 
   def test_dependency_added
-    @view.asset_path("url.css")
-
     assert_equal ["logo.png", "url.css.erb"], @assets['url.css'].send(:dependency_paths).map {|d| File.basename(d.pathname) }.sort
   end
+
+  def test_ignores_missing_dependencies
+    assert_equal ["missing.css.erb"], @assets['error/missing.css'].send(:dependency_paths).map {|d| File.basename(d.pathname) }.sort
+  end
+
 end
