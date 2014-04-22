@@ -112,7 +112,7 @@ class TestRailtie < TestBoot
     assert_equal "test-v2-#{Sprockets::Rails::VERSION}", env.version
   end
 
-  def test_version_fragments
+  def test_version_fragments_with_string_asset_host
     app.configure do
       config.assets.version = 'v2'
       config.action_controller.asset_host = 'http://some-cdn.com'
@@ -122,6 +122,20 @@ class TestRailtie < TestBoot
 
     assert env = app.assets
     assert_equal "test-v2-some-path-http://some-cdn.com-#{Sprockets::Rails::VERSION}", env.version
+  end
+
+  def test_version_fragments_with_proc_asset_host
+    app.configure do
+      config.assets.version = 'v2'
+      config.action_controller.asset_host = ->(path, request) {
+        'http://some-cdn.com'
+      }
+      config.action_controller.relative_url_root = 'some-path'
+    end
+    app.initialize!
+
+    assert env = app.assets
+    assert_equal "test-v2-some-path-#{Sprockets::Rails::VERSION}", env.version
   end
 
   def test_configure
