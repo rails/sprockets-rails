@@ -127,7 +127,7 @@ class TestRailtie < TestBoot
   def test_version_fragments_with_proc_asset_host
     app.configure do
       config.assets.version = 'v2'
-      config.action_controller.asset_host = ->(path, request) {
+      config.action_controller.asset_host = lambda { |path, request|
         'http://some-cdn.com'
       }
       config.action_controller.relative_url_root = 'some-path'
