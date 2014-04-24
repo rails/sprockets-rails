@@ -148,7 +148,7 @@ $ bundle install
 $ bundle exec rake test
 ```
 
-[![Build Status](https://secure.travis-ci.org/rails/sprockets-rails.png)](http://travis-ci.org/rails/sprockets-rails)
+[![Build Status](https://travis-ci.org/rails/sprockets-rails.svg?branch=master)](https://travis-ci.org/rails/sprockets-rails)
 
 
 ## Releases
