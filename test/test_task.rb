@@ -16,9 +16,10 @@ class TestTask < Minitest::Test
     @assets = Sprockets::Environment.new
     @assets.append_path FIXTURES_PATH
 
-    @dir = File.join(Dir::tmpdir, 'rails/task')
+    @dir = File.join(Dir::tmpdir, 'rails', 'task')
 
-    @manifest = Sprockets::Manifest.new(@assets, @dir)
+    @manifest_file = File.join(Dir::tmpdir, 'rails', 'manifest', 'custom-manifest.json')
+    @manifest = Sprockets::Manifest.new(@assets, @dir, @manifest_file)
 
     @environment_ran = false
     # Stub Rails environment task
@@ -39,9 +40,33 @@ class TestTask < Minitest::Test
 
     FileUtils.rm_rf(@dir)
     assert Dir["#{@dir}/*"].empty?
+
+    manifest_dir = File.dirname(@manifest_file)
+    FileUtils.rm_rf(manifest_dir)
+    assert Dir["#{manifest_dir}/*"].empty?
   end
 
   def test_precompile
+    assert !@environment_ran
+
+    digest_path = @assets['foo.js'].digest_path
+    assert !File.exist?("#{@dir}/#{digest_path}")
+
+    @rake['assets:precompile'].invoke
+
+    assert @environment_ran
+    assert File.exist?(@manifest_file)
+    assert File.exist?("#{@dir}/#{digest_path}")
+  end
+
+  def test_precompile_without_manifest
+    Sprockets::Rails::Task.new do |t|
+      t.environment = @assets
+      t.manifest    = Sprockets::Manifest.new(@assets, @dir, nil)
+      t.assets      = ['foo.js', 'foo-modified.js']
+      t.log_level   = :fatal
+    end
+
     assert !@environment_ran
 
     digest_path = @assets['foo.js'].digest_path

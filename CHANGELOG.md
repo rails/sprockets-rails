@@ -1,3 +1,10 @@
+### Unreleased
+
+*   Fix issues related `config.assets.manifest` option, including issues with `assets:precompile` Rake task.
+
+    *Johnny Shields*
+
+
 ### 2.1.3
 
 *   Correct NameError on Sprockets::Rails::VERSION.

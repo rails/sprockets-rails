@@ -37,6 +37,14 @@ module Sprockets
         end
       end
 
+      def manifest
+        if app
+          Sprockets::Manifest.new(index, output, app.config.assets.manifest)
+        else
+          super
+        end
+      end
+
       def cache_path
         if app
           "#{app.config.root}/tmp/cache/assets"
