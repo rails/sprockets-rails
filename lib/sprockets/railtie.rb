@@ -3,6 +3,7 @@ require 'rails/railtie'
 require 'action_controller/railtie'
 require 'active_support/core_ext/module/remove_method'
 require 'sprockets'
+require 'sprockets/rails/environment'
 require 'sprockets/rails/helper'
 require 'sprockets/rails/version'
 
@@ -18,9 +19,9 @@ module Rails
     remove_possible_method :assets
     remove_possible_method :assets=
 
-    # Returns Sprockets::Environment for app config.
+    # Returns Sprockets::Rails::Environment for app config.
     def assets
-      @assets ||= Sprockets::Environment.new(root.to_s) do |env|
+      @assets ||= Sprockets::Rails::Environment.new(root.to_s) do |env|
         env.version = ::Rails.env
 
         path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"

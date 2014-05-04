@@ -89,7 +89,9 @@ Defines the full path to be used for the asset precompiler's manifest file. Defa
 
 **`config.assets.digest`**
 
-Link to undigest asset filenames. This option will eventually go away. Unless when `compile` is disabled.
+When enabled, fingerprints will be added to asset filenames.
+If `config.assets.raise_runtime_errors` is also enabled, requests for assets
+will raise an error unless they contain fingerprints.
 
 **`config.assets.debug`**
 
