@@ -1,5 +1,12 @@
 ### Unreleased
 
+*   Don't serve up assets without digests in development.
+
+    If `config.assets.digest = true` and `config.assets.raise_runtime_errors = true`,
+    serve an asset only if the request has a digest.
+
+    *Dan Kang*
+
 *   Fix issues related `config.assets.manifest` option, including issues with `assets:precompile` Rake task.
 
     *Johnny Shields*

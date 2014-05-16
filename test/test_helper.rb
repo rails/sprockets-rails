@@ -2,6 +2,7 @@ require 'minitest/autorun'
 
 require 'action_view'
 require 'sprockets'
+require 'sprockets/rails/environment'
 require 'sprockets/rails/helper'
 
 Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
@@ -10,7 +11,7 @@ class HelperTest < Minitest::Test
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   def setup
-    assets = @assets = Sprockets::Environment.new
+    assets = @assets = Sprockets::Rails::Environment.new
     @assets.append_path FIXTURES_PATH
     @assets.context_class.class_eval do
       include ::Sprockets::Rails::Helper

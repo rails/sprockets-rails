@@ -2,6 +2,7 @@ require 'minitest/autorun'
 require 'tmpdir'
 
 require 'sprockets'
+require 'sprockets/rails/environment'
 require 'sprockets/rails/task'
 
 Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
@@ -13,7 +14,7 @@ class TestTask < Minitest::Test
     @rake = Rake::Application.new
     Rake.application = @rake
 
-    @assets = Sprockets::Environment.new
+    @assets = Sprockets::Rails::Environment.new
     @assets.append_path FIXTURES_PATH
 
     @dir = File.join(Dir::tmpdir, 'rails', 'task')
