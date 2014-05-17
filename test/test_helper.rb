@@ -373,22 +373,6 @@ class ManifestHelperTest < NoHostHelperTest
     assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
   end
 
-  def test_absolute_asset_path_error
-    Sprockets::Rails::Helper.raise_runtime_errors = true
-    @view.assets_environment = @assets
-
-    assert_equal "/assets/foo-#{@foo_js_digest}.js", @view.asset_path("foo.js")
-    assert_raises(Sprockets::Rails::Helper::AbsoluteAssetPathError) do
-      @view.asset_path("/assets/foo.js")
-    end
-
-    assert_equal "/unknown.js", @view.asset_path("unknown.js")
-    assert_equal "/assets/unknown.js", @view.asset_path("/assets/unknown.js")
-
-    Sprockets::Rails::Helper.raise_runtime_errors = false
-    assert_equal "/assets/foo.js", @view.asset_path("/assets/foo.js")
-  end
-
   def test_asset_digest_path
     assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
     assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
@@ -400,7 +384,7 @@ class ManifestHelperTest < NoHostHelperTest
   end
 end
 
-class PrecompileHelperTest < HelperTest
+class RuntimeErrorsHelperTest < HelperTest
   def setup
     super
 
@@ -441,7 +425,7 @@ class PrecompileHelperTest < HelperTest
       @view.javascript_include_tag("foo")
     end
 
-    error = assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.javascript_include_tag(:foo)
     end
 
@@ -512,6 +496,21 @@ class PrecompileHelperTest < HelperTest
     Sprockets::Rails::Helper.precompile = [loose_app_assets, /(?:\/|\\|\A)application\.(css|js)$/]
 
     @view.asset_path("logo.png")
+  end
+
+  def test_absolute_asset_path_error
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| true } ]
+
+    assert_equal "/assets/foo.js", @view.asset_path("foo.js")
+    assert_raises(Sprockets::Rails::Helper::AbsoluteAssetPathError) do
+      @view.asset_path("/assets/foo.js")
+    end
+
+    assert_equal "/unknown.js", @view.asset_path("unknown.js")
+    assert_equal "/assets/unknown.js", @view.asset_path("/assets/unknown.js")
+
+    Sprockets::Rails::Helper.raise_runtime_errors = false
+    assert_equal "/assets/foo.js", @view.asset_path("/assets/foo.js")
   end
 end
 
