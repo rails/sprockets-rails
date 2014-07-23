@@ -374,6 +374,7 @@ class ManifestHelperTest < NoHostHelperTest
 
   def test_absolute_asset_path_error
     Sprockets::Rails::Helper.raise_runtime_errors = true
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| true } ]
     @view.assets_environment = @assets
 
     assert_equal "/assets/foo-#{@foo_js_digest}.js", @view.asset_path("foo.js")
