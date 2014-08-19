@@ -407,6 +407,10 @@ class PrecompileHelperTest < HelperTest
     Sprockets::Rails::Helper.raise_runtime_errors = true
   end
 
+  def asset_url_helpers?
+    defined?(ActionView::VERSION::MAJOR) || ActionPack::VERSION::MAJOR > 3
+  end
+
   def test_public_folder_fallback_works_correctly
     @view.asset_path("asset-does-not-exist-foo.js")
     @view.asset_url("asset-does-not-exist-foo.js")
@@ -429,8 +433,10 @@ class PrecompileHelperTest < HelperTest
       @view.javascript_path("foo")
     end
 
-    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
-      @view.javascript_url("foo")
+    if asset_url_helpers?
+      assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+        @view.javascript_url("foo")
+      end
     end
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
@@ -450,7 +456,7 @@ class PrecompileHelperTest < HelperTest
     @view.asset_path("foo.js")
     @view.asset_url("foo.js")
     @view.javascript_path("foo")
-    @view.javascript_url("foo")
+    @view.javascript_url("foo") if asset_url_helpers?
     @view.javascript_include_tag("foo.js")
     @view.javascript_include_tag("foo")
     @view.javascript_include_tag(:foo)
@@ -459,8 +465,10 @@ class PrecompileHelperTest < HelperTest
       @view.stylesheet_path("foo")
     end
 
-    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
-      @view.stylesheet_url("foo")
+    if asset_url_helpers?
+      assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+        @view.stylesheet_url("foo")
+      end
     end
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
@@ -474,7 +482,7 @@ class PrecompileHelperTest < HelperTest
     end
 
     @view.stylesheet_path("foo")
-    @view.stylesheet_url("foo")
+    @view.stylesheet_url("foo") if asset_url_helpers?
     @view.stylesheet_link_tag("foo")
 
     Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| true } ]
@@ -482,12 +490,12 @@ class PrecompileHelperTest < HelperTest
     @view.asset_path("foo.js")
     @view.asset_url("foo.js")
     @view.javascript_path("foo")
-    @view.javascript_url("foo")
+    @view.javascript_url("foo") if asset_url_helpers?
     @view.javascript_include_tag("foo.js")
     @view.javascript_include_tag("foo")
     @view.javascript_include_tag(:foo)
     @view.stylesheet_path("foo")
-    @view.stylesheet_url("foo")
+    @view.stylesheet_url("foo") if asset_url_helpers?
     @view.stylesheet_link_tag("foo")
   end
 

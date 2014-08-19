@@ -34,6 +34,10 @@ module Sprockets
       end
       alias_method :path_to_asset, :asset_path
 
+      def asset_url(source, options = {})
+        path_to_asset(source, options.merge(:protocol => :request))
+      end
+
       ASSET_EXTENSIONS = {
         :javascript => '.js',
         :stylesheet => '.css'
