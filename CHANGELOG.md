@@ -1,4 +1,4 @@
-### Unreleased
+### 3.0.0.beta1
 
 *   Don't serve up assets without digests in development.
 
