@@ -25,7 +25,7 @@ module Sprockets
       def output
         if app
           config = app.config
-          File.join(app.root, config.paths['public'].first, config.assets.prefix)
+          File.join(config.paths['public'].first, config.assets.prefix)
         else
           super
         end
