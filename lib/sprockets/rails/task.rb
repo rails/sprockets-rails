@@ -49,7 +49,7 @@ module Sprockets
 
       def cache_path
         if app
-          "#{app.config.root}/tmp/cache/assets"
+          "#{app.config.paths['tmp'].first}/cache/assets"
         else
           @cache_path
         end
