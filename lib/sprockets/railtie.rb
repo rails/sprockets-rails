@@ -123,9 +123,9 @@ module Sprockets
       end
 
 
-      Sprockets::Rails::Helper.precompile         ||= app.config.assets.precompile
+      Sprockets::Rails::Helper.precompile         ||= config.assets.precompile
       Sprockets::Rails::Helper.assets             ||= app.assets
-      Sprockets::Rails::Helper.raise_runtime_errors = app.config.assets.raise_runtime_errors
+      Sprockets::Rails::Helper.raise_runtime_errors = config.assets.raise_runtime_errors
 
       if config.assets.compile
         app.routes.prepend do
