@@ -4,6 +4,14 @@
 
     *Johnny Shields*
 
+*   Ensure supplied asset paths don't contain "/assets/".
+
+    *Matthew Draper*
+
+*   Fix assets version to not depend in the assets host if it is a proc.
+
+    *Nikita*
+
 
 ### 2.1.3
 
