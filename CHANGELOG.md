@@ -1,4 +1,4 @@
-### Unreleased
+### 2.1.4
 
 *   Fix issues related `config.assets.manifest` option, including issues with `assets:precompile` Rake task.
 
