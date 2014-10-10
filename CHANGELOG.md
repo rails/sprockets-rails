@@ -1,3 +1,10 @@
+### 2.2.0
+
+*   Support Sprockets 2.8 through 3.x.
+
+    *Joshua Peek*
+
+
 ### 2.1.4
 
 *   Fix issues related `config.assets.manifest` option, including issues with `assets:precompile` Rake task.
