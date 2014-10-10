@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
 
   s.files = Dir["README.md", "lib/**/*.rb", "LICENSE"]
 
-  s.add_dependency "sprockets", "~> 2.8"
+  s.add_dependency "sprockets", [">= 2.8", "< 4.0"]
   s.add_dependency "actionpack", ">= 3.0"
   s.add_dependency "activesupport", ">= 3.0"
   s.add_development_dependency "rake"
