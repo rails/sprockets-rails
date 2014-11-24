@@ -6,15 +6,11 @@ module Sprockets
   module Rails
     module Helper
       class << self
-        attr_accessor :precompile, :assets, :raise_runtime_errors
+        attr_accessor :precompile, :raise_runtime_errors
       end
 
       def precompile
         Sprockets::Rails::Helper.precompile
-      end
-
-      def assets
-        Sprockets::Rails::Helper.assets
       end
 
       def raise_runtime_errors
