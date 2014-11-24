@@ -531,7 +531,7 @@ class AutomaticDependenciesFromHelpersTest < HelperTest
       paths = asset.metadata[:dependency_paths].map { |p| File.basename(p) }.sort
     else
       paths = asset.send(:dependency_paths).map {|d| File.basename(d.pathname) }.sort
-    end    
+    end
     assert_equal ["missing.css.erb"], paths
   end
 end
