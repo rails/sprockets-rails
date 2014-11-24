@@ -1,3 +1,6 @@
+*   `config.assets.raise_runtime_errors` is always enabled. The option can be
+    removed from `config/environments/development.rb`.
+
 ### 3.0.0.beta1
 
 *   Don't serve up assets without digests in development.

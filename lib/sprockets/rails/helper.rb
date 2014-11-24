@@ -5,14 +5,6 @@ require 'active_support/core_ext/class/attribute'
 module Sprockets
   module Rails
     module Helper
-      class << self
-        attr_accessor :raise_runtime_errors
-      end
-
-      def raise_runtime_errors
-        Sprockets::Rails::Helper.raise_runtime_errors
-      end
-
       # Internal: Generate a Set of all precompiled assets.
       def find_precompiled_assets
         return to_enum(__method__) unless block_given?
@@ -77,7 +69,7 @@ module Sprockets
         if environment = assets_environment
           if asset = environment[path]
             unless options[:debug]
-              if self.raise_runtime_errors && !find_precompiled_assets.include?(asset)
+              if !find_precompiled_assets.include?(asset)
                 raise AssetFilteredError.new(asset.logical_path)
               end
             end
@@ -148,7 +140,7 @@ module Sprockets
           end
 
           if asset = env[path]
-            if self.raise_runtime_errors && !find_precompiled_assets.include?(asset)
+            if !find_precompiled_assets.include?(asset)
               raise AssetFilteredError.new(asset.logical_path)
             end
           end

@@ -60,10 +60,6 @@ Also see [Sprockets::Rails::Task](https://github.com/rails/sprockets-rails/blob/
 
 Add additional assets to compile on deploy. Defaults to `application.js`, `application.css` and any other non-js/css file under `app/assets`.
 
-**`config.assets.raise_runtime_errors`**
-
-Set to `true` to enable additional runtime error checking. Recommended in the `development` environment to minimize unexpected behavior when deploying to `production`.
-
 **`config.assets.paths`**
 
 Add additional load paths to this Array. Rails includes `app/assets`, `lib/assets` and `vendor/assets` for you already. Plugins might want to add their custom paths to this.
@@ -90,8 +86,6 @@ Defines the full path to be used for the asset precompiler's manifest file. Defa
 **`config.assets.digest`**
 
 When enabled, fingerprints will be added to asset filenames.
-If `config.assets.raise_runtime_errors` is also enabled, requests for assets
-will raise an error unless they contain fingerprints.
 
 **`config.assets.debug`**
 

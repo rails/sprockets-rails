@@ -167,6 +167,7 @@ class TestRailtie < TestBoot
   def test_action_view_helper
     app.configure do
       config.assets.paths << FIXTURES_PATH
+      config.assets.precompile += ["foo.js"]
     end
     app.initialize!
 

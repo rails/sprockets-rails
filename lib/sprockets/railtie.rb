@@ -123,9 +123,6 @@ module Sprockets
         app.assets = app.assets.index
       end
 
-
-      Sprockets::Rails::Helper.raise_runtime_errors = config.assets.raise_runtime_errors
-
       if config.assets.compile
         app.routes.prepend do
           mount app.assets => config.assets.prefix
