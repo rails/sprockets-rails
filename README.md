@@ -156,7 +156,7 @@ $ bundle exec rake test
 
 ## Releases
 
-sprockets-rails 2.x will primarily target sprockets 2.x with future compatibility for 3.x. Consider upgrading to sprockets-rails 3.x to take full advantage of 3.x features.
+sprockets-rails 3.x will primarily target sprockets 3.x. And future versions will target the corresponding sprockets release line.
 
 The minor and patch version will be updated according to [semver](http://semver.org/).
 
