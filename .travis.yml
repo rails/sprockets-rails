@@ -12,6 +12,7 @@ gemfile:
   - test/gemfiles/Gemfile.sprockets-2.11.x
   - test/gemfiles/Gemfile.sprockets-2.12.x
   - test/gemfiles/Gemfile.sprockets-2.8.x
+  - test/gemfiles/Gemfile.sprockets-3.0.x
 
 notifications:
   email: false
