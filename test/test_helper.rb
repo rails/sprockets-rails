@@ -16,10 +16,13 @@ class HelperTest < ActionView::TestCase
     @assets.context_class.class_eval do
       include ::Sprockets::Rails::Context
     end
+    tmp = File.expand_path("../../tmp", __FILE__)
+    @manifest = Sprockets::Manifest.new(@assets, tmp)
 
     @view = ActionView::Base.new
     @view.extend ::Sprockets::Rails::Helper
     @view.assets_environment = @assets
+    @view.assets_manifest    = @manifest
     @view.assets_prefix      = "/assets"
 
     # Rails 2.x
@@ -384,7 +387,7 @@ class RuntimeErrorsHelperTest < HelperTest
   end
 
   def test_asset_not_precompiled_error
-    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| false } ]
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path, _| false } ]
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.asset_path("foo.js")
@@ -446,7 +449,7 @@ class RuntimeErrorsHelperTest < HelperTest
     @view.stylesheet_url("foo")
     @view.stylesheet_link_tag("foo")
 
-    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| true } ]
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path, _| true } ]
 
     @view.asset_path("foo.js")
     @view.asset_url("foo.js")
@@ -463,7 +466,7 @@ class RuntimeErrorsHelperTest < HelperTest
   def test_debug_mode
     @view.debug_assets = true
 
-    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| false } ]
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path, _| false } ]
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.javascript_include_tag("bar")
@@ -484,7 +487,7 @@ class RuntimeErrorsHelperTest < HelperTest
   end
 
   def test_absolute_asset_path_error
-    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path| true } ]
+    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path, _| true } ]
 
     assert_equal "/assets/foo.js", @view.asset_path("foo.js")
     assert_raises(Sprockets::Rails::Helper::AbsoluteAssetPathError) do
@@ -496,6 +499,11 @@ class RuntimeErrorsHelperTest < HelperTest
 
     Sprockets::Rails::Helper.raise_runtime_errors = false
     assert_equal "/assets/foo.js", @view.asset_path("/assets/foo.js")
+  end
+
+  def test_non_javascripts_and_stylesheets
+    Sprockets::Rails::Helper.precompile = ["url.css"]
+    assert @view.asset_path("logo.png")
   end
 end
 

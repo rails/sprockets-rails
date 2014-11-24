@@ -21,6 +21,17 @@ module Sprockets
         Sprockets::Rails::Helper.raise_runtime_errors
       end
 
+      def precompiled_assets
+        return to_enum(__method__) unless block_given?
+        return unless assets_environment
+
+        assets_manifest.filter_logical_paths(precompile || []).each do |_, filename|
+          assets_environment.find_all_linked_assets(filename) do |asset|
+            yield asset
+          end
+        end
+      end
+
       class AssetFilteredError < StandardError
         def initialize(source)
           msg = "Asset filtered out and will not be served: " <<
@@ -150,7 +161,7 @@ module Sprockets
 
           asset = lookup_asset_for_path(source, options)
 
-          if asset && asset_needs_precompile?(asset.logical_path, asset.pathname.to_s)
+          if asset && !(assets_environment && precompiled_assets.include?(asset))
             raise AssetFilteredError.new(asset.logical_path)
           end
 
@@ -159,33 +170,6 @@ module Sprockets
             short_path = source[full_prefix.size, source.size]
             if lookup_asset_for_path(short_path, options)
               raise AbsoluteAssetPathError.new(source, short_path, full_prefix)
-            end
-          end
-        end
-
-        # Returns true when an asset will not be available after precompile is run
-        def asset_needs_precompile?(source, filename)
-          if assets_environment && asset_matches_filter(precompile || [], source, filename)
-            false
-          else
-            true
-          end
-        end
-
-        def asset_matches_filter(filters, logical_path, filename)
-          return true if filters.empty?
-
-          filters.any? do |filter|
-            if filter.is_a?(Regexp)
-              filter.match(logical_path)
-            elsif filter.respond_to?(:call)
-              if filter.arity == 1
-                filter.call(logical_path)
-              else
-                filter.call(logical_path, filename.to_s)
-              end
-            else
-              File.fnmatch(filter.to_s, logical_path)
             end
           end
         end
