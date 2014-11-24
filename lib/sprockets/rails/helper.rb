@@ -84,20 +84,6 @@ module Sprockets
       end
       alias :path_to_asset :asset_path
 
-      # Get digest for asset path.
-      #
-      # path    - String path
-      # options - Hash options
-      #
-      # Returns String Hex digest or nil if digests are disabled.
-      def asset_digest(path, options = {})
-        return unless digest_assets
-
-        if digest_path = asset_digest_path(path, options)
-          digest_path[/-(.+)\./, 1]
-        end
-      end
-
       # Expand asset path to digested form.
       #
       # path    - String path

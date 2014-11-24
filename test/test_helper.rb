@@ -216,11 +216,6 @@ class NoDigestHelperTest < NoHostHelperTest
     assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
   end
 
-  def test_asset_digest
-    assert_equal nil, @view.asset_digest("foo.js")
-    assert_equal nil, @view.asset_digest("foo.css")
-  end
-
   def test_asset_url
     assert_equal "var url = '/assets/foo.js';\n", @assets["url.js"].to_s
     assert_equal "p { background: url(/assets/logo.png); }\n", @assets["url.css"].to_s
@@ -266,11 +261,6 @@ class DigestHelperTest < NoHostHelperTest
     super
 
     assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
-  end
-
-  def test_asset_digest
-    assert_equal @foo_js_digest, @view.asset_digest("foo.js")
-    assert_equal @foo_css_digest, @view.asset_digest("foo.css")
   end
 
   def test_asset_digest_path
@@ -375,11 +365,6 @@ class ManifestHelperTest < NoHostHelperTest
   def test_asset_digest_path
     assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
     assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
-  end
-
-  def test_asset_digest
-    assert_equal @foo_js_digest, @view.asset_digest("foo.js")
-    assert_equal @foo_css_digest, @view.asset_digest("foo.css")
   end
 end
 
