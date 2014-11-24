@@ -19,6 +19,7 @@ class TestTask < Minitest::Test
     @dir = File.join(Dir::tmpdir, 'rails', 'task')
 
     @manifest_file = File.join(Dir::tmpdir, 'rails', 'manifest', 'custom-manifest.json')
+    FileUtils.mkdir_p File.dirname(@manifest_file)
     @manifest = Sprockets::Manifest.new(@assets, @dir, @manifest_file)
 
     @environment_ran = false
