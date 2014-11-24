@@ -513,12 +513,12 @@ class RuntimeErrorsHelperTest < HelperTest
   end
 end
 
-class AutomaticDependenciesFromHelpersTest < HelperTest
-  def test_dependency_added
-    assert_equal ["logo.png", "url.css.erb"], @assets['url.css'].metadata[:dependency_paths].map { |p| File.basename(p) }.sort
+class AssetUrlHelperLinksTarget < HelperTest
+  def test_links_image_target
+    assert_match "logo.png", @assets['url.css'].links.to_a[0]
   end
 
-  def test_ignores_missing_dependencies
-    assert_equal ["missing.css.erb"], @assets['error/missing.css'].metadata[:dependency_paths].map { |p| File.basename(p) }.sort
+  def test_doesnt_track_public_assets
+    refute_match "does_not_exist.png", @assets['error/missing.css'].links.to_a[0]
   end
 end

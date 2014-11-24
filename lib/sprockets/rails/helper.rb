@@ -63,10 +63,9 @@ module Sprockets
       end
 
       def compute_asset_path(path, options = {})
-        # Check if we are inside Sprockets context before calling check_dependencies!.
-        check_dependencies!(path) if defined?(depend_on)
-
         if digest_path = asset_digest_path(path)
+          # Check if we are inside Sprockets context
+          link_asset(path) if defined?(link_asset)
           path = digest_path if digest_assets
           path += "?body=1" if options[:debug]
           File.join(assets_prefix || "/", path)
@@ -165,13 +164,6 @@ module Sprockets
       end
 
       protected
-        # Ensures the asset is included in the dependencies list.
-        def check_dependencies!(dep)
-          depend_on(dep)
-          depend_on_asset(dep)
-        rescue Sprockets::FileNotFound
-        end
-
         # Raise errors when source is not in the precompiled list, or
         # incorrectly contains the assets_prefix.
         def check_errors_for(source, options)
