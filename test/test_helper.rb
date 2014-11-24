@@ -516,22 +516,10 @@ end
 
 class AutomaticDependenciesFromHelpersTest < HelperTest
   def test_dependency_added
-    asset = @assets['url.css']
-    if asset.respond_to?(:metadata)
-      paths = asset.metadata[:dependency_paths].map { |p| File.basename(p) }.sort
-    else
-      paths = asset.send(:dependency_paths).map {|d| File.basename(d.pathname) }.sort
-    end
-    assert_equal ["logo.png", "url.css.erb"], paths
+    assert_equal ["logo.png", "url.css.erb"], @assets['url.css'].metadata[:dependency_paths].map { |p| File.basename(p) }.sort
   end
 
   def test_ignores_missing_dependencies
-    asset = @assets['error/missing.css']
-    if asset.respond_to?(:metadata)
-      paths = asset.metadata[:dependency_paths].map { |p| File.basename(p) }.sort
-    else
-      paths = asset.send(:dependency_paths).map {|d| File.basename(d.pathname) }.sort
-    end
-    assert_equal ["missing.css.erb"], paths
+    assert_equal ["missing.css.erb"], @assets['error/missing.css'].metadata[:dependency_paths].map { |p| File.basename(p) }.sort
   end
 end
