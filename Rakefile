@@ -1,7 +1,5 @@
 require 'rake/testtask'
 
-require 'bundler/gem_tasks'
-
 task :default => :test
 
 task :test_legacy do
