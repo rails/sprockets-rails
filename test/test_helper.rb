@@ -486,21 +486,6 @@ class RuntimeErrorsHelperTest < HelperTest
     @view.asset_path("logo.png")
   end
 
-  def test_absolute_asset_path_error
-    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path, _| true } ]
-
-    assert_equal "/assets/foo.js", @view.asset_path("foo.js")
-    assert_raises(Sprockets::Rails::Helper::AbsoluteAssetPathError) do
-      @view.asset_path("/assets/foo.js")
-    end
-
-    assert_equal "/unknown.js", @view.asset_path("unknown.js")
-    assert_equal "/assets/unknown.js", @view.asset_path("/assets/unknown.js")
-
-    Sprockets::Rails::Helper.raise_runtime_errors = false
-    assert_equal "/assets/foo.js", @view.asset_path("/assets/foo.js")
-  end
-
   def test_non_javascripts_and_stylesheets
     Sprockets::Rails::Helper.precompile = ["url.css"]
     assert @view.asset_path("url.css")

@@ -41,14 +41,6 @@ module Sprockets
         end
       end
 
-      class AbsoluteAssetPathError < ArgumentError
-        def initialize(bad_path, good_path, prefix)
-          msg = "Asset names passed to helpers should not include the #{prefix.inspect} prefix. " <<
-                "Instead of #{bad_path.inspect}, use #{good_path.inspect}"
-          super(msg)
-        end
-      end
-
       include ActionView::Helpers::AssetUrlHelper
       include ActionView::Helpers::AssetTagHelper
 
@@ -66,7 +58,7 @@ module Sprockets
       end
 
       def compute_asset_path(path, options = {})
-        if digest_path = asset_digest_path(path)
+        if digest_path = asset_digest_path(path, options)
           path = digest_path if digest_assets
           path += "?body=1" if options[:debug]
           File.join(assets_prefix || "/", path)
@@ -74,16 +66,6 @@ module Sprockets
           super
         end
       end
-
-      # Computes the full URL to a asset in the public directory. This
-      # method checks for errors before returning path.
-      def asset_path(source, options = {})
-        unless options[:debug]
-          check_errors_for(source, options)
-        end
-        super(source, options)
-      end
-      alias :path_to_asset :asset_path
 
       # Expand asset path to digested form.
       #
@@ -100,6 +82,11 @@ module Sprockets
 
         if environment = assets_environment
           if asset = environment[path]
+            unless options[:debug]
+              if self.raise_runtime_errors && !precompiled_assets.include?(asset)
+                raise AssetFilteredError.new(asset.logical_path)
+              end
+            end
             return asset.digest_path
           end
         end
@@ -113,7 +100,6 @@ module Sprockets
 
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
-            check_errors_for(source, :type => :javascript)
             if asset = lookup_asset_for_path(source, :type => :javascript)
               asset.to_a.map do |a|
                 super(path_to_javascript(a.logical_path, :debug => true), options)
@@ -135,7 +121,6 @@ module Sprockets
         options = sources.extract_options!.stringify_keys
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
-            check_errors_for(source, :type => :stylesheet)
             if asset = lookup_asset_for_path(source, :type => :stylesheet)
               asset.to_a.map do |a|
                 super(path_to_stylesheet(a.logical_path, :debug => true), options)
@@ -151,29 +136,6 @@ module Sprockets
       end
 
       protected
-        # Raise errors when source is not in the precompiled list, or
-        # incorrectly contains the assets_prefix.
-        def check_errors_for(source, options)
-          return unless self.raise_runtime_errors
-
-          source = source.to_s
-          return if source.blank? || source =~ URI_REGEXP
-
-          asset = lookup_asset_for_path(source, options)
-
-          if asset && !(assets_environment && precompiled_assets.include?(asset))
-            raise AssetFilteredError.new(asset.logical_path)
-          end
-
-          full_prefix = File.join(self.assets_prefix || "/", '')
-          if !asset && source.start_with?(full_prefix)
-            short_path = source[full_prefix.size, source.size]
-            if lookup_asset_for_path(short_path, options)
-              raise AbsoluteAssetPathError.new(source, short_path, full_prefix)
-            end
-          end
-        end
-
         # Enable split asset debugging. Eventually will be deprecated
         # and replaced by source maps in Sprockets 3.x.
         def request_debug_assets?
@@ -190,7 +152,14 @@ module Sprockets
           if extname = compute_asset_extname(path, options)
             path = "#{path}#{extname}"
           end
-          env[path]
+
+          if asset = env[path]
+            if self.raise_runtime_errors && !precompiled_assets.include?(asset)
+              raise AssetFilteredError.new(asset.logical_path)
+            end
+          end
+
+          asset
         end
     end
   end
