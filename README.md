@@ -165,6 +165,6 @@ The minor and patch version will be updated according to [semver](http://semver.
 
 ## License
 
-Copyright &copy; 2012 Joshua Peek.
+Copyright &copy; 2014 Joshua Peek.
 
 Released under the MIT license. See `LICENSE` for details.
