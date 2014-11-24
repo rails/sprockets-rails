@@ -2,6 +2,7 @@ require 'minitest/autorun'
 
 require 'action_view'
 require 'sprockets'
+require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
 
 ActiveSupport::TestCase.test_order = :random if ActiveSupport::TestCase.respond_to?(:test_order=)
@@ -13,7 +14,7 @@ class HelperTest < ActionView::TestCase
     assets = @assets = Sprockets::Environment.new
     @assets.append_path FIXTURES_PATH
     @assets.context_class.class_eval do
-      include ::Sprockets::Rails::Helper
+      include ::Sprockets::Rails::Context
     end
 
     @view = ActionView::Base.new

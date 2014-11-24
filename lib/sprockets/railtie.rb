@@ -3,6 +3,7 @@ require 'rails/railtie'
 require 'action_controller/railtie'
 require 'active_support/core_ext/module/remove_method'
 require 'sprockets'
+require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
 require 'sprockets/rails/version'
 
@@ -27,7 +28,7 @@ module Rails
         env.cache = Sprockets::Cache::FileStore.new(path)
 
         env.context_class.class_eval do
-          include ::Sprockets::Rails::Helper
+          include ::Sprockets::Rails::Context
         end
       end
     end

@@ -45,15 +45,7 @@ module Sprockets
                         :assets_prefix, :digest_assets, :debug_assets]
 
       def self.included(klass)
-        if klass < Sprockets::Context
-          klass.class_eval do
-            alias_method :assets_environment, :environment
-            def assets_manifest; end
-            class_attribute :config, :assets_prefix, :digest_assets, :debug_assets
-          end
-        else
-          klass.class_attribute(*VIEW_ACCESSORS)
-        end
+        klass.class_attribute(*VIEW_ACCESSORS)
       end
 
       def self.extended(obj)
@@ -64,8 +56,6 @@ module Sprockets
 
       def compute_asset_path(path, options = {})
         if digest_path = asset_digest_path(path)
-          # Check if we are inside Sprockets context
-          link_asset(path) if defined?(link_asset)
           path = digest_path if digest_assets
           path += "?body=1" if options[:debug]
           File.join(assets_prefix || "/", path)
