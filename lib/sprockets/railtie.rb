@@ -120,7 +120,7 @@ module Sprockets
       # change. Preferable in production when the FS only changes on
       # deploys when the app restarts.
       if config.cache_classes
-        app.assets = app.assets.index
+        app.assets = app.assets.cache
       end
 
       if config.assets.compile
