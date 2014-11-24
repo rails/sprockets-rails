@@ -380,7 +380,7 @@ class AssetUrlHelperLinksTarget < HelperTest
     assert @view.asset_path("url.css")
     assert @view.asset_path("logo.png")
 
-    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+    assert_raises(Sprockets::Rails::Helper::AssetNotPrecompiled) do
       @view.asset_path("foo.css")
     end
   end

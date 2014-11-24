@@ -17,11 +17,12 @@ module Sprockets
         end
       end
 
-      class AssetFilteredError < StandardError
+      class AssetNotPrecompiled < StandardError
         def initialize(source)
-          msg = "Asset filtered out and will not be served: " <<
-                "add `Rails.application.config.assets.precompile += %w( #{source} )` " <<
-                "to `config/initializers/assets.rb` and restart your server"
+          msg = "Asset was not declared to be precompiled in production.\n" +
+                "Add `Rails.application.config.assets.precompile += " +
+                "%w( #{source} )` to `config/initializers/assets.rb` and " +
+                "restart your server"
           super(msg)
         end
       end
@@ -70,7 +71,7 @@ module Sprockets
           if asset = environment[path]
             unless options[:debug]
               if !find_precompiled_assets.include?(asset)
-                raise AssetFilteredError.new(asset.logical_path)
+                raise AssetNotPrecompiled.new(asset.logical_path)
               end
             end
             return asset.digest_path
@@ -141,7 +142,7 @@ module Sprockets
 
           if asset = env[path]
             if !find_precompiled_assets.include?(asset)
-              raise AssetFilteredError.new(asset.logical_path)
+              raise AssetNotPrecompiled.new(asset.logical_path)
             end
           end
 
