@@ -503,6 +503,7 @@ class RuntimeErrorsHelperTest < HelperTest
 
   def test_non_javascripts_and_stylesheets
     Sprockets::Rails::Helper.precompile = ["url.css"]
+    assert @view.asset_path("url.css")
     assert @view.asset_path("logo.png")
   end
 end
