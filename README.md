@@ -156,17 +156,17 @@ $ bundle exec rake test
 
 ## Releases
 
-sprockets-rails 2.x will primarily target sprockets 2.x. And future versions will target the corresponding sprockets release line.
+sprockets-rails 2.x will primarily target sprockets 2.x with future compatibility for 3.x. Consider upgrading to sprockets-rails 3.x to take full advantage of 3.x features.
 
 The minor and patch version will be updated according to [semver](http://semver.org/).
 
 * Any new APIs or config options that don't break compatibility will be in a minor release
-* Any time the sprockets depedency is bumped, there will be a new minor release
+* Any time the sprockets dependency is bumped, there will be a new minor release
 * Simple bug fixes will be patch releases
 
 
 ## License
 
-Copyright &copy; 2012 Joshua Peek.
+Copyright &copy; 2014 Joshua Peek.
 
 Released under the MIT license. See `LICENSE` for details.
