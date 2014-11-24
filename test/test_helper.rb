@@ -387,7 +387,7 @@ class RuntimeErrorsHelperTest < HelperTest
   end
 
   def test_asset_not_precompiled_error
-    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path, _| false } ]
+    @view.assets_precompile = [ lambda {|logical_path, _| false } ]
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.asset_path("foo.js")
@@ -417,7 +417,7 @@ class RuntimeErrorsHelperTest < HelperTest
       @view.javascript_include_tag(:foo)
     end
 
-    Sprockets::Rails::Helper.precompile = ['foo.js']
+    @view.assets_precompile = ['foo.js']
 
     @view.asset_path("foo.js")
     @view.asset_url("foo.js")
@@ -439,7 +439,7 @@ class RuntimeErrorsHelperTest < HelperTest
       @view.stylesheet_link_tag("foo")
     end
 
-    Sprockets::Rails::Helper.precompile = ['foo.css']
+    @view.assets_precompile = ['foo.css']
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.javascript_include_tag("foo")
@@ -449,7 +449,7 @@ class RuntimeErrorsHelperTest < HelperTest
     @view.stylesheet_url("foo")
     @view.stylesheet_link_tag("foo")
 
-    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path, _| true } ]
+    @view.assets_precompile = [ lambda {|logical_path, _| true } ]
 
     @view.asset_path("foo.js")
     @view.asset_url("foo.js")
@@ -466,13 +466,13 @@ class RuntimeErrorsHelperTest < HelperTest
   def test_debug_mode
     @view.debug_assets = true
 
-    Sprockets::Rails::Helper.precompile = [ lambda {|logical_path, _| false } ]
+    @view.assets_precompile = [ lambda {|logical_path, _| false } ]
 
     assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.javascript_include_tag("bar")
     end
 
-    Sprockets::Rails::Helper.precompile = ['bar.js']
+    @view.assets_precompile = ['bar.js']
 
     @view.javascript_include_tag("bar")
   end
@@ -481,13 +481,13 @@ class RuntimeErrorsHelperTest < HelperTest
     loose_app_assets = lambda do |filename|
       !%w(.js .css).include?(File.extname(filename))
     end
-    Sprockets::Rails::Helper.precompile = [loose_app_assets, /(?:\/|\\|\A)application\.(css|js)$/]
+    @view.assets_precompile = [loose_app_assets, /(?:\/|\\|\A)application\.(css|js)$/]
 
     @view.asset_path("logo.png")
   end
 
   def test_non_javascripts_and_stylesheets
-    Sprockets::Rails::Helper.precompile = ["url.css"]
+    @view.assets_precompile = ["url.css"]
     assert @view.asset_path("url.css")
     assert @view.asset_path("logo.png")
   end

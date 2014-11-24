@@ -6,22 +6,19 @@ module Sprockets
   module Rails
     module Helper
       class << self
-        attr_accessor :precompile, :raise_runtime_errors
-      end
-
-      def precompile
-        Sprockets::Rails::Helper.precompile
+        attr_accessor :raise_runtime_errors
       end
 
       def raise_runtime_errors
         Sprockets::Rails::Helper.raise_runtime_errors
       end
 
-      def precompiled_assets
+      # Internal: Generate a Set of all precompiled assets.
+      def find_precompiled_assets
         return to_enum(__method__) unless block_given?
         return unless assets_environment
 
-        assets_manifest.filter_logical_paths(precompile || []).each do |_, filename|
+        assets_manifest.filter_logical_paths(assets_precompile || []).each do |_, filename|
           assets_environment.find_all_linked_assets(filename) do |asset|
             yield asset
           end
@@ -41,6 +38,7 @@ module Sprockets
       include ActionView::Helpers::AssetTagHelper
 
       VIEW_ACCESSORS = [:assets_environment, :assets_manifest,
+                        :assets_precompile,
                         :assets_prefix, :digest_assets, :debug_assets]
 
       def self.included(klass)
@@ -79,7 +77,7 @@ module Sprockets
         if environment = assets_environment
           if asset = environment[path]
             unless options[:debug]
-              if self.raise_runtime_errors && !precompiled_assets.include?(asset)
+              if self.raise_runtime_errors && !find_precompiled_assets.include?(asset)
                 raise AssetFilteredError.new(asset.logical_path)
               end
             end
@@ -150,7 +148,7 @@ module Sprockets
           end
 
           if asset = env[path]
-            if self.raise_runtime_errors && !precompiled_assets.include?(asset)
+            if self.raise_runtime_errors && !find_precompiled_assets.include?(asset)
               raise AssetFilteredError.new(asset.logical_path)
             end
           end

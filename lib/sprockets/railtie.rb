@@ -88,9 +88,10 @@ module Sprockets
         include Sprockets::Rails::Helper
 
         # Copy relevant config to AV context
-        self.debug_assets  = config.assets.debug
-        self.digest_assets = config.assets.digest
-        self.assets_prefix = config.assets.prefix
+        self.debug_assets      = config.assets.debug
+        self.digest_assets     = config.assets.digest
+        self.assets_prefix     = config.assets.prefix
+        self.assets_precompile = config.assets.precompile
 
         # Copy over to Sprockets as well
         context = app.assets.context_class
@@ -123,7 +124,6 @@ module Sprockets
       end
 
 
-      Sprockets::Rails::Helper.precompile         ||= config.assets.precompile
       Sprockets::Rails::Helper.raise_runtime_errors = config.assets.raise_runtime_errors
 
       if config.assets.compile
