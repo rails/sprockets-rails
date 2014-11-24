@@ -11,6 +11,7 @@ gemfile:
   - test/gemfiles/Gemfile.rails-3.2.x
   - test/gemfiles/Gemfile.rails-4.0.x
   - test/gemfiles/Gemfile.rails-4.1.x
+  - test/gemfiles/Gemfile.sprockets-2.8.x
 
 env:
   - LEGACY=true
