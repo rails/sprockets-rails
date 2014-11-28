@@ -1,3 +1,9 @@
+### 2.3.0
+
+*   Expose Rails.application.assets_manifest
+
+    *Joshua Peek*
+
 ### 2.2.0
 
 *   Support Sprockets 2.8 through 3.x.
