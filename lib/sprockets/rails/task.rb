@@ -47,15 +47,6 @@ module Sprockets
         end
       end
 
-      def cache_path
-        if app
-          "#{app.config.paths['tmp'].first}/cache/assets"
-        else
-          @cache_path
-        end
-      end
-      attr_writer :cache_path
-
       def define
         namespace :assets do
           # Override this task change the loaded dependencies
@@ -84,7 +75,6 @@ module Sprockets
           task :clobber => :environment do
             with_logger do
               manifest.clobber
-              rm_rf cache_path if cache_path
             end
           end
         end
