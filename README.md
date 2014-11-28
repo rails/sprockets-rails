@@ -27,7 +27,7 @@ Only removes old assets (keeps the most recent 3 copies) from `public/assets`. U
 
 **`rake assets:clobber`**
 
-Nuke `public/assets` and clear the Sprockets file system cache.
+Nuke `public/assets`.
 
 #### Customize
 
