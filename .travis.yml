@@ -10,6 +10,13 @@ gemfile:
   - test/gemfiles/Gemfile.rails-4.1.x
   - test/gemfiles/Gemfile.rails-4.2.x
 
+matrix:
+  exclude:
+    - gemfile: Gemfile
+      rvm: 1.9.3
+    - gemfile: Gemfile
+      rvm: 2.0.0
+
 notifications:
   email: false
   campfire:
