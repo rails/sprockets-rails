@@ -31,6 +31,9 @@ module Rails
       end
     end
     attr_writer :assets
+
+    # Returns Sprockets::Manifest for app config.
+    attr_accessor :assets_manifest
   end
 end
 
@@ -65,8 +68,6 @@ module Sprockets
     config.after_initialize do |app|
       config = app.config
 
-      manifest_assets_path = File.join(config.paths['public'].first, config.assets.prefix)
-
       # Configuration options that should invalidate
       # the Sprockets cache when changed.
       app.assets.version = [
@@ -81,6 +82,29 @@ module Sprockets
       # Copy config.assets.paths to Sprockets
       config.assets.paths.each do |path|
         app.assets.append_path path
+      end
+
+      app.assets.js_compressor  = config.assets.js_compressor
+      app.assets.css_compressor = config.assets.css_compressor
+
+      # Run app.assets.configure blocks
+      config.assets._blocks.each do |block|
+        block.call app.assets
+      end
+
+      # No more configuration changes at this point.
+      # With cache classes on, Sprockets won't check the FS when files
+      # change. Preferable in production when the FS only changes on
+      # deploys when the app restarts.
+      if config.cache_classes
+        app.assets = app.assets.cached
+      end
+
+      manifest_assets_path = File.join(config.paths['public'].first, config.assets.prefix)
+      if config.assets.compile
+        app.assets_manifest = Sprockets::Manifest.new(app.assets, manifest_assets_path, config.assets.manifest)
+      else
+        app.assets_manifest = Sprockets::Manifest.new(manifest_assets_path, config.assets.manifest)
       end
 
       ActiveSupport.on_load(:action_view) do
@@ -98,28 +122,8 @@ module Sprockets
         context.digest_assets = config.assets.digest
         context.config        = config.action_controller
 
-        if config.assets.compile
-          self.assets_environment = app.assets
-          self.assets_manifest    = Sprockets::Manifest.new(app.assets, manifest_assets_path, config.assets.manifest)
-        else
-          self.assets_manifest = Sprockets::Manifest.new(manifest_assets_path, config.assets.manifest)
-        end
-      end
-
-      app.assets.js_compressor  = config.assets.js_compressor
-      app.assets.css_compressor = config.assets.css_compressor
-
-      # Run app.assets.configure blocks
-      config.assets._blocks.each do |block|
-        block.call app.assets
-      end
-
-      # No more configuration changes at this point.
-      # With cache classes on, Sprockets won't check the FS when files
-      # change. Preferable in production when the FS only changes on
-      # deploys when the app restarts.
-      if config.cache_classes
-        app.assets = app.assets.cached
+        self.assets_environment = app.assets if config.assets.compile
+        self.assets_manifest = app.assets_manifest
       end
 
       if config.assets.compile

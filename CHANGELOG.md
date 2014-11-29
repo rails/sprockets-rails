@@ -8,11 +8,39 @@
     If `config.assets.digest = true` and `config.assets.raise_runtime_errors = true`,
     serve an asset only if the request has a digest.
 
-    *Dan Kang*
+*Dan Kang*
 
 *   Fix issues related `config.assets.manifest` option, including issues with `assets:precompile` Rake task.
 
     *Johnny Shields*
+
+### 2.3.0
+
+*   Expose Rails.application.assets_manifest
+
+    *Joshua Peek*
+
+
+### 2.2.0
+
+*   Support Sprockets 2.8 through 3.x.
+
+    *Joshua Peek*
+
+
+### 2.1.4
+
+*   Fix issues related `config.assets.manifest` option, including issues with `assets:precompile` Rake task.
+
+    *Johnny Shields*
+
+*   Ensure supplied asset paths don't contain "/assets/".
+
+    *Matthew Draper*
+
+*   Fix assets version to not depend in the assets host if it is a proc.
+
+    *Nikita*
 
 
 ### 2.1.3
