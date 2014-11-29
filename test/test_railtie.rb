@@ -66,6 +66,16 @@ class TestRailtie < TestBoot
     assert env = app.assets
   end
 
+  def test_app_asset_manifest_available_when_compile
+    assert_equal true, app.config.assets.compile
+
+    app.initialize!
+
+    assert manifest = app.assets_manifest
+    assert_equal app.assets, manifest.environment
+    assert_equal File.join(ROOT, "public/assets"), manifest.dir
+  end
+
   def test_app_asset_available_when_no_compile
     app.configure do
       config.assets.compile = false
@@ -76,6 +86,20 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
+  end
+
+  def test_app_asset_manifest_available_when_no_compile
+    app.configure do
+      config.assets.compile = false
+    end
+
+    assert_equal false, app.config.assets.compile
+
+    app.initialize!
+
+    assert manifest = app.assets_manifest
+    refute manifest.environment
+    assert_equal File.join(ROOT, "public/assets"), manifest.dir
   end
 
   def test_copies_paths
@@ -176,7 +200,7 @@ class TestRailtie < TestBoot
     assert_equal false, ActionView::Base.digest_assets
     assert_equal "/assets", ActionView::Base.assets_prefix
     assert_equal app.assets, ActionView::Base.assets_environment
-    assert_match %r{public/assets/manifest-.*.json}, ActionView::Base.assets_manifest.path
+    assert_equal app.assets_manifest, ActionView::Base.assets_manifest
 
     @view = ActionView::Base.new
     assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
@@ -198,8 +222,9 @@ class TestRailtie < TestBoot
     end
     app.initialize!
 
-    assert_match %r{config/foo/bar\.json$}, ActionView::Base.assets_manifest.path
-    assert_match %r{public/assets$}, ActionView::Base.assets_manifest.dir
+    assert manifest = app.assets_manifest
+    assert_match %r{config/foo/bar\.json$}, manifest.path
+    assert_match %r{public/assets$}, manifest.dir
   end
 
   def test_manifest_path_respects_rails_public_path
@@ -209,8 +234,9 @@ class TestRailtie < TestBoot
       end
       app.initialize!
 
-      assert_match %r{test_public/assets/manifest-.*\.json$}, ActionView::Base.assets_manifest.path
-      assert_match %r{test_public/assets$}, ActionView::Base.assets_manifest.dir
+      assert manifest = app.assets_manifest
+      assert_match %r{test_public/assets/manifest-.*\.json$}, manifest.path
+      assert_match %r{test_public/assets$}, manifest.dir
     end
   end
 end
