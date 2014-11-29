@@ -73,7 +73,7 @@ class TestRailtie < TestBoot
 
     assert manifest = app.assets_manifest
     assert_equal app.assets, manifest.environment
-    assert_equal File.join(ROOT, "public/assets"), manifest.directory
+    assert_equal File.join(ROOT, "public/assets"), manifest.dir
   end
 
   def test_app_asset_available_when_no_compile
@@ -99,7 +99,7 @@ class TestRailtie < TestBoot
 
     assert manifest = app.assets_manifest
     refute manifest.environment
-    assert_equal File.join(ROOT, "public/assets"), manifest.directory
+    assert_equal File.join(ROOT, "public/assets"), manifest.dir
   end
 
   def test_copies_paths
