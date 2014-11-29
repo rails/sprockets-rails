@@ -23,9 +23,7 @@ module Rails
     def assets
       @assets ||= Sprockets::Environment.new(root.to_s) do |env|
         env.version = ::Rails.env
-
-        path = "#{config.root}/tmp/cache/assets/#{::Rails.env}"
-        env.cache = Sprockets::Cache::FileStore.new(path)
+        env.cache = Sprockets::Cache::FileStore.new("#{root}/tmp/cache")
 
         env.context_class.class_eval do
           include ::Sprockets::Rails::Context
@@ -72,6 +70,7 @@ module Sprockets
       # Configuration options that should invalidate
       # the Sprockets cache when changed.
       app.assets.version = [
+        ::Rails.env,
         app.assets.version,
         config.assets.version,
         config.action_controller.relative_url_root,
