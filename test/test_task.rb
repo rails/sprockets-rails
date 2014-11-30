@@ -22,17 +22,17 @@ class TestTask < Minitest::Test
     FileUtils.mkdir_p File.dirname(@manifest_file)
     @manifest = Sprockets::Manifest.new(@assets, @dir, @manifest_file)
 
-    @environment_ran = false
-    # Stub Rails environment task
-    @rake.define_task Rake::Task, :environment do
-      @environment_ran = true
-    end
-
     Sprockets::Rails::Task.new do |t|
       t.environment = @assets
       t.manifest    = @manifest
       t.assets      = ['foo.js', 'foo-modified.js']
       t.log_level   = :fatal
+    end
+
+    @environment_ran = false
+    # Stub Rails environment task
+    @rake.define_task Rake::Task, :environment do
+      @environment_ran = true
     end
   end
 
