@@ -49,6 +49,10 @@ module Sprockets
 
       def define
         namespace :assets do
+          %w( environment precompile clean clobber ).each do |task|
+            Rake::Task[task].clear if Rake::Task.task_defined?(task)
+          end
+
           # Override this task change the loaded dependencies
           desc "Load asset compile environment"
           task :environment do
