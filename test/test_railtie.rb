@@ -63,7 +63,7 @@ class TestRailtie < TestBoot
 
     app.initialize!
 
-    assert env = app.assets
+    assert app.assets
   end
 
   def test_app_asset_manifest_available_when_compile
@@ -85,7 +85,7 @@ class TestRailtie < TestBoot
 
     app.initialize!
 
-    assert env = app.assets
+    assert app.assets
   end
 
   def test_app_asset_manifest_available_when_no_compile
@@ -123,6 +123,10 @@ class TestRailtie < TestBoot
 
     assert env = app.assets
     assert_equal Sprockets::UglifierCompressor, env.js_compressor
+
+    silence_warnings do
+      require 'sprockets/sass_compressor'
+    end
     assert_equal Sprockets::SassCompressor, env.css_compressor
   end
 

@@ -11,7 +11,7 @@ class HelperTest < ActionView::TestCase
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   def setup
-    assets = @assets = Sprockets::Environment.new
+    @assets = Sprockets::Environment.new
     @assets.append_path FIXTURES_PATH
     @assets.context_class.class_eval do
       include ::Sprockets::Rails::Context
