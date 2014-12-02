@@ -63,7 +63,7 @@ class TestRailtie < TestBoot
 
     app.initialize!
 
-    assert env = app.assets
+    assert app.assets
   end
 
   def test_app_asset_manifest_available_when_compile
@@ -85,7 +85,7 @@ class TestRailtie < TestBoot
 
     app.initialize!
 
-    assert env = app.assets
+    assert app.assets
   end
 
   def test_app_asset_manifest_available_when_no_compile
@@ -123,6 +123,10 @@ class TestRailtie < TestBoot
 
     assert env = app.assets
     assert_equal Sprockets::UglifierCompressor, env.js_compressor
+
+    silence_warnings do
+      require 'sprockets/sass_compressor'
+    end
     assert_equal Sprockets::SassCompressor, env.css_compressor
   end
 
@@ -185,7 +189,7 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
-    assert_kind_of Sprockets::Index, env
+    assert_kind_of Sprockets::CachedEnvironment, env
   end
 
   def test_action_view_helper
@@ -202,10 +206,32 @@ class TestRailtie < TestBoot
     assert_equal "/assets", ActionView::Base.assets_prefix
     assert_equal app.assets, ActionView::Base.assets_environment
     assert_equal app.assets_manifest, ActionView::Base.assets_manifest
+    assert_kind_of Sprockets::Environment, ActionView::Base.assets_environment
 
     @view = ActionView::Base.new
     assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
     assert_equal "/assets/foo.js", @view.javascript_path("foo")
+
+    env = @view.assets_environment
+    assert_kind_of Sprockets::CachedEnvironment, env
+    assert @view.assets_environment.equal?(env), "view didn't return the same cached instance"
+  end
+
+  def test_action_view_helper_when_no_compile
+    app.configure do
+      config.assets.compile = false
+    end
+
+    assert_equal false, app.config.assets.compile
+
+    app.initialize!
+
+    refute ActionView::Base.assets_environment
+    assert_equal app.assets_manifest, ActionView::Base.assets_manifest
+
+    @view = ActionView::Base.new
+    refute @view.assets_environment
+    assert_equal app.assets_manifest, @view.assets_manifest
   end
 
   def test_sprockets_context_helper

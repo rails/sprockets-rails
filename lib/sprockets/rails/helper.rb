@@ -36,11 +36,33 @@ module Sprockets
 
       def self.included(klass)
         klass.class_attribute(*VIEW_ACCESSORS)
+
+        klass.class_eval do
+          remove_method :assets_environment
+          def assets_environment
+            if instance_variable_defined?(:@assets_environment)
+              @assets_environment = @assets_environment.cached
+            elsif env = self.class.assets_environment
+              @assets_environment = env.cached
+            else
+              nil
+            end
+          end
+        end
       end
 
       def self.extended(obj)
         obj.class_eval do
           attr_accessor(*VIEW_ACCESSORS)
+
+          remove_method :assets_environment
+          def assets_environment
+            if env = @assets_environment
+              @assets_environment = env.cached
+            else
+              nil
+            end
+          end
         end
       end
 

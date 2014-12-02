@@ -11,7 +11,7 @@ class HelperTest < ActionView::TestCase
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   def setup
-    assets = @assets = Sprockets::Environment.new
+    @assets = Sprockets::Environment.new
     @assets.append_path FIXTURES_PATH
     @assets.context_class.class_eval do
       include ::Sprockets::Rails::Context
@@ -366,6 +366,10 @@ class ManifestHelperTest < NoHostHelperTest
     assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
     assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
   end
+
+  def test_assets_environment_unavailable
+    refute @view.assets_environment
+  end
 end
 
 class AssetUrlHelperLinksTarget < HelperTest
@@ -385,5 +389,11 @@ class AssetUrlHelperLinksTarget < HelperTest
 
   def test_doesnt_track_public_assets
     refute_match "does_not_exist.png", @assets['error/missing.css'].links.to_a[0]
+  end
+
+  def test_asset_environment_reference_is_cached
+    env = @view.assets_environment
+    assert_kind_of Sprockets::CachedEnvironment, env
+    assert @view.assets_environment.equal?(env), "view didn't return the same cached instance"
   end
 end
