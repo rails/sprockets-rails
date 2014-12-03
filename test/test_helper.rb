@@ -390,11 +390,11 @@ class DebugDigestHelperTest < NoHostHelperTest
   def test_stylesheet_link_tag
     super
 
-    assert_equal %(<link rel="stylesheet" media="screen" href="/assets/foo-#{@foo_css_digest}.css?body=1" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_css_digest}.css?body=1" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
-    assert_equal %(<link rel="stylesheet" media="screen" href="/assets/foo-#{@foo_css_digest}.css?body=1" />\n<link rel="stylesheet" media="screen" href="/assets/bar-#{@bar_css_digest}.css?body=1" />),
+    assert_equal %(<link href="/assets/foo-#{@foo_css_digest}.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/bar-#{@bar_css_digest}.css?body=1" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:bar)
-    assert_equal %(<link rel="stylesheet" media="screen" href="/assets/dependency-#{@dependency_css_digest}.css?body=1" />\n<link rel="stylesheet" media="screen" href="/assets/file1-#{@file1_css_digest}.css?body=1" />\n<link rel="stylesheet" media="screen" href="/assets/file2-#{@file2_css_digest}.css?body=1" />),
+    assert_equal %(<link href="/assets/dependency-#{@dependency_css_digest}.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file1-#{@file1_css_digest}.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file2-#{@file2_css_digest}.css?body=1" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:file1, :file2)
 
     assert_servable_asset_url "/assets/foo-#{@foo_css_digest}.css?body=1"
