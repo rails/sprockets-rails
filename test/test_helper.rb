@@ -10,7 +10,7 @@ class HelperTest < Minitest::Test
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   def setup
-    assets = @assets = Sprockets::Environment.new
+    @assets = Sprockets::Environment.new
     @assets.append_path FIXTURES_PATH
     @assets.context_class.class_eval do
       include ::Sprockets::Rails::Helper
@@ -47,6 +47,18 @@ class HelperTest < Minitest::Test
   end
 
   def test_truth
+  end
+
+  def assert_asset_url(url)
+    path, query = url.split("?", 2)
+    path = path.sub(@view.assets_prefix, "")
+
+    status = @assets.call({
+      'REQUEST_METHOD' => 'GET',
+      'PATH_INFO' => path,
+      'QUERY_STRING' => query
+    })[0]
+    assert_equal 200, status, "#{url} responded with #{status}"
   end
 end
 
@@ -200,6 +212,8 @@ class NoDigestHelperTest < NoHostHelperTest
       @view.javascript_include_tag("foo.js")
     assert_equal %(<script src="/assets/foo.js"></script>),
       @view.javascript_include_tag(:foo)
+
+    assert_asset_url "/assets/foo.js"
   end
 
   def test_stylesheet_link_tag
@@ -211,18 +225,22 @@ class NoDigestHelperTest < NoHostHelperTest
       @view.stylesheet_link_tag("foo.css")
     assert_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
+
+    assert_asset_url "/assets/foo.css"
   end
 
   def test_javascript_path
     super
 
     assert_equal "/assets/foo.js", @view.javascript_path("foo")
+    assert_asset_url "/assets/foo.js"
   end
 
   def test_stylesheet_path
     super
 
     assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
+    assert_asset_url "/assets/foo.css"
   end
 
   def test_asset_digest
@@ -252,6 +270,8 @@ class DigestHelperTest < NoHostHelperTest
       @view.javascript_include_tag("foo.js")
     assert_equal %(<script src="/assets/foo-#{@foo_js_digest}.js"></script>),
       @view.javascript_include_tag(:foo)
+
+    assert_asset_url "/assets/foo-#{@foo_js_digest}.js"
   end
 
   def test_stylesheet_link_tag
@@ -263,18 +283,22 @@ class DigestHelperTest < NoHostHelperTest
       @view.stylesheet_link_tag("foo.css")
     assert_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
+
+    assert_asset_url "/assets/foo-#{@foo_css_digest}.css"
   end
 
   def test_javascript_path
     super
 
     assert_equal "/assets/foo-#{@foo_js_digest}.js", @view.javascript_path("foo")
+    assert_asset_url "/assets/foo-#{@foo_js_digest}.js"
   end
 
   def test_stylesheet_path
     super
 
     assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
+    assert_asset_url "/assets/foo-#{@foo_css_digest}.css"
   end
 
   def test_asset_digest
@@ -308,6 +332,12 @@ class DebugHelperTest < NoHostHelperTest
       @view.javascript_include_tag(:bar)
     assert_equal %(<script src="/assets/dependency.js?body=1"></script>\n<script src="/assets/file1.js?body=1"></script>\n<script src="/assets/file2.js?body=1"></script>),
       @view.javascript_include_tag(:file1, :file2)
+
+    assert_asset_url "/assets/foo.js?body=1"
+    assert_asset_url "/assets/bar.js?body=1"
+    assert_asset_url "/assets/dependency.js?body=1"
+    assert_asset_url "/assets/file1.js?body=1"
+    assert_asset_url "/assets/file2.js?body=1"
   end
 
   def test_stylesheet_link_tag
@@ -319,18 +349,26 @@ class DebugHelperTest < NoHostHelperTest
       @view.stylesheet_link_tag(:bar)
     assert_equal %(<link href="/assets/dependency.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file1.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file2.css?body=1" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:file1, :file2)
+
+    assert_asset_url "/assets/foo.css?body=1"
+    assert_asset_url "/assets/bar.css?body=1"
+    assert_asset_url "/assets/dependency.css?body=1"
+    assert_asset_url "/assets/file1.css?body=1"
+    assert_asset_url "/assets/file2.css?body=1"
   end
 
   def test_javascript_path
     super
 
     assert_equal "/assets/foo.js", @view.javascript_path("foo")
+    assert_asset_url "/assets/foo.js"
   end
 
   def test_stylesheet_path
     super
 
     assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
+    assert_asset_url "/assets/foo.css"
   end
 end
 
@@ -351,6 +389,12 @@ class DebugDigestHelperTest < NoHostHelperTest
       @view.javascript_include_tag(:bar)
     assert_equal %(<script src="/assets/dependency-#{@dependency_js_digest}.js?body=1"></script>\n<script src="/assets/file1-#{@file1_js_digest}.js?body=1"></script>\n<script src="/assets/file2-#{@file1_js_digest}.js?body=1"></script>),
       @view.javascript_include_tag(:file1, :file2)
+
+    assert_asset_url "/assets/foo-#{@foo_js_digest}.js?body=1"
+    assert_asset_url "/assets/bar-#{@bar_js_digest}.js?body=1"
+    assert_asset_url "/assets/dependency-#{@dependency_js_digest}.js?body=1"
+    assert_asset_url "/assets/file1-#{@file1_js_digest}.js?body=1"
+    assert_asset_url "/assets/file2-#{@file2_js_digest}.js?body=1"
   end
 
   def test_stylesheet_link_tag
@@ -362,30 +406,26 @@ class DebugDigestHelperTest < NoHostHelperTest
       @view.stylesheet_link_tag(:bar)
     assert_equal %(<link href="/assets/dependency-#{@dependency_css_digest}.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file1-#{@file1_css_digest}.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file2-#{@file2_css_digest}.css?body=1" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:file1, :file2)
-  end
 
-  def test_javascript_path
-    super
-
-    assert_equal "/assets/foo.js", @view.javascript_path("foo")
-  end
-
-  def test_stylesheet_path
-    super
-
-    assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
+    assert_asset_url "/assets/foo-#{@foo_css_digest}.css?body=1"
+    assert_asset_url "/assets/bar-#{@bar_css_digest}.css?body=1"
+    assert_asset_url "/assets/dependency-#{@dependency_css_digest}.css?body=1"
+    assert_asset_url "/assets/file1-#{@file1_css_digest}.css?body=1"
+    assert_asset_url "/assets/file2-#{@file2_css_digest}.css?body=1"
   end
 
   def test_javascript_path
     super
 
     assert_equal "/assets/foo-#{@foo_js_digest}.js", @view.javascript_path("foo")
+    assert_asset_url "/assets/foo-#{@foo_js_digest}.js"
   end
 
   def test_stylesheet_path
     super
 
     assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
+    assert_asset_url "/assets/foo-#{@foo_css_digest}.css"
   end
 
   def test_asset_digest
@@ -526,7 +566,7 @@ class PrecompileHelperTest < HelperTest
       @view.javascript_include_tag("foo")
     end
 
-    error = assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
+    assert_raises(Sprockets::Rails::Helper::AssetFilteredError) do
       @view.javascript_include_tag(:foo)
     end
 
