@@ -519,6 +519,14 @@ class ManifestHelperTest < NoHostHelperTest
   end
 end
 
+class DebugManifestHelperTest < ManifestHelperTest
+  def setup
+    super
+
+    @view.debug_assets = true
+  end
+end
+
 class PrecompileHelperTest < HelperTest
   def setup
     super
