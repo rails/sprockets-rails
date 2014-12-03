@@ -519,6 +519,40 @@ class ManifestHelperTest < NoHostHelperTest
   end
 end
 
+class DebugManifestHelperTest < NoHostHelperTest
+  def setup
+    super
+
+    @manifest = Sprockets::Manifest.new(@assets, FIXTURES_PATH)
+    @manifest.assets["bar.js"] = "bar-#{@bar_js_digest}.js"
+    @manifest.assets["bar.css"] = "bar-#{@bar_css_digest}.css"
+
+    @view.digest_assets = true
+    @view.assets_environment = nil
+    @view.assets_manifest = @manifest
+
+    @view.debug_assets = true
+  end
+
+  def test_javascript_include_tag
+    super
+
+    assert_equal %(<script src="/javascripts/foo.js"></script>),
+      @view.javascript_include_tag(:foo)
+    assert_equal %(<script src="/assets/bar-#{@bar_js_digest}.js"></script>),
+      @view.javascript_include_tag(:bar)
+  end
+
+  def test_stylesheet_link_tag
+    super
+
+    assert_equal %(<link href="/stylesheets/foo.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag(:foo)
+    assert_equal %(<link href="/assets/bar-#{@bar_css_digest}.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag(:bar)
+  end
+end
+
 class PrecompileHelperTest < HelperTest
   def setup
     super
