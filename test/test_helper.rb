@@ -49,7 +49,7 @@ class HelperTest < Minitest::Test
   def test_truth
   end
 
-  def assert_asset_url(url)
+  def assert_servable_asset_url(url)
     path, query = url.split("?", 2)
     path = path.sub(@view.assets_prefix, "")
 
@@ -213,7 +213,7 @@ class NoDigestHelperTest < NoHostHelperTest
     assert_equal %(<script src="/assets/foo.js"></script>),
       @view.javascript_include_tag(:foo)
 
-    assert_asset_url "/assets/foo.js"
+    assert_servable_asset_url "/assets/foo.js"
   end
 
   def test_stylesheet_link_tag
@@ -226,21 +226,21 @@ class NoDigestHelperTest < NoHostHelperTest
     assert_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
 
-    assert_asset_url "/assets/foo.css"
+    assert_servable_asset_url "/assets/foo.css"
   end
 
   def test_javascript_path
     super
 
     assert_equal "/assets/foo.js", @view.javascript_path("foo")
-    assert_asset_url "/assets/foo.js"
+    assert_servable_asset_url "/assets/foo.js"
   end
 
   def test_stylesheet_path
     super
 
     assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
-    assert_asset_url "/assets/foo.css"
+    assert_servable_asset_url "/assets/foo.css"
   end
 
   def test_asset_digest
@@ -271,7 +271,7 @@ class DigestHelperTest < NoHostHelperTest
     assert_equal %(<script src="/assets/foo-#{@foo_js_digest}.js"></script>),
       @view.javascript_include_tag(:foo)
 
-    assert_asset_url "/assets/foo-#{@foo_js_digest}.js"
+    assert_servable_asset_url "/assets/foo-#{@foo_js_digest}.js"
   end
 
   def test_stylesheet_link_tag
@@ -284,21 +284,21 @@ class DigestHelperTest < NoHostHelperTest
     assert_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
 
-    assert_asset_url "/assets/foo-#{@foo_css_digest}.css"
+    assert_servable_asset_url "/assets/foo-#{@foo_css_digest}.css"
   end
 
   def test_javascript_path
     super
 
     assert_equal "/assets/foo-#{@foo_js_digest}.js", @view.javascript_path("foo")
-    assert_asset_url "/assets/foo-#{@foo_js_digest}.js"
+    assert_servable_asset_url "/assets/foo-#{@foo_js_digest}.js"
   end
 
   def test_stylesheet_path
     super
 
     assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
-    assert_asset_url "/assets/foo-#{@foo_css_digest}.css"
+    assert_servable_asset_url "/assets/foo-#{@foo_css_digest}.css"
   end
 
   def test_asset_digest
@@ -333,11 +333,11 @@ class DebugHelperTest < NoHostHelperTest
     assert_equal %(<script src="/assets/dependency.js?body=1"></script>\n<script src="/assets/file1.js?body=1"></script>\n<script src="/assets/file2.js?body=1"></script>),
       @view.javascript_include_tag(:file1, :file2)
 
-    assert_asset_url "/assets/foo.js?body=1"
-    assert_asset_url "/assets/bar.js?body=1"
-    assert_asset_url "/assets/dependency.js?body=1"
-    assert_asset_url "/assets/file1.js?body=1"
-    assert_asset_url "/assets/file2.js?body=1"
+    assert_servable_asset_url "/assets/foo.js?body=1"
+    assert_servable_asset_url "/assets/bar.js?body=1"
+    assert_servable_asset_url "/assets/dependency.js?body=1"
+    assert_servable_asset_url "/assets/file1.js?body=1"
+    assert_servable_asset_url "/assets/file2.js?body=1"
   end
 
   def test_stylesheet_link_tag
@@ -350,25 +350,25 @@ class DebugHelperTest < NoHostHelperTest
     assert_equal %(<link href="/assets/dependency.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file1.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file2.css?body=1" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:file1, :file2)
 
-    assert_asset_url "/assets/foo.css?body=1"
-    assert_asset_url "/assets/bar.css?body=1"
-    assert_asset_url "/assets/dependency.css?body=1"
-    assert_asset_url "/assets/file1.css?body=1"
-    assert_asset_url "/assets/file2.css?body=1"
+    assert_servable_asset_url "/assets/foo.css?body=1"
+    assert_servable_asset_url "/assets/bar.css?body=1"
+    assert_servable_asset_url "/assets/dependency.css?body=1"
+    assert_servable_asset_url "/assets/file1.css?body=1"
+    assert_servable_asset_url "/assets/file2.css?body=1"
   end
 
   def test_javascript_path
     super
 
     assert_equal "/assets/foo.js", @view.javascript_path("foo")
-    assert_asset_url "/assets/foo.js"
+    assert_servable_asset_url "/assets/foo.js"
   end
 
   def test_stylesheet_path
     super
 
     assert_equal "/assets/foo.css", @view.stylesheet_path("foo")
-    assert_asset_url "/assets/foo.css"
+    assert_servable_asset_url "/assets/foo.css"
   end
 end
 
@@ -390,11 +390,11 @@ class DebugDigestHelperTest < NoHostHelperTest
     assert_equal %(<script src="/assets/dependency-#{@dependency_js_digest}.js?body=1"></script>\n<script src="/assets/file1-#{@file1_js_digest}.js?body=1"></script>\n<script src="/assets/file2-#{@file1_js_digest}.js?body=1"></script>),
       @view.javascript_include_tag(:file1, :file2)
 
-    assert_asset_url "/assets/foo-#{@foo_js_digest}.js?body=1"
-    assert_asset_url "/assets/bar-#{@bar_js_digest}.js?body=1"
-    assert_asset_url "/assets/dependency-#{@dependency_js_digest}.js?body=1"
-    assert_asset_url "/assets/file1-#{@file1_js_digest}.js?body=1"
-    assert_asset_url "/assets/file2-#{@file2_js_digest}.js?body=1"
+    assert_servable_asset_url "/assets/foo-#{@foo_js_digest}.js?body=1"
+    assert_servable_asset_url "/assets/bar-#{@bar_js_digest}.js?body=1"
+    assert_servable_asset_url "/assets/dependency-#{@dependency_js_digest}.js?body=1"
+    assert_servable_asset_url "/assets/file1-#{@file1_js_digest}.js?body=1"
+    assert_servable_asset_url "/assets/file2-#{@file2_js_digest}.js?body=1"
   end
 
   def test_stylesheet_link_tag
@@ -407,25 +407,25 @@ class DebugDigestHelperTest < NoHostHelperTest
     assert_equal %(<link href="/assets/dependency-#{@dependency_css_digest}.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file1-#{@file1_css_digest}.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file2-#{@file2_css_digest}.css?body=1" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:file1, :file2)
 
-    assert_asset_url "/assets/foo-#{@foo_css_digest}.css?body=1"
-    assert_asset_url "/assets/bar-#{@bar_css_digest}.css?body=1"
-    assert_asset_url "/assets/dependency-#{@dependency_css_digest}.css?body=1"
-    assert_asset_url "/assets/file1-#{@file1_css_digest}.css?body=1"
-    assert_asset_url "/assets/file2-#{@file2_css_digest}.css?body=1"
+    assert_servable_asset_url "/assets/foo-#{@foo_css_digest}.css?body=1"
+    assert_servable_asset_url "/assets/bar-#{@bar_css_digest}.css?body=1"
+    assert_servable_asset_url "/assets/dependency-#{@dependency_css_digest}.css?body=1"
+    assert_servable_asset_url "/assets/file1-#{@file1_css_digest}.css?body=1"
+    assert_servable_asset_url "/assets/file2-#{@file2_css_digest}.css?body=1"
   end
 
   def test_javascript_path
     super
 
     assert_equal "/assets/foo-#{@foo_js_digest}.js", @view.javascript_path("foo")
-    assert_asset_url "/assets/foo-#{@foo_js_digest}.js"
+    assert_servable_asset_url "/assets/foo-#{@foo_js_digest}.js"
   end
 
   def test_stylesheet_path
     super
 
     assert_equal "/assets/foo-#{@foo_css_digest}.css", @view.stylesheet_path("foo")
-    assert_asset_url "/assets/foo-#{@foo_css_digest}.css"
+    assert_servable_asset_url "/assets/foo-#{@foo_css_digest}.css"
   end
 
   def test_asset_digest
