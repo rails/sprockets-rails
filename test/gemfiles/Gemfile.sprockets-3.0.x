@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gemspec :path => "./../.."
 
-gem 'sprockets', '3.0.0.beta.4'
+gem 'sprockets', '3.0.0.beta.6'
 
 gem 'actionpack'
 gem 'railties'
