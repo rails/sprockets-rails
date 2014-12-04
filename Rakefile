@@ -3,7 +3,10 @@ require 'rake/testtask'
 task :default => :test
 
 task :test_legacy do
-  exec "testrb test/test_*.rb"
+  Dir['test/test_*.rb'].each do |path|
+    system "testrb", path
+    exit($?.exitstatus) unless $?.success?
+  end
 end
 
 Rake::TestTask.new(:test) do |t|
