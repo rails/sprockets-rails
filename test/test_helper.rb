@@ -486,6 +486,14 @@ class ManifestHelperTest < NoHostHelperTest
   end
 end
 
+class DebugManifestHelperTest < ManifestHelperTest
+  def setup
+    super
+
+    @view.debug_assets = true
+  end
+end
+
 class AssetUrlHelperLinksTarget < HelperTest
   def test_precompile_allows_links
     @view.assets_precompile = ["url.css"]
