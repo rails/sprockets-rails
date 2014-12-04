@@ -6,7 +6,7 @@ require 'sprockets/rails/helper'
 
 Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
 
-class HelperTest < Minitest::Test
+class HelperTest < ActionView::TestCase
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   def setup
