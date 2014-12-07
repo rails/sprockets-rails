@@ -5,18 +5,6 @@ require 'active_support/core_ext/class/attribute'
 module Sprockets
   module Rails
     module Helper
-      # Internal: Generate a Set of all precompiled assets.
-      def find_precompiled_assets
-        return to_enum(__method__) unless block_given?
-        return unless assets_environment
-
-        assets_manifest.filter_logical_paths(assets_precompile || []).each do |_, filename|
-          assets_environment.find_all_linked_assets(filename) do |asset|
-            yield asset
-          end
-        end
-      end
-
       class AssetNotPrecompiled < StandardError
         def initialize(source)
           msg = "Asset was not declared to be precompiled in production.\n" +
@@ -92,7 +80,7 @@ module Sprockets
         if environment = assets_environment
           if asset = environment[path]
             unless options[:debug]
-              if !find_precompiled_assets.include?(asset)
+              if !precompiled_assets.include?(asset)
                 raise AssetNotPrecompiled.new(asset.logical_path)
               end
             end
@@ -163,12 +151,17 @@ module Sprockets
           end
 
           if asset = env[path]
-            if !find_precompiled_assets.include?(asset)
+            if !precompiled_assets.include?(asset)
               raise AssetNotPrecompiled.new(asset.logical_path)
             end
           end
 
           asset
+        end
+
+        # Internal: Generate a Set of all precompiled assets.
+        def precompiled_assets
+          @precompiled_assets ||= Set.new(assets_manifest.find(assets_precompile || []))
         end
     end
   end
