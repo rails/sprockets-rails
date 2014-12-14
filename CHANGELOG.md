@@ -14,7 +14,7 @@
 
     *Johnny Shields*
 
-### 2.3.0
+### 2.2.2
 
 *   Expose Rails.application.assets_manifest
 
