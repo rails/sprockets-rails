@@ -5,6 +5,7 @@ require 'sprockets'
 require 'sprockets/rails/helper'
 
 Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
+ActiveSupport::TestCase.test_order = :random if ActiveSupport::TestCase.respond_to?(:test_order=)
 
 class HelperTest < ActionView::TestCase
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
