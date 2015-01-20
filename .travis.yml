@@ -1,7 +1,5 @@
 language: ruby
-
 cache: bundler
-
 sudo: false
 
 rvm:
@@ -12,15 +10,21 @@ rvm:
 
 gemfile:
   - Gemfile
+  - test/gemfiles/Gemfile.rails-3.0.x
   - test/gemfiles/Gemfile.rails-4.0.x
   - test/gemfiles/Gemfile.rails-4.1.x
   - test/gemfiles/Gemfile.rails-4.2.x
+  - test/gemfiles/Gemfile.rails-5.0.x
 
 matrix:
   exclude:
     - gemfile: Gemfile
       rvm: 1.9.3
     - gemfile: Gemfile
+      rvm: 2.0.0
+    - gemfile: test/gemfiles/Gemfile.rails-5.0.x
+      rvm: 1.9.3
+    - gemfile: test/gemfiles/Gemfile.rails-5.0.x
       rvm: 2.0.0
 
 notifications:
