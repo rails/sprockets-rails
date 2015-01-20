@@ -32,6 +32,8 @@ matrix:
       rvm: 1.8.7
     - gemfile: test/gemfiles/Gemfile.rails-4.2.x
       rvm: 1.8.7
+    - gemfile: test/gemfiles/Gemfile.rails-5.0.x
+      rvm: 1.8.7
     - gemfile: test/gemfiles/Gemfile.sprockets-2.11.x
       rvm: 1.8.7
     - gemfile: test/gemfiles/Gemfile.sprockets-2.12.x
@@ -49,6 +51,8 @@ matrix:
     - gemfile: test/gemfiles/Gemfile.rails-4.1.x
       env: LEGACY=true
     - gemfile: test/gemfiles/Gemfile.rails-4.2.x
+      env: LEGACY=true
+    - gemfile: test/gemfiles/Gemfile.rails-5.0.x
       env: LEGACY=true
     - gemfile: test/gemfiles/Gemfile.sprockets-2.11.x
       env: LEGACY=true
