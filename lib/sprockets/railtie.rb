@@ -40,16 +40,11 @@ module Rails
     # Skip defining append_assets_path on Rails <= 4.2
     unless initializers.find { |init| init.name == :append_assets_path }
       initializer :append_assets_path, :group => :all do |app|
-        if paths["app/assets"].respond_to?(:existent_directories)
-          app.config.assets.paths.unshift(*paths["vendor/assets"].existent_directories)
-          app.config.assets.paths.unshift(*paths["lib/assets"].existent_directories)
-          app.config.assets.paths.unshift(*paths["app/assets"].existent_directories)
-        else
-          app.config.assets.paths.unshift(*paths["vendor/assets"].paths.select { |d| File.directory?(d) })
-          app.config.assets.paths.unshift(*paths["lib/assets"].paths.select { |d| File.directory?(d) })
-          app.config.assets.paths.unshift(*paths["app/assets"].paths.select { |d| File.directory?(d) })
-        end
+        app.config.assets.paths.unshift(*paths["vendor/assets"].existent_directories)
+        app.config.assets.paths.unshift(*paths["lib/assets"].existent_directories)
+        app.config.assets.paths.unshift(*paths["app/assets"].existent_directories)
       end
+     end
     end
   end
 end
