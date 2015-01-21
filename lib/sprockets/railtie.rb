@@ -44,7 +44,6 @@ module Rails
         app.config.assets.paths.unshift(*paths["lib/assets"].existent_directories)
         app.config.assets.paths.unshift(*paths["app/assets"].existent_directories)
       end
-     end
     end
   end
 end
