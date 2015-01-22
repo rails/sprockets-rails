@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
 gemspec
 
-gem 'actionpack', :github => 'rails/rails', branch: 'master'
-gem 'railties', :github => 'rails/rails', branch: 'master'
+gem 'actionpack', :github => 'josh/rails', branch: 'railties-remove-config-assets'
+gem 'railties', :github => 'josh/rails', branch: 'railties-remove-config-assets'
