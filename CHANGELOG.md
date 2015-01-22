@@ -1,3 +1,5 @@
+*   Restricted default precompile to root app's own app/assets directory.
+
 *   `config.assets.raise_runtime_errors` is always enabled. The option can be
     removed from `config/environments/development.rb`.
 
