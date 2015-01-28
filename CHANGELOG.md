@@ -16,6 +16,23 @@
 
     *Johnny Shields*
 
+### 2.2.4
+
+*   Still automatically recompile other app/assets paths for compatibility
+
+    *Joshua Peek*
+
+### 2.2.3
+
+*Joshua Peek*
+
+*   Enhancement: Many, various improvements to tests
+    including test support for rails 4.2, 5.0
+*   Fix: Ensure $root/app/assets
+*   Fix: logical_path reference
+*   Fix: Define append_assets_path unless it exists
+*   Fix: Hack for old rails without existent_directories
+
 ### 2.2.2
 
 *   Expose Rails.application.assets_manifest
