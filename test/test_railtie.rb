@@ -76,7 +76,7 @@ class TestRailtie < TestBoot
     assert_equal File.join(ROOT, "public/assets"), manifest.dir
   end
 
-  def test_app_asset_available_when_no_compile
+  def test_app_asset_not_available_when_no_compile
     app.configure do
       config.assets.compile = false
     end
@@ -85,7 +85,7 @@ class TestRailtie < TestBoot
 
     app.initialize!
 
-    assert app.assets
+    refute app.assets
   end
 
   def test_app_asset_manifest_available_when_no_compile
