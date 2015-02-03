@@ -20,17 +20,7 @@ module Rails
     remove_possible_method :assets=
 
     # Returns Sprockets::Environment for app config.
-    def assets
-      @assets ||= Sprockets::Environment.new(root.to_s) do |env|
-        env.version = ::Rails.env
-        env.cache = Sprockets::Cache::FileStore.new("#{root}/tmp/cache")
-
-        env.context_class.class_eval do
-          include ::Sprockets::Rails::Context
-        end
-      end
-    end
-    attr_writer :assets
+    attr_accessor :assets
 
     # Returns Sprockets::Manifest for app config.
     attr_accessor :assets_manifest
@@ -77,31 +67,41 @@ module Sprockets
       Sprockets::Rails::Task.new(app)
     end
 
-    config.after_initialize do |app|
+    def self.build_environment(app)
       config = app.config
+      env = Sprockets::Environment.new(app.root.to_s)
+
+      # Copy config.assets.paths to Sprockets
+      config.assets.paths.each do |path|
+        env.append_path path
+      end
+
+      env.js_compressor  = config.assets.js_compressor
+      env.css_compressor = config.assets.css_compressor
+
+      env.context_class.class_eval do
+        include ::Sprockets::Rails::Context
+        self.assets_prefix = config.assets.prefix
+        self.digest_assets = config.assets.digest
+        self.config        = config.action_controller
+      end
 
       # Configuration options that should invalidate
       # the Sprockets cache when changed.
-      app.assets.version = [
+      env.version = [
         ::Rails.env,
-        app.assets.version,
+        ::Rails.env, # TODO: Remove duplicate key
         config.assets.version,
         config.action_controller.relative_url_root,
         (config.action_controller.asset_host unless config.action_controller.asset_host.respond_to?(:call)),
         Sprockets::Rails::VERSION
       ].compact.join('-')
 
-      # Copy config.assets.paths to Sprockets
-      config.assets.paths.each do |path|
-        app.assets.append_path path
-      end
-
-      app.assets.js_compressor  = config.assets.js_compressor
-      app.assets.css_compressor = config.assets.css_compressor
+      env.cache = Sprockets::Cache::FileStore.new("#{app.root}/tmp/cache")
 
       # Run app.assets.configure blocks
       config.assets._blocks.each do |block|
-        block.call app.assets
+        block.call(env)
       end
 
       # No more configuration changes at this point.
@@ -109,15 +109,28 @@ module Sprockets
       # change. Preferable in production when the FS only changes on
       # deploys when the app restarts.
       if config.cache_classes
-        app.assets = app.assets.cached
+        env = env.cached
       end
 
-      manifest_assets_path = File.join(config.paths['public'].first, config.assets.prefix)
+      env
+    end
+
+    def self.build_manifest(app)
+      config = app.config
+      path = File.join(config.paths['public'].first, config.assets.prefix)
+      Sprockets::Manifest.new(app.assets, path, config.assets.manifest)
+    end
+
+    config.after_initialize do |app|
+      config = app.config
+
       if config.assets.compile
-        app.assets_manifest = Sprockets::Manifest.new(app.assets, manifest_assets_path, config.assets.manifest)
-      else
-        app.assets_manifest = Sprockets::Manifest.new(manifest_assets_path, config.assets.manifest)
+        app.assets = self.build_environment(app)
+        app.routes.prepend do
+          mount app.assets => config.assets.prefix
+        end
       end
+      app.assets_manifest = build_manifest(app)
 
       ActiveSupport.on_load(:action_view) do
         include Sprockets::Rails::Helper
@@ -128,20 +141,8 @@ module Sprockets
         self.assets_prefix     = config.assets.prefix
         self.assets_precompile = config.assets.precompile
 
-        # Copy over to Sprockets as well
-        context = app.assets.context_class
-        context.assets_prefix = config.assets.prefix
-        context.digest_assets = config.assets.digest
-        context.config        = config.action_controller
-
-        self.assets_environment = app.assets if config.assets.compile
+        self.assets_environment = app.assets
         self.assets_manifest = app.assets_manifest
-      end
-
-      if config.assets.compile
-        app.routes.prepend do
-          mount app.assets => config.assets.prefix
-        end
       end
     end
   end
