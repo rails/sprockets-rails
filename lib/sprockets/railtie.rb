@@ -2,6 +2,7 @@ require 'rails'
 require 'rails/railtie'
 require 'action_controller/railtie'
 require 'active_support/core_ext/module/remove_method'
+require 'active_support/core_ext/numeric/bytes'
 require 'sprockets'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
@@ -52,15 +53,16 @@ module Sprockets
     end
 
     config.assets = OrderedOptions.new
-    config.assets._blocks    = []
-    config.assets.paths      = []
-    config.assets.prefix     = "/assets"
-    config.assets.manifest   = nil
-    config.assets.precompile = [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
-    config.assets.version    = ""
-    config.assets.debug      = false
-    config.assets.compile    = true
-    config.assets.digest     = false
+    config.assets._blocks     = []
+    config.assets.paths       = []
+    config.assets.prefix      = "/assets"
+    config.assets.manifest    = nil
+    config.assets.precompile  = [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
+    config.assets.version     = ""
+    config.assets.debug       = false
+    config.assets.compile     = true
+    config.assets.digest      = false
+    config.assets.cache_limit = 50.megabytes
 
     rake_tasks do |app|
       require 'sprockets/rails/task'
@@ -97,7 +99,7 @@ module Sprockets
         Sprockets::Rails::VERSION
       ].compact.join('-')
 
-      env.cache = Sprockets::Cache::FileStore.new("#{app.root}/tmp/cache")
+      env.cache = Sprockets::Cache::FileStore.new("#{app.root}/tmp/cache", config.assets.cache_limit, env.logger)
 
       # Run app.assets.configure blocks
       config.assets._blocks.each do |block|
