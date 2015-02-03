@@ -61,7 +61,7 @@ module Sprockets
     config.assets.version     = ""
     config.assets.debug       = false
     config.assets.compile     = true
-    config.assets.digest      = false
+    config.assets.digest      = true
     config.assets.cache_limit = 50.megabytes
 
     rake_tasks do |app|
