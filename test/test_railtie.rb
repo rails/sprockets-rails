@@ -264,4 +264,15 @@ class TestRailtie < TestBoot
     assert_match %r{test_public/assets/manifest-.*\.json$}, manifest.path
     assert_match %r{test_public/assets$}, manifest.dir
   end
+
+  def test_load_tasks
+    app.initialize!
+
+    app.load_tasks
+
+    assert Rake.application['assets:environment']
+    assert Rake.application['assets:precompile']
+    assert Rake.application['assets:clean']
+    assert Rake.application['assets:clobber']
+  end
 end
