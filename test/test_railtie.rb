@@ -308,4 +308,31 @@ class TestRailtie < TestBoot
     end
     refute File.exist?(path)
   end
+
+  def test_task_precompile_compile_false
+    app.configure do
+      config.assets.compile = false
+      config.assets.paths << FIXTURES_PATH
+      config.assets.precompile += ["foo.js"]
+    end
+    app.initialize!
+    app.load_tasks
+
+    path = "#{app.assets_manifest.dir}/foo-4ef5541f349f7ed5a0d6b71f2fa4c82745ca106ae02f212aea5129726ac6f6ab.js"
+
+    silence_stderr do
+      Rake.application['assets:clobber'].execute
+    end
+    refute File.exist?(path)
+
+    silence_stderr do
+      Rake.application['assets:precompile'].execute
+    end
+    assert File.exist?(path)
+
+    silence_stderr do
+      Rake.application['assets:clobber'].execute
+    end
+    refute File.exist?(path)
+  end
 end

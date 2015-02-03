@@ -16,7 +16,9 @@ module Sprockets
 
       def environment
         if app
-          app.assets
+          # Use initialized app.assets or force build an environment if
+          # config.assets.compile is disabled
+          app.assets || Sprockets::Railtie.build_environment(app)
         else
           super
         end
