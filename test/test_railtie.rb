@@ -291,20 +291,21 @@ class TestRailtie < TestBoot
     app.initialize!
     app.load_tasks
 
-    digest_path = app.assets['foo.js'].digest_path
+    path = "#{app.assets_manifest.dir}/foo-4ef5541f349f7ed5a0d6b71f2fa4c82745ca106ae02f212aea5129726ac6f6ab.js"
+
     silence_stderr do
       Rake.application['assets:clobber'].execute
     end
-    refute File.exist?("#{app.assets_manifest.dir}/#{digest_path}")
+    refute File.exist?(path)
 
     silence_stderr do
       Rake.application['assets:precompile'].execute
     end
-    assert File.exist?("#{app.assets_manifest.dir}/#{digest_path}")
+    assert File.exist?(path)
 
     silence_stderr do
       Rake.application['assets:clobber'].execute
     end
-    refute File.exist?("#{app.assets_manifest.dir}/#{digest_path}")
+    refute File.exist?(path)
   end
 end
