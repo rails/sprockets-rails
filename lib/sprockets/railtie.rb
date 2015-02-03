@@ -92,7 +92,6 @@ module Sprockets
       # the Sprockets cache when changed.
       env.version = [
         ::Rails.env,
-        ::Rails.env, # TODO: Remove duplicate key
         config.assets.version,
         config.action_controller.relative_url_root,
         (config.action_controller.asset_host unless config.action_controller.asset_host.respond_to?(:call)),
