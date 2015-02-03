@@ -1,8 +1,16 @@
-require 'minitest/autorun'
 require 'active_support'
 require 'active_support/testing/isolation'
+require 'minitest/autorun'
 
 Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
+
+def silence_stderr
+  orig_stderr = $stderr.clone
+  $stderr.reopen File.new('/dev/null', 'w')
+  yield
+ensure
+  $stderr.reopen orig_stderr
+end
 
 class TestBoot < Minitest::Test
   include ActiveSupport::Testing::Isolation
@@ -267,12 +275,36 @@ class TestRailtie < TestBoot
 
   def test_load_tasks
     app.initialize!
-
     app.load_tasks
 
     assert Rake.application['assets:environment']
     assert Rake.application['assets:precompile']
     assert Rake.application['assets:clean']
     assert Rake.application['assets:clobber']
+  end
+
+  def test_task_precompile
+    app.configure do
+      config.assets.paths << FIXTURES_PATH
+      config.assets.precompile += ["foo.js"]
+    end
+    app.initialize!
+    app.load_tasks
+
+    digest_path = app.assets['foo.js'].digest_path
+    silence_stderr do
+      Rake.application['assets:clobber'].execute
+    end
+    refute File.exist?("#{app.assets_manifest.dir}/#{digest_path}")
+
+    silence_stderr do
+      Rake.application['assets:precompile'].execute
+    end
+    assert File.exist?("#{app.assets_manifest.dir}/#{digest_path}")
+
+    silence_stderr do
+      Rake.application['assets:clobber'].execute
+    end
+    refute File.exist?("#{app.assets_manifest.dir}/#{digest_path}")
   end
 end
