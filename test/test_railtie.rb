@@ -335,4 +335,19 @@ class TestRailtie < TestBoot
     end
     refute File.exist?(path)
   end
+
+  def test_direct_build_environment_call
+    app.configure do
+      config.assets.paths << "javascripts"
+      config.assets.paths << "stylesheets"
+    end
+    app.initialize!
+
+    assert env = Sprockets::Railtie.build_environment(app)
+    assert_kind_of Sprockets::Environment, env
+
+    assert_equal ROOT, env.root
+    assert_equal ["#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
+      env.paths.sort
+  end
 end
