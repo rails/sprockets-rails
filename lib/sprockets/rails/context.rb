@@ -14,6 +14,8 @@ module Sprockets
       end
 
       def compute_asset_path(path, options = {})
+        @dependencies << 'actioncontroller-asset-url-config'
+
         begin
           asset_uri = resolve(path, compat: false)
         rescue FileNotFound
@@ -31,5 +33,11 @@ module Sprockets
         end
       end
     end
+  end
+
+  register_dependency_resolver 'actioncontroller-asset-url-config' do |env|
+    config = env.context_class.config
+    [config.relative_url_root,
+    (config.asset_host unless config.asset_host.respond_to?(:call))]
   end
 end

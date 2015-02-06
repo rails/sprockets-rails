@@ -88,16 +88,15 @@ module Sprockets
       )
     end
 
+    Sprockets.register_dependency_resolver 'rails-env' do
+      ::Rails.env
+    end
     config.assets.configure do |env|
-      # Configuration options that should invalidate
-      # the Sprockets cache when changed.
-      env.version = [
-        ::Rails.env,
-        config.assets.version,
-        config.action_controller.relative_url_root,
-        (config.action_controller.asset_host unless config.action_controller.asset_host.respond_to?(:call)),
-        Sprockets::Rails::VERSION
-      ].compact.join('-')
+      env.depend_on 'environment-version'
+    end
+
+    config.assets.configure do |env|
+      env.version = config.assets.version
     end
 
     rake_tasks do |app|
