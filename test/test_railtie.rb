@@ -1,8 +1,16 @@
-require 'minitest/autorun'
 require 'active_support'
 require 'active_support/testing/isolation'
+require 'minitest/autorun'
 
 Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
+
+def silence_stderr
+  orig_stderr = $stderr.clone
+  $stderr.reopen File.new('/dev/null', 'w')
+  yield
+ensure
+  $stderr.reopen orig_stderr
+end
 
 class TestBoot < Minitest::Test
   include ActiveSupport::Testing::Isolation
@@ -263,5 +271,83 @@ class TestRailtie < TestBoot
     assert manifest = app.assets_manifest
     assert_match %r{test_public/assets/manifest-.*\.json$}, manifest.path
     assert_match %r{test_public/assets$}, manifest.dir
+  end
+
+  def test_load_tasks
+    app.initialize!
+    app.load_tasks
+
+    assert Rake.application['assets:environment']
+    assert Rake.application['assets:precompile']
+    assert Rake.application['assets:clean']
+    assert Rake.application['assets:clobber']
+  end
+
+  def test_task_precompile
+    app.configure do
+      config.assets.paths << FIXTURES_PATH
+      config.assets.precompile += ["foo.js"]
+    end
+    app.initialize!
+    app.load_tasks
+
+    path = "#{app.assets_manifest.dir}/foo-4ef5541f349f7ed5a0d6b71f2fa4c82745ca106ae02f212aea5129726ac6f6ab.js"
+
+    silence_stderr do
+      Rake.application['assets:clobber'].execute
+    end
+    refute File.exist?(path)
+
+    silence_stderr do
+      Rake.application['assets:precompile'].execute
+    end
+    assert File.exist?(path)
+
+    silence_stderr do
+      Rake.application['assets:clobber'].execute
+    end
+    refute File.exist?(path)
+  end
+
+  def test_task_precompile_compile_false
+    app.configure do
+      config.assets.compile = false
+      config.assets.paths << FIXTURES_PATH
+      config.assets.precompile += ["foo.js"]
+    end
+    app.initialize!
+    app.load_tasks
+
+    path = "#{app.assets_manifest.dir}/foo-4ef5541f349f7ed5a0d6b71f2fa4c82745ca106ae02f212aea5129726ac6f6ab.js"
+
+    silence_stderr do
+      Rake.application['assets:clobber'].execute
+    end
+    refute File.exist?(path)
+
+    silence_stderr do
+      Rake.application['assets:precompile'].execute
+    end
+    assert File.exist?(path)
+
+    silence_stderr do
+      Rake.application['assets:clobber'].execute
+    end
+    refute File.exist?(path)
+  end
+
+  def test_direct_build_environment_call
+    app.configure do
+      config.assets.paths << "javascripts"
+      config.assets.paths << "stylesheets"
+    end
+    app.initialize!
+
+    assert env = Sprockets::Railtie.build_environment(app)
+    assert_kind_of Sprockets::Environment, env
+
+    assert_equal ROOT, env.root
+    assert_equal ["#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
+      env.paths.sort
   end
 end
