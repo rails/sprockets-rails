@@ -69,7 +69,8 @@ module Sprockets
       Sprockets::Rails::Task.new(app)
     end
 
-    def build_environment(app, initialized: app.initialized?)
+    def build_environment(app, initialized = nil)
+      initialized = app.initialized? if initialized.nil?
       unless initialized
         ::Rails.logger.warn "Application uninitialized: Try calling YourApp::Application.initialize!"
       end
@@ -130,7 +131,7 @@ module Sprockets
       config = app.config
 
       if config.assets.compile
-        app.assets = self.build_environment(app, initialized: true)
+        app.assets = self.build_environment(app, true)
         app.routes.prepend do
           mount app.assets => config.assets.prefix
         end
