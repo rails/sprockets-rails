@@ -130,12 +130,12 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
-    assert_equal Sprockets::UglifierCompressor, env.js_compressor
+    assert_equal Sprockets::UglifierCompressor.name, env.js_compressor.name
 
     silence_warnings do
       require 'sprockets/sass_compressor'
     end
-    assert_equal Sprockets::SassCompressor, env.css_compressor
+    assert_equal Sprockets::SassCompressor.name, env.css_compressor.name
   end
 
   def test_version
