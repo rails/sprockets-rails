@@ -15,7 +15,7 @@ module Sprockets
 
       def compute_asset_path(path, options = {})
         begin
-          asset_uri = locate(path)
+          asset_uri = resolve(path, compat: false)
         rescue FileNotFound
           # TODO: eh, we should be able to use a form of locate that returns
           # nil instead of raising an exception.
