@@ -64,6 +64,42 @@ module Sprockets
     config.assets.digest      = true
     config.assets.cache_limit = 50.megabytes
 
+    config.assets.configure do |env|
+      config.assets.paths.each { |path| env.append_path(path) }
+    end
+
+    config.assets.configure do |env|
+      env.js_compressor  = config.assets.js_compressor
+      env.css_compressor = config.assets.css_compressor
+    end
+
+    config.assets.configure do |env|
+      env.context_class.send :include, ::Sprockets::Rails::Context
+      env.context_class.assets_prefix = config.assets.prefix
+      env.context_class.digest_assets = config.assets.digest
+      env.context_class.config        = config.action_controller
+    end
+
+    config.assets.configure do |env|
+      env.cache = Sprockets::Cache::FileStore.new(
+        "#{env.root}/tmp/cache",
+        config.assets.cache_limit,
+        env.logger
+      )
+    end
+
+    config.assets.configure do |env|
+      # Configuration options that should invalidate
+      # the Sprockets cache when changed.
+      env.version = [
+        ::Rails.env,
+        config.assets.version,
+        config.action_controller.relative_url_root,
+        (config.action_controller.asset_host unless config.action_controller.asset_host.respond_to?(:call)),
+        Sprockets::Rails::VERSION
+      ].compact.join('-')
+    end
+
     rake_tasks do |app|
       require 'sprockets/rails/task'
       Sprockets::Rails::Task.new(app)
@@ -75,38 +111,10 @@ module Sprockets
         ::Rails.logger.warn "Application uninitialized: Try calling YourApp::Application.initialize!"
       end
 
-      config = app.config
       env = Sprockets::Environment.new(app.root.to_s)
 
-      # Copy config.assets.paths to Sprockets
-      config.assets.paths.each do |path|
-        env.append_path path
-      end
-
-      env.js_compressor  = config.assets.js_compressor
-      env.css_compressor = config.assets.css_compressor
-
-      env.context_class.class_eval do
-        include ::Sprockets::Rails::Context
-        self.assets_prefix = config.assets.prefix
-        self.digest_assets = config.assets.digest
-        self.config        = config.action_controller
-      end
-
-      # Configuration options that should invalidate
-      # the Sprockets cache when changed.
-      env.version = [
-        ::Rails.env,
-        config.assets.version,
-        config.action_controller.relative_url_root,
-        (config.action_controller.asset_host unless config.action_controller.asset_host.respond_to?(:call)),
-        Sprockets::Rails::VERSION
-      ].compact.join('-')
-
-      env.cache = Sprockets::Cache::FileStore.new("#{app.root}/tmp/cache", config.assets.cache_limit, env.logger)
-
       # Run app.assets.configure blocks
-      config.assets._blocks.each do |block|
+      app.config.assets._blocks.each do |block|
         block.call(env)
       end
 
@@ -114,7 +122,7 @@ module Sprockets
       # With cache classes on, Sprockets won't check the FS when files
       # change. Preferable in production when the FS only changes on
       # deploys when the app restarts.
-      if config.cache_classes
+      if app.config.cache_classes
         env = env.cached
       end
 
