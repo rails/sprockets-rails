@@ -28,6 +28,9 @@ class HelperTest < ActionView::TestCase
       foo.css foo.js bar.css bar.js
       file1.css file1.js file2.css file2.js
     )
+    @view.request = ActionDispatch::Request.new({
+      "rack.url_scheme" => "https"
+    })
 
     @assets.context_class.assets_prefix = @view.assets_prefix
     @assets.context_class.config        = @view.config
@@ -177,42 +180,42 @@ class RelativeHostHelperTest < HelperTest
   end
 
   def test_javascript_path
-    assert_equal "//assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
-    assert_equal "//assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
-    assert_equal "//assets.example.com/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
-    assert_equal "//assets.example.com/super/xmlhr.js", @view.javascript_path("/super/xmlhr")
+    assert_equal "https://assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
+    assert_equal "https://assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
+    assert_equal "https://assets.example.com/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
+    assert_equal "https://assets.example.com/super/xmlhr.js", @view.javascript_path("/super/xmlhr")
 
-    assert_equal "//assets.example.com/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr.js?foo=1")
-    assert_equal "//assets.example.com/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr?foo=1")
-    assert_equal "//assets.example.com/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr.js#hash")
-    assert_equal "//assets.example.com/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr#hash")
-    assert_equal "//assets.example.com/javascripts/xmlhr.js?foo=1#hash", @view.javascript_path("xmlhr.js?foo=1#hash")
+    assert_equal "https://assets.example.com/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr.js?foo=1")
+    assert_equal "https://assets.example.com/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr?foo=1")
+    assert_equal "https://assets.example.com/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr.js#hash")
+    assert_equal "https://assets.example.com/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr#hash")
+    assert_equal "https://assets.example.com/javascripts/xmlhr.js?foo=1#hash", @view.javascript_path("xmlhr.js?foo=1#hash")
 
-    assert_dom_equal %(<script src="//assets.example.com/assets/foo.js"></script>),
+    assert_dom_equal %(<script src="https://assets.example.com/assets/foo.js"></script>),
       @view.javascript_include_tag("foo")
-    assert_dom_equal %(<script src="//assets.example.com/assets/foo.js"></script>),
+    assert_dom_equal %(<script src="https://assets.example.com/assets/foo.js"></script>),
       @view.javascript_include_tag("foo.js")
-    assert_dom_equal %(<script src="//assets.example.com/assets/foo.js"></script>),
+    assert_dom_equal %(<script src="https://assets.example.com/assets/foo.js"></script>),
       @view.javascript_include_tag(:foo)
   end
 
   def test_stylesheet_path
-    assert_equal "//assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank")
-    assert_equal "//assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank.css")
-    assert_equal "//assets.example.com/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
-    assert_equal "//assets.example.com/subdir/subdir.css", @view.stylesheet_path("/subdir/subdir.css")
+    assert_equal "https://assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank")
+    assert_equal "https://assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank.css")
+    assert_equal "https://assets.example.com/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
+    assert_equal "https://assets.example.com/subdir/subdir.css", @view.stylesheet_path("/subdir/subdir.css")
 
-    assert_equal "//assets.example.com/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank.css?foo=1")
-    assert_equal "//assets.example.com/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank?foo=1")
-    assert_equal "//assets.example.com/stylesheets/bank.css#hash", @view.stylesheet_path("bank.css#hash")
-    assert_equal "//assets.example.com/stylesheets/bank.css#hash", @view.stylesheet_path("bank#hash")
-    assert_equal "//assets.example.com/stylesheets/bank.css?foo=1#hash", @view.stylesheet_path("bank.css?foo=1#hash")
+    assert_equal "https://assets.example.com/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank.css?foo=1")
+    assert_equal "https://assets.example.com/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank?foo=1")
+    assert_equal "https://assets.example.com/stylesheets/bank.css#hash", @view.stylesheet_path("bank.css#hash")
+    assert_equal "https://assets.example.com/stylesheets/bank.css#hash", @view.stylesheet_path("bank#hash")
+    assert_equal "https://assets.example.com/stylesheets/bank.css?foo=1#hash", @view.stylesheet_path("bank.css?foo=1#hash")
 
-    assert_dom_equal %(<link href="//assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="https://assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag("foo")
-    assert_dom_equal %(<link href="//assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="https://assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag("foo.css")
-    assert_dom_equal %(<link href="//assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="https://assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
   end
 
