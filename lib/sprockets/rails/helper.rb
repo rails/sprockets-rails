@@ -89,11 +89,44 @@ module Sprockets
         end
       end
 
+      # Experimental: Get integrity for asset path.
+      #
+      # path    - String path
+      # options - Hash options
+      #
+      # Returns String integrity attribute or nil if no asset was found.
+      def asset_integrity(path, options = {})
+        path = path.to_s
+        if extname = compute_asset_extname(path, options)
+          path = "#{path}#{extname}"
+        end
+
+        if manifest = assets_manifest
+          if digest_path = manifest.assets[path]
+            if metadata = manifest.files[digest_path]
+              return metadata["integrity"]
+            end
+          end
+        end
+
+        if environment = assets_environment
+          if asset = environment[path]
+            return asset.integrity
+          end
+        end
+
+        nil
+      end
+
       # Override javascript tag helper to provide debugging support.
       #
       # Eventually will be deprecated and replaced by source maps.
       def javascript_include_tag(*sources)
         options = sources.extract_options!.stringify_keys
+
+        if options["integrity"] == true
+          compute_integrity = options.delete("integrity")
+        end
 
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
@@ -106,8 +139,11 @@ module Sprockets
             end
           }.flatten.uniq.join("\n").html_safe
         else
-          sources.push(options)
-          super(*sources)
+          sources.map { |source|
+            super(source, compute_integrity ?
+              options.merge("integrity" => asset_integrity(source, :type => :javascript)) :
+              options)
+          }.join("\n").html_safe
         end
       end
 
@@ -116,6 +152,11 @@ module Sprockets
       # Eventually will be deprecated and replaced by source maps.
       def stylesheet_link_tag(*sources)
         options = sources.extract_options!.stringify_keys
+
+        if options["integrity"] == true
+          compute_integrity = options.delete("integrity")
+        end
+
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
             if asset = lookup_asset_for_path(source, :type => :stylesheet)
@@ -127,8 +168,11 @@ module Sprockets
             end
           }.flatten.uniq.join("\n").html_safe
         else
-          sources.push(options)
-          super(*sources)
+          sources.map { |source|
+            super(source, compute_integrity ?
+              options.merge("integrity" => asset_integrity(source, :type => :stylesheet)) :
+              options)
+          }.join("\n").html_safe
         end
       end
 

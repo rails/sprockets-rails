@@ -49,6 +49,11 @@ class HelperTest < ActionView::TestCase
   def test_truth
   end
 
+  def test_foo_and_bar_different_digests
+    refute_equal @foo_js_digest, @bar_js_digest
+    refute_equal @foo_css_digest, @bar_css_digest
+  end
+
   def assert_servable_asset_url(url)
     path, query = url.split("?", 2)
     path = path.sub(@view.assets_prefix, "")
@@ -113,6 +118,22 @@ class NoHostHelperTest < HelperTest
       @view.stylesheet_link_tag("print", :media => "print")
     assert_dom_equal %(<link href="/stylesheets/print.css" media="&lt;hax&gt;" rel="stylesheet" />),
       @view.stylesheet_link_tag("print", :media => "<hax>")
+  end
+
+  def test_javascript_include_tag_integrity
+    assert_dom_equal %(<script src="/javascripts/static.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>),
+      @view.javascript_include_tag("static", integrity: "ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript")
+
+    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+      @view.javascript_include_tag("static", integrity: true)
+  end
+
+  def test_stylesheet_link_tag_integrity
+    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" integrity="ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css" />),
+      @view.stylesheet_link_tag("static", integrity: "ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css")
+
+    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("static", integrity: true)
   end
 
   def test_javascript_path
@@ -266,6 +287,9 @@ class DigestHelperTest < NoHostHelperTest
     assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js"></script>),
       @view.javascript_include_tag(:foo)
 
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js"></script>\n<script src="/assets/bar-#{@bar_js_digest}.js"></script>),
+      @view.javascript_include_tag(:foo, :bar)
+
     assert_servable_asset_url "/assets/foo-#{@foo_js_digest}.js"
   end
 
@@ -279,7 +303,38 @@ class DigestHelperTest < NoHostHelperTest
     assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
 
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />\n<link href="/assets/bar-#{@bar_css_digest}.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag(:foo, :bar)
+
     assert_servable_asset_url "/assets/foo-#{@foo_css_digest}.css"
+  end
+
+  def test_javascript_include_tag_integrity
+    super
+
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>),
+      @view.javascript_include_tag("foo", integrity: true)
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>),
+      @view.javascript_include_tag("foo.js", integrity: true)
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>),
+      @view.javascript_include_tag(:foo, integrity: true)
+
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>\n<script src="/assets/bar-#{@bar_js_digest}.js" integrity="ni:///sha-256;g0JYFeYSYGXe376R0JrRzS6CpYpC1HiqtwBsVt_XAWU?ct=application/javascript"></script>),
+      @view.javascript_include_tag(:foo, :bar, integrity: true)
+  end
+
+  def test_stylesheet_link_tag_integrity
+    super
+
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css" />),
+      @view.stylesheet_link_tag("foo", integrity: true)
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css" />),
+      @view.stylesheet_link_tag("foo.css", integrity: true)
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css" />),
+      @view.stylesheet_link_tag(:foo, integrity: true)
+
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css" />\n<link href="/assets/bar-#{@bar_css_digest}.css" media="screen" rel="stylesheet" integrity="ni:///sha-256;Vd370-VAW4D96CVpZcjFLXyeHoagI0VHwofmzRXetuE?ct=text/css" />),
+      @view.stylesheet_link_tag(:foo, :bar, integrity: true)
   end
 
   def test_javascript_path
@@ -437,6 +492,13 @@ class ManifestHelperTest < NoHostHelperTest
     @manifest.assets["foo.js"] = "foo-#{@foo_js_digest}.js"
     @manifest.assets["foo.css"] = "foo-#{@foo_css_digest}.css"
 
+    @manifest.files["foo-#{@foo_js_digest}.js"] = {
+      "integrity" => "ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"
+    }
+    @manifest.files["foo-#{@foo_css_digest}.css"] = {
+      "integrity" => "ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css"
+    }
+
     @view.digest_assets = true
     @view.assets_environment = nil
     @view.assets_manifest = @manifest
@@ -462,6 +524,28 @@ class ManifestHelperTest < NoHostHelperTest
       @view.stylesheet_link_tag("foo.css")
     assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
+  end
+
+  def test_javascript_include_tag_integrity
+    super
+
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>),
+      @view.javascript_include_tag("foo", integrity: true)
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>),
+      @view.javascript_include_tag("foo.js", integrity: true)
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>),
+      @view.javascript_include_tag(:foo, integrity: true)
+  end
+
+  def test_stylesheet_link_tag_integrity
+    super
+
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css" />),
+      @view.stylesheet_link_tag("foo", integrity: true)
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css" />),
+      @view.stylesheet_link_tag("foo.css", integrity: true)
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css" />),
+      @view.stylesheet_link_tag(:foo, integrity: true)
   end
 
   def test_javascript_path
@@ -491,6 +575,12 @@ class DebugManifestHelperTest < ManifestHelperTest
     super
 
     @view.debug_assets = true
+  end
+
+  def test_javascript_include_tag_integrity
+  end
+
+  def test_stylesheet_link_tag_integrity
   end
 end
 

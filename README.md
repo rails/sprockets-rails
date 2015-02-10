@@ -128,6 +128,17 @@ The following plugins provide some extras for the Sprockets Asset Pipeline.
 * `config.assets.manifest` (if used) must now include the manifest filename, e.g. `Rails.root.join('config/manifest.json')`. It cannot be a directory.
 * Two cleanup tasks. `rake assets:clean` is now a safe cleanup that only removes older assets that are no longer used. While `rake assets:clobber` nukes the entire `public/assets` directory and clears your filesystem cache. The clean task allows for rolling deploys that may still be linking to an old asset while the new assets are being built.
 
+## Experimental
+
+### [SRI](http://www.w3.org/TR/SRI/) support
+
+Sprockets 3.x adds experimental support for subresource integrity checks. The spec is still evolving and the API may change in backwards incompatible ways.
+
+``` ruby
+javascript_include_tag :application, integrity: true
+# => "<script src="/assets/application.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>"
+```
+
 
 ## Contributing
 
