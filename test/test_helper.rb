@@ -126,6 +126,10 @@ class NoHostHelperTest < HelperTest
 
     assert_dom_equal %(<script src="/javascripts/static.js"></script>),
       @view.javascript_include_tag("static", integrity: true)
+    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+      @view.javascript_include_tag("static", integrity: false)
+    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+      @view.javascript_include_tag("static", integrity: nil)
   end
 
   def test_stylesheet_link_tag_integrity
@@ -134,6 +138,8 @@ class NoHostHelperTest < HelperTest
 
     assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag("static", integrity: true)
+    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("static", integrity: false)
   end
 
   def test_javascript_path
@@ -312,6 +318,11 @@ class DigestHelperTest < NoHostHelperTest
   def test_javascript_include_tag_integrity
     super
 
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js"></script>),
+      @view.javascript_include_tag("foo", integrity: false)
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js"></script>),
+      @view.javascript_include_tag("foo", integrity: nil)
+
     assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>),
       @view.javascript_include_tag("foo", integrity: true)
     assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>),
@@ -325,6 +336,11 @@ class DigestHelperTest < NoHostHelperTest
 
   def test_stylesheet_link_tag_integrity
     super
+
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("foo", integrity: false)
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("foo", integrity: nil)
 
     assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="ni:///sha-256;5YzTQPuOJz_EpeXfN_-v1sxsjAj_dw8q26abiHZM3A4?ct=text/css" />),
       @view.stylesheet_link_tag("foo", integrity: true)

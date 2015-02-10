@@ -124,8 +124,11 @@ module Sprockets
       def javascript_include_tag(*sources)
         options = sources.extract_options!.stringify_keys
 
-        if options["integrity"] == true
+        case options["integrity"]
+        when true
           compute_integrity = options.delete("integrity")
+        when false, nil
+          options.delete("integrity")
         end
 
         if options["debug"] != false && request_debug_assets?
@@ -153,8 +156,11 @@ module Sprockets
       def stylesheet_link_tag(*sources)
         options = sources.extract_options!.stringify_keys
 
-        if options["integrity"] == true
+        case options["integrity"]
+        when true
           compute_integrity = options.delete("integrity")
+        when false, nil
+          options.delete("integrity")
         end
 
         if options["debug"] != false && request_debug_assets?
