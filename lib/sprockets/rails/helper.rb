@@ -219,7 +219,24 @@ module Sprockets
 
         # Internal: Generate a Set of all precompiled assets.
         def precompiled_assets
-          @precompiled_assets ||= Set.new(assets_manifest.find(assets_precompile || []))
+          @precompiled_assets ||= begin
+            assets = Set.new
+
+            filters = (assets_precompile || []).map { |f|
+              Sprockets::Manifest.compile_match_filter(f)
+            }
+
+            env = assets_environment
+            env.logical_paths do |logical_path, filename|
+              if filters.any? { |f| f.call(logical_path, filename) }
+                env.find_all_linked_assets(filename) do |asset|
+                  assets << asset
+                end
+              end
+            end
+
+            assets
+          end
         end
     end
   end
