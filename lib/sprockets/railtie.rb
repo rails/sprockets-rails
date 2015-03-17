@@ -58,7 +58,8 @@ end
 module Sprockets
   class Railtie < ::Rails::Railtie
     LOOSE_APP_ASSETS = lambda do |filename, path|
-      path =~ /app\/assets/ && !%w(.js .css).include?(File.extname(filename))
+      extname = File.extname(filename)
+      !extname.empty? && path =~ /app\/assets/ && !%w(.js .css).include?(extname)
     end
 
     class OrderedOptions < ActiveSupport::OrderedOptions
