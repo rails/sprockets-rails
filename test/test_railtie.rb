@@ -243,7 +243,7 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert manifest = app.assets_manifest
-    assert_match %r{test_public/assets/manifest-.*\.json$}, manifest.path
+    assert_match %r{test_public/assets/\.sprockets-manifest-.*\.json$}, manifest.path
     assert_match %r{test_public/assets$}, manifest.dir
   end
 
