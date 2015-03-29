@@ -76,7 +76,7 @@ class TestTask < Minitest::Test
     @rake['assets:precompile'].invoke
 
     assert @environment_ran
-    assert Dir["#{@dir}/manifest-*.json"].first
+    assert Dir["#{@dir}/.sprockets-manifest-*.json"].first
     assert File.exist?("#{@dir}/#{digest_path}")
   end
 
