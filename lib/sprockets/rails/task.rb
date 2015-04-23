@@ -7,6 +7,9 @@ require 'action_view/base'
 module Sprockets
   module Rails
     class Task < Rake::SprocketsTask
+      class MissingParamsError < StandardError; end
+      class MissingFileError < StandardError; end
+
       attr_accessor :app
 
       def initialize(app = nil)
@@ -49,6 +52,16 @@ module Sprockets
         end
       end
 
+      def generate_nondigests(files)
+        files.each do |file|
+          digest_file = manifest.assets[file]
+          raise MissingFileError.new("#{file} does not exists. Maybe you didn't run assets:precompile yet?") unless digest_file
+
+          path = manifest.directory
+          FileUtils.cp("#{path}/#{digest_file}", "#{path}/#{file}")
+        end
+      end
+
       def define
         namespace :assets do
           %w( environment precompile clean clobber ).each do |task|
@@ -66,6 +79,16 @@ module Sprockets
           task :precompile => :environment do
             with_logger do
               manifest.compile(assets)
+            end
+          end
+
+          desc "Compile non-digest files"
+          task :generate_nondigest => :environment do |t, args|
+            files = args.extras
+            raise MissingParamsError.new("You must pass the files you want to generate nondigests (e.g. rake 'assets:generate_nondigests[file1.js, file2.js]')") if files.empty?
+
+            with_logger do
+              generate_nondigests(files)
             end
           end
 

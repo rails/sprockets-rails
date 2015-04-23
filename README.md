@@ -29,6 +29,12 @@ Only removes old assets (keeps the most recent 3 copies) from `public/assets`. U
 
 Nuke `public/assets`.
 
+**`rake 'assets:generate_nondigests[app_sdk.js, app_sdk.css]''`**
+
+Will generate non-digest files of the files passed in the parameters of the task (`app_sdk.js` and `app_sdk.css` in the example above). Useful if you need some of your assets to be available for developers outside of your application (Javascript SDK for example).
+
+Remember that it's your responsibility to deal with cache expiration for those assets.
+
 #### Customize
 
 If the basic tasks don't do all that you need, it's straight forward to redefine them and replace them with something more specific to your app.
