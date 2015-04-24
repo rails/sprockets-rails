@@ -148,7 +148,13 @@ module Sprockets
       app.assets_manifest = build_manifest(app)
 
       ActionDispatch::Routing::RouteWrapper.class_eval do
-        include Sprockets::Rails::RouteWrapper
+        class_attribute :assets_prefix
+
+        if defined?(prepend) && ::Rails.version >= '4'
+          prepend Sprockets::Rails::RouteWrapper
+        else
+          include Sprockets::Rails::RouteWrapper
+        end
 
         self.assets_prefix = config.assets.prefix
       end
