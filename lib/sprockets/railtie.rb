@@ -6,6 +6,7 @@ require 'active_support/core_ext/numeric/bytes'
 require 'sprockets'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
+require 'sprockets/rails/route_wrapper'
 require 'sprockets/rails/version'
 
 module Rails
@@ -145,6 +146,18 @@ module Sprockets
         end
       end
       app.assets_manifest = build_manifest(app)
+
+      ActionDispatch::Routing::RouteWrapper.class_eval do
+        class_attribute :assets_prefix
+
+        if defined?(prepend) && ::Rails.version >= '4'
+          prepend Sprockets::Rails::RouteWrapper
+        else
+          include Sprockets::Rails::RouteWrapper
+        end
+
+        self.assets_prefix = config.assets.prefix
+      end
 
       ActiveSupport.on_load(:action_view) do
         include Sprockets::Rails::Helper
