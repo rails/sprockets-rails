@@ -699,4 +699,26 @@ class AutomaticDependenciesFromHelpersTest < HelperTest
     end
     assert_includes paths, "missing.css.erb"
   end
+
+  def test_asset_path_with_index_requires_exact_logical_path
+    Sprockets::Rails::Helper.raise_runtime_errors = true
+    Sprockets::Rails::Helper.precompile = ["bundle.js"]
+
+    assert @view.asset_path("bundle.js")
+
+    assert_raises(Sprockets::Rails::Helper::AssetAliasUsed) do
+      assert @view.asset_path("bundle/index.js")
+    end
+  end
+
+  def test_asset_path_with_bower_requires_exact_logical_path
+    Sprockets::Rails::Helper.raise_runtime_errors = true
+    Sprockets::Rails::Helper.precompile = ["jquery/jquery.js"]
+
+    assert @view.asset_path("jquery/jquery.js")
+
+    assert_raises(Sprockets::Rails::Helper::AssetAliasUsed) do
+      assert @view.asset_path("jquery.js")
+    end
+  end
 end
