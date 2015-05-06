@@ -2,6 +2,9 @@ language: ruby
 cache: bundler
 sudo: false
 
+# TODO: Remove this when travis stop using bundler 1.7.6
+before_install: gem install bundler
+
 rvm:
   - 1.9.3
   - 2.0.0
