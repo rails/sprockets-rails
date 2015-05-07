@@ -16,6 +16,17 @@
 
     *Johnny Shields*
 
+### 2.3.0
+
+[Compare: v2.2.4...v2.3.0](https://github.com/rails/sprockets-rails/compare/v2.2.4...v2.3.0)
+
+*   Enhancement: No longer test against ruby 1.8.7
+*   Enhancement: New manifests are under `.sprockets-manifest-*.json`, but `manifest-*.json` is still supported
+*   Fix: Prevent alias logical paths passed to asset_path (https://github.com/rails/sprockets-rails/pull/244)
+*   Fix: Various improvements to test suite
+
+    *Joshua Peek*, *Rafael Mendonça França*
+
 ### 2.2.4
 
 *   Still automatically recompile other app/assets paths for compatibility
@@ -24,14 +35,14 @@
 
 ### 2.2.3
 
-*Joshua Peek*
-
 *   Enhancement: Many, various improvements to tests
     including test support for rails 4.2, 5.0
 *   Fix: Ensure $root/app/assets
 *   Fix: logical_path reference
 *   Fix: Define append_assets_path unless it exists
 *   Fix: Hack for old rails without existent_directories
+
+    *Joshua Peek*
 
 ### 2.2.2
 
