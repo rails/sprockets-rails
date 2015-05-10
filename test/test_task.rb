@@ -159,7 +159,7 @@ class TestTask < Minitest::Test
     assert File.exist?("#{@dir}/#{digest2_path}")
     refute File.exist?("#{@dir}/#{asset2_name}")
 
-    @rake['assets:generate_nondigest'].invoke(asset1_name, asset2_name)
+    @rake['assets:generate_nondigest'].invoke("#{asset1_name} #{asset2_name}")
 
     assert @environment_ran
     assert File.exist?("#{@dir}/#{digest1_path}"), "digest file 1 not found"

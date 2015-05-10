@@ -83,9 +83,10 @@ module Sprockets
           end
 
           desc "Compile non-digest files"
-          task :generate_nondigest => :environment do |t, args|
-            files = args.extras
-            raise MissingParamsError.new("You must pass the files you want to generate nondigests (e.g. rake 'assets:generate_nondigests[file1.js, file2.js]')") if files.empty?
+          task :generate_nondigest, [:files_list] => :environment do |t, args|
+            raise MissingParamsError.new("You must pass the files you want to generate nondigests (e.g. rake assets:generate_nondigests['file1.js, file2.js'])") if args.files_list.nil?
+
+            files = args.files_list.split(' ')
 
             with_logger do
               generate_nondigests(files)
