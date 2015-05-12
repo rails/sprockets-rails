@@ -130,7 +130,7 @@ module Sprockets
 
         if environment = assets_environment
           if asset = environment[path]
-            if self.raise_runtime_errors && path != asset.logical_path
+            if self.is_a?(ActionView::Base) && self.raise_runtime_errors && path != asset.logical_path
               raise AssetAliasUsed.new(path, asset.logical_path)
             end
 
