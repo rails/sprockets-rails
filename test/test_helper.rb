@@ -700,7 +700,7 @@ class AutomaticDependenciesFromHelpersTest < HelperTest
     assert_includes paths, "missing.css.erb"
   end
 
-  if Sprockets::VERSION > "3"
+  if Sprockets::VERSION > "3.1"
     def test_asset_path_with_index_requires_exact_logical_path
       Sprockets::Rails::Helper.raise_runtime_errors = true
       Sprockets::Rails::Helper.precompile = ["bundle/index.js"]
