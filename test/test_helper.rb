@@ -703,12 +703,12 @@ class AutomaticDependenciesFromHelpersTest < HelperTest
   if Sprockets::VERSION > "3"
     def test_asset_path_with_index_requires_exact_logical_path
       Sprockets::Rails::Helper.raise_runtime_errors = true
-      Sprockets::Rails::Helper.precompile = ["bundle.js"]
+      Sprockets::Rails::Helper.precompile = ["bundle/index.js"]
 
-      assert @view.asset_path("bundle.js")
+      assert @view.asset_path("bundle/index.js")
 
       assert_raises(Sprockets::Rails::Helper::AssetAliasUsed) do
-        assert @view.asset_path("bundle/index.js")
+        assert @view.asset_path("bundle.js")
       end
     end
 
