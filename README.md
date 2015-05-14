@@ -136,7 +136,7 @@ Sprockets 3.x adds experimental support for subresource integrity checks. The sp
 
 ``` ruby
 javascript_include_tag :application, integrity: true
-# => "<script src="/assets/application.js" integrity="ni:///sha-256;TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs?ct=application/javascript"></script>"
+# => "<script src="/assets/application.js" integrity="sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs="></script>"
 ```
 
 
