@@ -15,15 +15,6 @@ module Sprockets
         end
       end
 
-      class AssetAliasUsed < StandardError
-        def initialize(actual, expected)
-          msg = "Asset was linked to from an alias rather than its exact path. " +
-                "Alias resolving may not be available in production.\n" +
-                "Use #{expected.inspect} instead of #{actual.inspect}"
-          super(msg)
-        end
-      end
-
       include ActionView::Helpers::AssetUrlHelper
       include ActionView::Helpers::AssetTagHelper
 
@@ -89,10 +80,6 @@ module Sprockets
         if environment = assets_environment
           if asset = environment[path]
             unless options[:debug]
-              if path != asset.logical_path
-                raise AssetAliasUsed.new(path, asset.logical_path)
-              end
-
               if !precompiled_assets.include?(asset)
                 raise AssetNotPrecompiled.new(asset.logical_path)
               end
