@@ -222,15 +222,23 @@ module Sprockets
           @precompiled_assets ||= begin
             assets = Set.new
 
-            filters = (assets_precompile || []).map { |f|
-              Sprockets::Manifest.compile_match_filter(f)
-            }
+            paths, filters = (assets_precompile || []).flatten.partition { |arg| Sprockets::Manifest.simple_logical_path?(arg) }
+            filters = filters.map { |arg| Sprockets::Manifest.compile_match_filter(arg) }
 
-            env = assets_environment
-            env.logical_paths do |logical_path, filename|
-              if filters.any? { |f| f.call(logical_path, filename) }
-                env.find_all_linked_assets(filename) do |asset|
-                  assets << asset
+            env = assets_environment.cached
+
+            paths.each do |path|
+              env.find_all_linked_assets(path) do |asset|
+                assets << asset
+              end
+            end
+
+            if filters.any?
+              env.logical_paths do |logical_path, filename|
+                if filters.any? { |f| f.call(logical_path, filename) }
+                  env.find_all_linked_assets(filename) do |asset|
+                    assets << asset
+                  end
                 end
               end
             end
