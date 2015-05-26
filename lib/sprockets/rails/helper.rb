@@ -22,6 +22,8 @@ module Sprockets
                         :assets_precompile,
                         :assets_prefix, :digest_assets, :debug_assets]
 
+      MEMORY_CACHE = ActiveSupport::Cache::MemoryStore.new
+      
       def self.included(klass)
         klass.class_attribute(*VIEW_ACCESSORS)
 
@@ -122,33 +124,35 @@ module Sprockets
       #
       # Eventually will be deprecated and replaced by source maps.
       def javascript_include_tag(*sources)
-        options = sources.extract_options!.stringify_keys
+        tag_cache(__method__, sources) do
+          options = sources.extract_options!.stringify_keys
 
-        unless request_ssl?
-          options.delete("integrity")
-        end
+          unless request_ssl?
+            options.delete("integrity")
+          end
 
-        case options["integrity"]
-        when true, false, nil
-          compute_integrity = options.delete("integrity")
-        end
+          case options["integrity"]
+          when true, false, nil
+            compute_integrity = options.delete("integrity")
+          end
 
-        if options["debug"] != false && request_debug_assets?
-          sources.map { |source|
-            if asset = lookup_asset_for_path(source, :type => :javascript)
-              asset.to_a.map do |a|
-                super(path_to_javascript(a.logical_path, :debug => true), options)
+          if options["debug"] != false && request_debug_assets?
+            sources.map { |source|
+              if asset = lookup_asset_for_path(source, :type => :javascript)
+                asset.to_a.map do |a|
+                  super(path_to_javascript(a.logical_path, :debug => true), options)
+                end
+              else
+                super(source, options)
               end
-            else
-              super(source, options)
-            end
-          }.flatten.uniq.join("\n").html_safe
-        else
-          sources.map { |source|
-            super(source, compute_integrity ?
-              options.merge("integrity" => asset_integrity(source, :type => :javascript)) :
-              options)
-          }.join("\n").html_safe
+            }.flatten.uniq.join("\n").html_safe
+          else
+            sources.map { |source|
+              super(source, compute_integrity ?
+                options.merge("integrity" => asset_integrity(source, :type => :javascript)) :
+                options)
+            }.join("\n").html_safe
+          end
         end
       end
 
@@ -156,33 +160,35 @@ module Sprockets
       #
       # Eventually will be deprecated and replaced by source maps.
       def stylesheet_link_tag(*sources)
-        options = sources.extract_options!.stringify_keys
+        tag_cache(__method__, sources) do
+          options = sources.extract_options!.stringify_keys
 
-        unless request_ssl?
-          options.delete("integrity")
-        end
+          unless request_ssl?
+            options.delete("integrity")
+          end
 
-        case options["integrity"]
-        when true, false, nil
-          compute_integrity = options.delete("integrity")
-        end
+          case options["integrity"]
+          when true, false, nil
+            compute_integrity = options.delete("integrity")
+          end
 
-        if options["debug"] != false && request_debug_assets?
-          sources.map { |source|
-            if asset = lookup_asset_for_path(source, :type => :stylesheet)
-              asset.to_a.map do |a|
-                super(path_to_stylesheet(a.logical_path, :debug => true), options)
+          if options["debug"] != false && request_debug_assets?
+            sources.map { |source|
+              if asset = lookup_asset_for_path(source, :type => :stylesheet)
+                asset.to_a.map do |a|
+                  super(path_to_stylesheet(a.logical_path, :debug => true), options)
+                end
+              else
+                super(source, options)
               end
-            else
-              super(source, options)
-            end
-          }.flatten.uniq.join("\n").html_safe
-        else
-          sources.map { |source|
-            super(source, compute_integrity ?
-              options.merge("integrity" => asset_integrity(source, :type => :stylesheet)) :
-              options)
-          }.join("\n").html_safe
+            }.flatten.uniq.join("\n").html_safe
+          else
+            sources.map { |source|
+              super(source, compute_integrity ?
+                options.merge("integrity" => asset_integrity(source, :type => :stylesheet)) :
+                options)
+            }.join("\n").html_safe
+          end
         end
       end
 
@@ -245,6 +251,13 @@ module Sprockets
 
             assets
           end
+        end
+        
+        # Cache helper result in Memory 
+        # enable cache when `config.cache_classes = true`
+        def tag_cache(*keys)
+          return yield if !ActionView::Resolver.caching?
+          MEMORY_CACHE.fetch(keys.to_s) { yield }
         end
     end
   end
