@@ -17,7 +17,7 @@ module Sprockets
         @dependencies << 'actioncontroller-asset-url-config'
 
         begin
-          asset_uri = resolve(path, compat: false)
+          asset_uri = resolve(path)
         rescue FileNotFound
           # TODO: eh, we should be able to use a form of locate that returns
           # nil instead of raising an exception.
@@ -39,5 +39,10 @@ module Sprockets
     config = env.context_class.config
     [config.relative_url_root,
     (config.asset_host unless config.asset_host.respond_to?(:call))]
+  end
+
+  # fallback to the default pipeline when using Sprockets 3.x
+  unless config[:pipelines].include? :debug
+    register_pipeline :debug, config[:pipelines][:default]
   end
 end

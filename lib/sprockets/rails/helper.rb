@@ -1,6 +1,7 @@
 require 'action_view'
 require 'sprockets'
 require 'active_support/core_ext/class/attribute'
+require 'sprockets/rails/utils'
 
 module Sprockets
   module Rails
@@ -17,6 +18,7 @@ module Sprockets
 
       include ActionView::Helpers::AssetUrlHelper
       include ActionView::Helpers::AssetTagHelper
+      include Sprockets::Rails::Utils
 
       VIEW_ACCESSORS = [:assets_environment, :assets_manifest,
                         :assets_precompile,
@@ -57,7 +59,7 @@ module Sprockets
       def compute_asset_path(path, options = {})
         if digest_path = asset_digest_path(path, options)
           path = digest_path if digest_assets
-          path += "?body=1" if options[:debug]
+          path += "?body=1" if options[:debug] && !using_sprockets4?
           File.join(assets_prefix || "/", path)
         else
           super
@@ -80,7 +82,7 @@ module Sprockets
         if environment = assets_environment
           if asset = environment[path]
             unless options[:debug]
-              if !precompiled_assets.include?(asset)
+              if !precompiled_assets.include?(asset.logical_path)
                 raise AssetNotPrecompiled.new(asset.logical_path)
               end
             end
@@ -135,9 +137,13 @@ module Sprockets
 
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
-            if asset = lookup_asset_for_path(source, :type => :javascript)
-              asset.to_a.map do |a|
-                super(path_to_javascript(a.logical_path, :debug => true), options)
+            if asset = lookup_debug_asset(source, :type => :javascript)
+              if asset.respond_to?(:to_a)
+                asset.to_a.map do |a|
+                  super(path_to_javascript(a.logical_path, :debug => true), options)
+                end
+              else
+                super(path_to_javascript(asset.logical_path, :debug => true), options)
               end
             else
               super(source, options)
@@ -169,9 +175,13 @@ module Sprockets
 
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
-            if asset = lookup_asset_for_path(source, :type => :stylesheet)
-              asset.to_a.map do |a|
-                super(path_to_stylesheet(a.logical_path, :debug => true), options)
+            if asset = lookup_debug_asset(source, :type => :stylesheet)
+              if asset.respond_to?(:to_a)
+                asset.to_a.map do |a|
+                  super(path_to_stylesheet(a.logical_path, :debug => true), options)
+                end
+              else
+                super(path_to_stylesheet(asset.logical_path, :debug => true), options)
               end
             else
               super(source, options)
@@ -201,50 +211,26 @@ module Sprockets
 
         # Internal method to support multifile debugging. Will
         # eventually be removed w/ Sprockets 3.x.
-        def lookup_asset_for_path(path, options = {})
+        def lookup_debug_asset(path, options = {})
           return unless env = assets_environment
           path = path.to_s
           if extname = compute_asset_extname(path, options)
             path = "#{path}#{extname}"
           end
 
-          if asset = env[path]
-            if !precompiled_assets.include?(asset)
-              raise AssetNotPrecompiled.new(asset.logical_path)
+          if asset = env[path, pipeline: :debug]
+            original_path = asset.logical_path.gsub('.debug', '')
+            unless precompiled_assets.include?(original_path)
+              raise AssetNotPrecompiled.new(original_path)
             end
           end
 
           asset
         end
 
-        # Internal: Generate a Set of all precompiled assets.
+        # Internal: Generate a Set of all precompiled assets logical paths.
         def precompiled_assets
-          @precompiled_assets ||= begin
-            assets = Set.new
-
-            paths, filters = (assets_precompile || []).flatten.partition { |arg| Sprockets::Manifest.simple_logical_path?(arg) }
-            filters = filters.map { |arg| Sprockets::Manifest.compile_match_filter(arg) }
-
-            env = assets_environment.cached
-
-            paths.each do |path|
-              env.find_all_linked_assets(path) do |asset|
-                assets << asset
-              end
-            end
-
-            if filters.any?
-              env.logical_paths do |logical_path, filename|
-                if filters.any? { |f| f.call(logical_path, filename) }
-                  env.find_all_linked_assets(filename) do |asset|
-                    assets << asset
-                  end
-                end
-              end
-            end
-
-            assets
-          end
+          @precompiled_assets ||= assets_manifest.find(assets_precompile || []).map(&:logical_path)
         end
     end
   end
