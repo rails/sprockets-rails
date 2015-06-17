@@ -11,6 +11,8 @@ Gem::Specification.new do |s|
 
   s.files = Dir["README.md", "lib/**/*.rb", "LICENSE"]
 
+  s.required_ruby_version = '>= 1.9.3'
+  
   s.add_dependency "sprockets", ">= 3.0.0", "< 4.0"
   s.add_dependency "actionpack", ">= 4.0"
   s.add_dependency "activesupport", ">= 4.0"
