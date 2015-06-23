@@ -106,6 +106,7 @@ class TestTask < Minitest::Test
     assert File.exist?("#{@dir}/#{digest_path}")
   end
 
+  if Sprockets::VERSION < "3"
   def test_clean_with_keep_specified
     assert !@environment_ran
     path     = @assets['foo.js'].pathname
@@ -138,5 +139,6 @@ class TestTask < Minitest::Test
     refute File.exist?("#{@dir}/#{old_digest_path}")
   ensure
     FileUtils.rm(new_path) if new_path
+  end
   end
 end
