@@ -66,6 +66,11 @@ module Sprockets
     config.assets.digest      = true
     config.assets.cache_limit = 50.megabytes
 
+
+    config.assets.configure do |env|
+      env.logger = config.assets.logger if config.assets.logger.present?
+    end
+
     config.assets.configure do |env|
       config.assets.paths.each { |path| env.append_path(path) }
     end

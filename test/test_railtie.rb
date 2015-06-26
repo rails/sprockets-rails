@@ -110,6 +110,30 @@ class TestRailtie < TestBoot
     assert_equal File.join(ROOT, "public/assets"), manifest.dir
   end
 
+  def test_logger
+    # Sprockets by default logs at level FATAL to $stderr
+    expected_logger = Logger.new($stderr)
+    expected_logger.level = Logger::FATAL
+
+    app.initialize!
+    assert env = app.assets
+    # env.logger should have the same @level, @formatter, @filename, and @dev
+    # as expected_logger (though different object ids)
+    assert_equal env.logger.inspect.split.reject {|a| a =~ /:0x/},
+                 expected_logger.inspect.split.reject {|a| a =~ /:0x/}
+  end
+
+  def test_custom_logger
+    custom_logger = Logger.new('log/sprockets.log')
+    app.configure do
+      config.assets.logger = custom_logger
+    end
+    app.initialize!
+
+    assert env = app.assets
+    assert_equal env.logger, custom_logger
+  end
+
   def test_copies_paths
     app.configure do
       config.assets.paths << "javascripts"
