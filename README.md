@@ -46,7 +46,7 @@ end
 
 Each asset task will invoke `assets:environment` first. By default this loads the Rails environment. You can override this task to add or remove dependencies for your specific compilation environment.
 
-Also see [Sprockets::Rails::Task](https://github.com/rails/sprockets-rails/blob/master/lib/sprockets/rails/task.rb) and [Rake::SprocketsTask](https://github.com/sstephenson/sprockets/blob/master/lib/rake/sprocketstask.rb).
+Also see [Sprockets::Rails::Task](https://github.com/rails/sprockets-rails/blob/master/lib/sprockets/rails/task.rb) and [Rake::SprocketsTask](https://github.com/rails/sprockets/blob/master/lib/rake/sprocketstask.rb).
 
 
 ### Initializer options
