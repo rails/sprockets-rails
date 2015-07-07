@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-
+require 'mocha/setup'
 require 'action_view'
 require 'sprockets'
 require 'sprockets/rails/context'
@@ -18,6 +18,8 @@ class HelperTest < ActionView::TestCase
     end
     tmp = File.expand_path("../../tmp", __FILE__)
     @manifest = Sprockets::Manifest.new(@assets, tmp)
+
+    ActionView::Resolver.stubs(:caching?).returns(false)
 
     @view = ActionView::Base.new
     @view.extend ::Sprockets::Rails::Helper
@@ -79,6 +81,34 @@ class HelperTest < ActionView::TestCase
       'QUERY_STRING' => query
     })[0]
     assert_equal 200, status, "#{url} responded with #{status}"
+  end
+end
+
+class CacheHelperTest < HelperTest
+  def setup
+    super
+
+    ActionView::Resolver.stubs(:caching?).returns(true)
+
+    @cache = Sprockets::Rails::Helper::MEMORY_CACHE
+  end
+
+  def test_javascript_include_tag
+    out = %(<script src="/javascripts/static.js" title="foo"></script>)
+    cache_key = [:javascript_include_tag, ['static.js', {:title=>"foo"}]].to_s
+    assert_dom_equal out, @view.javascript_include_tag("static.js", title: 'foo')
+    assert_dom_equal out, @cache.read(cache_key)
+    @cache.write(cache_key, "111")
+    assert_dom_equal "111", @view.javascript_include_tag("static.js", title: 'foo')
+  end
+
+  def test_stylesheet_link_tag
+    out = %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" title="foo" />)
+    cache_key = [:stylesheet_link_tag, ['static.css', {:title=>"foo"}]].to_s
+    assert_dom_equal out, @view.stylesheet_link_tag("static.css", title: 'foo')
+    assert_dom_equal out, @cache.read(cache_key)
+    @cache.write(cache_key, "111")
+    assert_dom_equal "111", @view.stylesheet_link_tag("static.css", title: 'foo')
   end
 end
 
@@ -225,7 +255,6 @@ end
 class RelativeHostHelperTest < HelperTest
   def setup
     super
-
     @view.config.asset_host = "assets.example.com"
   end
 
@@ -279,6 +308,7 @@ end
 class NoDigestHelperTest < NoHostHelperTest
   def setup
     super
+
     @view.digest_assets = false
     @assets.context_class.digest_assets = false
   end
