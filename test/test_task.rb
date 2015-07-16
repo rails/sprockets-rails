@@ -108,7 +108,7 @@ class TestTask < Minitest::Test
 
   def test_clean_with_keep_specified
     assert !@environment_ran
-    path     = @assets['foo.js'].pathname
+    path     = Pathname.new(@assets['foo.js'].filename)
     new_path = path.join("../foo-modified.js")
 
     FileUtils.cp(path, new_path)

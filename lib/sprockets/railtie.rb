@@ -43,6 +43,8 @@ end
 
 module Sprockets
   class Railtie < ::Rails::Railtie
+    include Sprockets::Rails::Utils
+
     LOOSE_APP_ASSETS = lambda do |logical_path, filename|
         filename.start_with?(::Rails.root.join("app/assets").to_s) &&
         !%w(.js .css).include?(File.extname(logical_path))
@@ -59,7 +61,11 @@ module Sprockets
     config.assets.paths       = []
     config.assets.prefix      = "/assets"
     config.assets.manifest    = nil
-    config.assets.precompile  = [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
+    if using_sprockets4?
+      config.assets.precompile  = %w( manifest.js )
+    else
+      config.assets.precompile  = [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
+    end
     config.assets.version     = ""
     config.assets.debug       = false
     config.assets.compile     = true
