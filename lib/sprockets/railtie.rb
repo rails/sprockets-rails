@@ -26,6 +26,9 @@ module Rails
 
     # Returns Sprockets::Manifest for app config.
     attr_accessor :assets_manifest
+
+    # Returns array of already precompiled assets
+    attr_accessor :precompiled_assets
   end
 
   class Engine < Railtie
@@ -150,8 +153,11 @@ module Sprockets
         app.routes.prepend do
           mount app.assets => config.assets.prefix
         end
+        app.assets_manifest = build_manifest(app)
+        app.precompiled_assets = build_precompiled_list(app.assets_manifest, config.assets.precompile)
+      else
+        app.assets_manifest = build_manifest(app)
       end
-      app.assets_manifest = build_manifest(app)
 
       ActionDispatch::Routing::RouteWrapper.class_eval do
         class_attribute :assets_prefix
@@ -176,6 +182,7 @@ module Sprockets
 
         self.assets_environment = app.assets
         self.assets_manifest = app.assets_manifest
+        self.precompiled_assets = app.precompiled_assets
       end
     end
   end
