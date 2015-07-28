@@ -21,7 +21,7 @@ module Sprockets
       include Sprockets::Rails::Utils
 
       VIEW_ACCESSORS = [:assets_environment, :assets_manifest,
-                        :assets_precompile,
+                        :assets_precompile, :precompiled_assets,
                         :assets_prefix, :digest_assets, :debug_assets]
 
       def self.included(klass)
@@ -226,11 +226,6 @@ module Sprockets
           end
 
           asset
-        end
-
-        # Internal: Generate a Set of all precompiled assets logical paths.
-        def precompiled_assets
-          @precompiled_assets ||= assets_manifest.find(assets_precompile || []).map(&:logical_path)
         end
     end
   end
