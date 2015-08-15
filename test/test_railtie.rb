@@ -254,7 +254,7 @@ class TestRailtie < TestBoot
     assert Rake.application['assets:environment']
     assert Rake.application['assets:precompile']
     assert Rake.application['assets:clean']
-    assert Rake.application['assets:clobber']
+    assert Rake.application['assets:delete']
   end
 
   def test_task_precompile
@@ -268,7 +268,7 @@ class TestRailtie < TestBoot
     path = "#{app.assets_manifest.dir}/foo-4ef5541f349f7ed5a0d6b71f2fa4c82745ca106ae02f212aea5129726ac6f6ab.js"
 
     silence_stderr do
-      Rake.application['assets:clobber'].execute
+      Rake.application['assets:delete'].execute
     end
     refute File.exist?(path)
 
@@ -278,7 +278,7 @@ class TestRailtie < TestBoot
     assert File.exist?(path)
 
     silence_stderr do
-      Rake.application['assets:clobber'].execute
+      Rake.application['assets:delete'].execute
     end
     refute File.exist?(path)
   end
@@ -295,7 +295,7 @@ class TestRailtie < TestBoot
     path = "#{app.assets_manifest.dir}/foo-4ef5541f349f7ed5a0d6b71f2fa4c82745ca106ae02f212aea5129726ac6f6ab.js"
 
     silence_stderr do
-      Rake.application['assets:clobber'].execute
+      Rake.application['assets:delete'].execute
     end
     refute File.exist?(path)
 
@@ -305,7 +305,7 @@ class TestRailtie < TestBoot
     assert File.exist?(path)
 
     silence_stderr do
-      Rake.application['assets:clobber'].execute
+      Rake.application['assets:delete'].execute
     end
     refute File.exist?(path)
   end

@@ -80,7 +80,7 @@ class TestTask < Minitest::Test
     assert File.exist?("#{@dir}/#{digest_path}")
   end
 
-  def test_clobber
+  def test_delete
     assert !@environment_ran
     digest_path = @assets['foo.js'].digest_path
 
@@ -89,7 +89,7 @@ class TestTask < Minitest::Test
 
     assert @environment_ran
 
-    @rake['assets:clobber'].invoke
+    @rake['assets:delete'].invoke
     assert !File.exist?("#{@dir}/#{digest_path}")
   end
 
