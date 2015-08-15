@@ -59,6 +59,10 @@ module Sprockets
       end
     end
 
+    Sprockets.register_dependency_resolver 'rails-env' do
+      ::Rails.env
+    end
+
     config.assets = OrderedOptions.new
     config.assets._blocks     = []
     config.assets.paths       = []
@@ -76,37 +80,26 @@ module Sprockets
     config.assets.cache_limit = 50.megabytes
 
     config.assets.configure do |env|
-      config.assets.paths.each { |path| env.append_path(path) }
-    end
+      env.logger = config.assets.logger if config.assets.logger.present?
 
-    config.assets.configure do |env|
+      config.assets.paths.each { |path| env.append_path(path) }
+
       env.js_compressor  = config.assets.js_compressor
       env.css_compressor = config.assets.css_compressor
-    end
 
-    config.assets.configure do |env|
       env.context_class.send :include, ::Sprockets::Rails::Context
       env.context_class.assets_prefix = config.assets.prefix
       env.context_class.digest_assets = config.assets.digest
       env.context_class.config        = config.action_controller
-    end
 
-    config.assets.configure do |env|
       env.cache = Sprockets::Cache::FileStore.new(
         "#{env.root}/tmp/cache",
         config.assets.cache_limit,
         env.logger
       )
-    end
 
-    Sprockets.register_dependency_resolver 'rails-env' do
-      ::Rails.env
-    end
-    config.assets.configure do |env|
       env.depend_on 'environment-version'
-    end
 
-    config.assets.configure do |env|
       env.version = config.assets.version
     end
 
