@@ -51,7 +51,7 @@ module Sprockets
 
       def define
         namespace :assets do
-          %w( environment precompile clean clobber ).each do |task|
+          %w( environment precompile clean delete ).each do |task|
             Rake::Task[task].clear if Rake::Task.task_defined?(task)
           end
 
@@ -77,9 +77,9 @@ module Sprockets
           end
 
           desc "Remove compiled assets"
-          task :clobber => :environment do
+          task :delete => :environment do
             with_logger do
-              manifest.clobber
+              manifest.delete
             end
           end
         end
