@@ -140,19 +140,12 @@ javascript_include_tag :application, integrity: true
 ```
 
 
-## Contributing
+## Contributing to Sprockets Rails
 
-Usual bundler workflow.
+Sprockets Rails is work of many contributors. You're encouraged to submit pull requests, propose
+features and discuss issues.
 
-``` shell
-$ git clone https://github.com/rails/sprockets-rails.git
-$ cd sprockets-rails/
-$ bundle install
-$ bundle exec rake test
-```
-
-[![Build Status](https://travis-ci.org/rails/sprockets-rails.svg?branch=master)](https://travis-ci.org/rails/sprockets-rails)
-
+See [CONTRIBUTING](CONTRIBUTING.md).
 
 ## Releases
 
@@ -164,9 +157,6 @@ The minor and patch version will be updated according to [semver](http://semver.
 * Any time the sprockets dependency is bumped, there will be a new minor release
 * Simple bug fixes will be patch releases
 
-
 ## License
 
-Copyright &copy; 2014 Joshua Peek.
-
-Released under the MIT license. See `LICENSE` for details.
+Sprockets Rails is released under the [MIT License](MIT-LICENSE).
