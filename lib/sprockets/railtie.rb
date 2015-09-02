@@ -74,6 +74,7 @@ module Sprockets
     config.assets.compile     = true
     config.assets.digest      = true
     config.assets.cache_limit = 50.megabytes
+    config.assets.cache_path  = nil
 
     config.assets.configure do |env|
       config.assets.paths.each { |path| env.append_path(path) }
@@ -88,7 +89,7 @@ module Sprockets
 
     config.assets.configure do |env|
       env.cache = Sprockets::Cache::FileStore.new(
-        "#{env.root}/tmp/cache",
+        config.assets.cache_path || "#{env.root}/tmp/cache",
         config.assets.cache_limit,
         env.logger
       )
