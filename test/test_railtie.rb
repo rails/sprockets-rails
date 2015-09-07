@@ -138,6 +138,23 @@ class TestRailtie < TestBoot
     assert_equal Sprockets::SassCompressor.name, env.css_compressor.name
   end
 
+  def test_custom_compressors
+    compressor = Class.new
+    app.configure do
+      config.assets.configure do |env|
+        env.register_compressor "application/javascript", :test_js, compressor
+        env.register_compressor "text/css", :test_css, compressor
+      end
+      config.assets.js_compressor  = :test_js
+      config.assets.css_compressor = :test_css
+    end
+    app.initialize!
+
+    assert env = app.assets
+    assert_equal compressor, env.js_compressor
+    assert_equal compressor, env.css_compressor
+  end
+
   def test_version
     app.configure do
       config.assets.version = 'v2'

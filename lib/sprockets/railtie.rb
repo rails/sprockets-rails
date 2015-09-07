@@ -80,11 +80,6 @@ module Sprockets
     end
 
     config.assets.configure do |env|
-      env.js_compressor  = config.assets.js_compressor
-      env.css_compressor = config.assets.css_compressor
-    end
-
-    config.assets.configure do |env|
       env.context_class.send :include, ::Sprockets::Rails::Context
       env.context_class.assets_prefix = config.assets.prefix
       env.context_class.digest_assets = config.assets.digest
@@ -123,16 +118,23 @@ module Sprockets
 
       env = Sprockets::Environment.new(app.root.to_s)
 
+      config = app.config
+
       # Run app.assets.configure blocks
-      app.config.assets._blocks.each do |block|
+      config.assets._blocks.each do |block|
         block.call(env)
       end
+
+      # Set compressors after the configure blocks since they can
+      # define new compressors and we only accept existent compressors.
+      env.js_compressor  = config.assets.js_compressor
+      env.css_compressor = config.assets.css_compressor
 
       # No more configuration changes at this point.
       # With cache classes on, Sprockets won't check the FS when files
       # change. Preferable in production when the FS only changes on
       # deploys when the app restarts.
-      if app.config.cache_classes
+      if config.cache_classes
         env = env.cached
       end
 
