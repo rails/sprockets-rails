@@ -101,13 +101,15 @@ module Sprockets
         app.assets.append_path path
       end
 
-      app.assets.js_compressor  = config.assets.js_compressor
-      app.assets.css_compressor = config.assets.css_compressor
-
       # Run app.assets.configure blocks
       config.assets._blocks.each do |block|
         block.call app.assets
       end
+
+      # Set compressors after the configure blocks since they can
+      # define new compressors and we only accept existent compressors.
+      app.assets.js_compressor  = config.assets.js_compressor
+      app.assets.css_compressor = config.assets.css_compressor
 
       # No more configuration changes at this point.
       # With cache classes on, Sprockets won't check the FS when files
