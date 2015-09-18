@@ -160,3 +160,9 @@ The minor and patch version will be updated according to [semver](http://semver.
 ## License
 
 Sprockets Rails is released under the [MIT License](MIT-LICENSE).
+
+## Code Status
+
+* [![Travis CI](https://api.travis-ci.org/rails/sprockets-rails.svg)](http://travis-ci.org/rails/sprockets-rails)
+* [![Gem Version](https://badge.fury.io/rb/sprockets-rails.svg)](http://badge.fury.io/rb/sprockets-rails)
+* [![Dependencies](https://gemnasium.com/rails/sprockets-rails.svg)](https://gemnasium.com/rails/sprockets-rails)
