@@ -6,7 +6,7 @@ rvm:
   - 1.9.3
   - 2.0.0
   - 2.1 # tests on latest 2.1.x
-  - 2.2.2 # tests on latest 2.2.x
+  - 2.2.3 # tests on latest 2.2.x
 
 gemfile:
   - Gemfile
