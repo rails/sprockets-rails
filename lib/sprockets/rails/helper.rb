@@ -21,7 +21,7 @@ module Sprockets
       include Sprockets::Rails::Utils
 
       VIEW_ACCESSORS = [:assets_environment, :assets_manifest,
-                        :assets_precompile, :precompiled_assets,
+                        :assets_precompile, :precompiled_asset_checker,
                         :assets_prefix, :digest_assets, :debug_assets]
 
       def self.included(klass)
@@ -82,7 +82,7 @@ module Sprockets
         if environment = assets_environment
           if asset = environment[path]
             unless options[:debug]
-              if !precompiled_assets.include?(asset.logical_path)
+              if !precompiled_asset_checker.call(asset.logical_path)
                 raise AssetNotPrecompiled.new(asset.logical_path)
               end
             end
@@ -220,7 +220,7 @@ module Sprockets
 
           if asset = env[path, pipeline: :debug]
             original_path = asset.logical_path.gsub('.debug', '')
-            unless precompiled_assets.include?(original_path)
+            unless precompiled_asset_checker.call(original_path)
               raise AssetNotPrecompiled.new(original_path)
             end
           end
