@@ -73,21 +73,13 @@ module Sprockets
       #
       # Returns String path or nil if no asset was found.
       def asset_digest_path(path, options = {})
-        if manifest = assets_manifest
-          if digest_path = manifest.assets[path]
-            return digest_path
+        if assets_environment
+          if asset = assets_environment[path]
+            raise_unless_precompiled_asset asset.logical_path unless options[:debug]
+            asset.digest_path
           end
-        end
-
-        if environment = assets_environment
-          if asset = environment[path]
-            unless options[:debug]
-              if !precompiled_asset_checker.call(asset.logical_path)
-                raise AssetNotPrecompiled.new(asset.logical_path)
-              end
-            end
-            return asset.digest_path
-          end
+        else
+          assets_manifest.assets[path]
         end
       end
 
@@ -98,26 +90,17 @@ module Sprockets
       #
       # Returns String integrity attribute or nil if no asset was found.
       def asset_integrity(path, options = {})
-        path = path.to_s
-        if extname = compute_asset_extname(path, options)
-          path = "#{path}#{extname}"
-        end
+        path = path_with_extname(path, options)
 
-        if manifest = assets_manifest
-          if digest_path = manifest.assets[path]
-            if metadata = manifest.files[digest_path]
-              return metadata["integrity"]
-            end
+        if assets_environment
+          if asset = assets_environment[path]
+            asset.integrity
+          end
+        elsif digest_path = assets_manifest.assets[path]
+          if metadata = assets_manifest.files[digest_path]
+            metadata["integrity"]
           end
         end
-
-        if environment = assets_environment
-          if asset = environment[path]
-            return asset.integrity
-          end
-        end
-
-        nil
       end
 
       # Override javascript tag helper to provide debugging support.
@@ -125,15 +108,7 @@ module Sprockets
       # Eventually will be deprecated and replaced by source maps.
       def javascript_include_tag(*sources)
         options = sources.extract_options!.stringify_keys
-
-        unless request_ssl?
-          options.delete("integrity")
-        end
-
-        case options["integrity"]
-        when true, false, nil
-          compute_integrity = options.delete("integrity")
-        end
+        integrity = compute_integrity?(options)
 
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
@@ -151,9 +126,8 @@ module Sprockets
           }.flatten.uniq.join("\n").html_safe
         else
           sources.map { |source|
-            super(source, compute_integrity ?
-              options.merge("integrity" => asset_integrity(source, :type => :javascript)) :
-              options)
+            options = options.merge('integrity' => asset_integrity(source, :type => :javascript)) if integrity
+            super source, options
           }.join("\n").html_safe
         end
       end
@@ -163,15 +137,7 @@ module Sprockets
       # Eventually will be deprecated and replaced by source maps.
       def stylesheet_link_tag(*sources)
         options = sources.extract_options!.stringify_keys
-
-        unless request_ssl?
-          options.delete("integrity")
-        end
-
-        case options["integrity"]
-        when true, false, nil
-          compute_integrity = options.delete("integrity")
-        end
+        integrity = compute_integrity?(options)
 
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
@@ -189,15 +155,28 @@ module Sprockets
           }.flatten.uniq.join("\n").html_safe
         else
           sources.map { |source|
-            super(source, compute_integrity ?
-              options.merge("integrity" => asset_integrity(source, :type => :stylesheet)) :
-              options)
+            options = options.merge('integrity' => asset_integrity(source, :type => :stylesheet)) if integrity
+            super source, options
           }.join("\n").html_safe
         end
       end
 
       protected
-        def request_ssl?
+        def compute_integrity?(options)
+          if secure_subresource_integrity_context?
+            case options['integrity']
+            when nil, false, true
+              options.delete('integrity') == true
+            end
+          else
+            options.delete 'integrity'
+            false
+          end
+        end
+
+        # Only serve integrity metadata for HTTPS requests:
+        #   http://www.w3.org/TR/SRI/#non-secure-contexts-remain-non-secure
+        def secure_subresource_integrity_context?
           respond_to?(:request) && self.request && self.request.ssl?
         end
 
@@ -205,27 +184,29 @@ module Sprockets
         # and replaced by source maps in Sprockets 3.x.
         def request_debug_assets?
           debug_assets || (defined?(controller) && controller && params[:debug_assets])
-        rescue
-          return false
+        rescue # FIXME: what exactly are we rescuing?
+          false
         end
 
         # Internal method to support multifile debugging. Will
         # eventually be removed w/ Sprockets 3.x.
         def lookup_debug_asset(path, options = {})
-          return unless env = assets_environment
+          if assets_environment && asset = assets_environment[path_with_extname(path, options), pipeline: :debug]
+            raise_unless_precompiled_asset asset.logical_path.sub('.debug', '')
+            asset
+          end
+        end
+
+        def raise_unless_precompiled_asset(logical_path)
+          if !precompiled_asset_checker.call(logical_path)
+            raise AssetNotPrecompiled.new(logical_path)
+          end
+        end
+
+        # compute_asset_extname is in AV::Helpers::AssetUrlHelper
+        def path_with_extname(path, options)
           path = path.to_s
-          if extname = compute_asset_extname(path, options)
-            path = "#{path}#{extname}"
-          end
-
-          if asset = env[path, pipeline: :debug]
-            original_path = asset.logical_path.gsub('.debug', '')
-            unless precompiled_asset_checker.call(original_path)
-              raise AssetNotPrecompiled.new(original_path)
-            end
-          end
-
-          asset
+          "#{path}#{compute_asset_extname(path, options)}"
         end
     end
   end
