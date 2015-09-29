@@ -166,7 +166,14 @@ module Sprockets
           mount app.assets => config.assets.prefix
         end
       end
+
       app.assets_manifest = build_manifest(app)
+
+      if config.assets.resolve_with.nil?
+        config.assets.resolve_with = []
+        config.assets.resolve_with << :manifest if config.assets.digest && !config.assets.debug
+        config.assets.resolve_with << :environment if config.assets.compile
+      end
 
       ActionDispatch::Routing::RouteWrapper.class_eval do
         class_attribute :assets_prefix
@@ -191,6 +198,8 @@ module Sprockets
 
         self.assets_environment = app.assets
         self.assets_manifest = app.assets_manifest
+
+        self.resolve_assets_with = config.assets.resolve_with
 
         # Expose the app precompiled asset check to the view
         self.precompiled_asset_checker = -> logical_path { app.asset_precompiled? logical_path }

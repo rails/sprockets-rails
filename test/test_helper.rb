@@ -21,10 +21,11 @@ class HelperTest < ActionView::TestCase
 
     @view = ActionView::Base.new
     @view.extend ::Sprockets::Rails::Helper
-    @view.assets_environment = @assets
-    @view.assets_manifest    = @manifest
-    @view.assets_prefix      = "/assets"
-    @view.assets_precompile  = %w( manifest.js )
+    @view.assets_environment  = @assets
+    @view.assets_manifest     = @manifest
+    @view.resolve_assets_with = [ :manifest, :environment ]
+    @view.assets_prefix       = "/assets"
+    @view.assets_precompile   = %w( manifest.js )
     precompiled_assets = @manifest.find(@view.assets_precompile).map(&:logical_path)
     @view.precompiled_asset_checker = -> logical_path { precompiled_assets.include? logical_path }
     @view.request = ActionDispatch::Request.new({
@@ -36,6 +37,7 @@ class HelperTest < ActionView::TestCase
 
     @foo_js_integrity  = @assets['foo.js'].integrity
     @foo_css_integrity = @assets['foo.css'].integrity
+    @bar_js_integrity  = @assets['bar.js'].integrity
 
     @foo_js_digest  = @assets['foo.js'].etag
     @foo_css_digest = @assets['foo.css'].etag
@@ -401,7 +403,7 @@ class DigestHelperTest < NoHostHelperTest
     assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="#{@foo_js_integrity}"></script>),
       @view.javascript_include_tag(:foo, integrity: true)
 
-    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="#{@foo_js_integrity}"></script>\n<script src="/assets/bar-#{@bar_js_digest}.js" integrity="sha256-g0JYFeYSYGXe376R0JrRzS6CpYpC1HiqtwBsVt/XAWU="></script>),
+    assert_dom_equal %(<script src="/assets/foo-#{@foo_js_digest}.js" integrity="#{@foo_js_integrity}"></script>\n<script src="/assets/bar-#{@bar_js_digest}.js" integrity="#{@bar_js_integrity}"></script>),
       @view.javascript_include_tag(:foo, :bar, integrity: true)
   end
 
@@ -645,6 +647,7 @@ class ManifestHelperTest < NoHostHelperTest
     @view.digest_assets = true
     @view.assets_environment = nil
     @view.assets_manifest = @manifest
+    @view.resolve_assets_with = [ :manifest ]
   end
 
   def test_javascript_include_tag
@@ -727,7 +730,7 @@ class DebugManifestHelperTest < ManifestHelperTest
   end
 end
 
-class StaleManifestVsEnvironmentHelperTest < HelperTest
+class AssetResolverOrderingTest < HelperTest
   def setup
     super
 
@@ -735,23 +738,39 @@ class StaleManifestVsEnvironmentHelperTest < HelperTest
 
     @view.assets_manifest = Sprockets::Manifest.new(@assets, FIXTURES_PATH).tap do |stale|
       stale.assets["foo.js"] = "foo-stale.js"
-      @manifest.files["foo-stale.js"] = { "integrity" => "stale-manifest" }
-      @manifest.files["foo-#{@foo_js_digest}.js"] = { "integrity" => "current-manifest" }
+      stale.files["foo-stale.js"] = { "integrity" => "stale-manifest" }
 
       stale.assets["foo.css"] = "foo-stale.css"
-      @manifest.files["foo-stale.css"] = { "integrity" => "stale-manifest" }
-      @manifest.files["foo-#{@foo_css_digest}.css"] = { "integrity" => "current-manifest" }
+      stale.files["foo-stale.css"] = { "integrity" => "stale-manifest" }
     end
   end
 
   def test_digest_prefers_asset_environment_over_manifest
+    @view.resolve_assets_with = [ :environment, :manifest ]
+
     assert_equal "foo-#{@foo_js_digest}.js", @view.asset_digest_path("foo.js")
     assert_equal "foo-#{@foo_css_digest}.css", @view.asset_digest_path("foo.css")
-  end
 
-  def test_digest_prefers_asset_environment_over_manifest
     assert_equal @foo_js_integrity, @view.asset_integrity("foo.js")
     assert_equal @foo_css_integrity, @view.asset_integrity("foo.css")
+  end
+
+  def test_try_resolvers_until_first_result
+    @view.resolve_assets_with = [ :manifest, :environment ]
+
+    assert_equal 'foo-stale.js', @view.asset_digest_path('foo.js')
+    assert_equal "bar-#{@bar_js_digest}.js", @view.asset_digest_path('bar.js')
+    assert_nil @view.asset_digest_path('nonexistent')
+
+    assert_equal 'stale-manifest', @view.asset_integrity('foo.js')
+    assert_equal @bar_js_integrity, @view.asset_integrity('bar.js')
+    assert_nil @view.asset_integrity('nonexistent')
+  end
+
+  def test_obeys_asset_resolver_order
+    @view.resolve_assets_with = []
+    assert_nil @view.asset_digest_path('foo.js')
+    assert_nil @view.asset_integrity('foo.js')
   end
 end
 

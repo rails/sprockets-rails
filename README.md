@@ -74,10 +74,6 @@ config.assets.version = 'v2'
 
 Defaults to `/assets`. Changes the directory to compile assets to.
 
-**`config.assets.manifest`**
-
-Defines the full path to be used for the asset precompiler's manifest file. Defaults to a randomly-generated filename in the `config.assets.prefix` directory within the public folder.
-
 **`config.assets.digest`**
 
 When enabled, fingerprints will be added to asset filenames.
@@ -106,6 +102,24 @@ config.assets.configure do |env|
 
   env.cache = ActiveSupport::Cache::FileStore.new("tmp/cache/assets")
 end
+```
+
+**`config.assets.resolve_with`**
+
+A list of `:environment` and `:manifest` symbols that defines the order that
+we try to find assets: manifest first, environment second? Manifest only?
+
+By default, we check the manifest first if asset digests are enabled and debug
+is not enabled, then we check the environment if compiling is enabled:
+```
+# Dev where debug is true, or digests are disabled
+%i[ environment ]
+
+# Dev default, or production with compile enabled.
+%i[ manifest environment ]
+
+# Production default.
+%i[ manifest ]
 ```
 
 
