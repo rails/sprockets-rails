@@ -162,6 +162,12 @@ module Sprockets
       end
 
       protected
+        # This is awkward: `integrity` is a boolean option indicating whether
+        # we want to include or omit the subresource integrity hash, but the
+        # options hash is also passed through as literal tag attributes.
+        # That means we have to delete the shortcut boolean option so it
+        # doesn't bleed into the tag attributes, but also check its value if
+        # it's boolean-ish.
         def compute_integrity?(options)
           if secure_subresource_integrity_context?
             case options['integrity']
