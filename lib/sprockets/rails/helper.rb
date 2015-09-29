@@ -20,9 +20,12 @@ module Sprockets
       include ActionView::Helpers::AssetTagHelper
       include Sprockets::Rails::Utils
 
-      VIEW_ACCESSORS = [:assets_environment, :assets_manifest,
-                        :assets_precompile, :precompiled_asset_checker,
-                        :assets_prefix, :digest_assets, :debug_assets]
+      VIEW_ACCESSORS = [
+        :assets_environment, :assets_manifest,
+        :assets_precompile, :precompiled_asset_checker,
+        :assets_prefix, :digest_assets, :debug_assets,
+        :resolve_assets_with
+      ]
 
       def self.included(klass)
         klass.class_attribute(*VIEW_ACCESSORS)
@@ -73,13 +76,8 @@ module Sprockets
       #
       # Returns String path or nil if no asset was found.
       def asset_digest_path(path, options = {})
-        if assets_environment
-          if asset = assets_environment[path]
-            raise_unless_precompiled_asset asset.logical_path unless options[:debug]
-            asset.digest_path
-          end
-        else
-          assets_manifest.assets[path]
+        resolve_asset do |resolver|
+          resolver.digest_path path, options[:debug]
         end
       end
 
@@ -92,14 +90,8 @@ module Sprockets
       def asset_integrity(path, options = {})
         path = path_with_extname(path, options)
 
-        if assets_environment
-          if asset = assets_environment[path]
-            asset.integrity
-          end
-        elsif digest_path = assets_manifest.assets[path]
-          if metadata = assets_manifest.files[digest_path]
-            metadata["integrity"]
-          end
+        resolve_asset do |resolver|
+          resolver.integrity path, options[:debug]
         end
       end
 
@@ -197,15 +189,10 @@ module Sprockets
         # Internal method to support multifile debugging. Will
         # eventually be removed w/ Sprockets 3.x.
         def lookup_debug_asset(path, options = {})
-          if assets_environment && asset = assets_environment[path_with_extname(path, options), pipeline: :debug]
-            raise_unless_precompiled_asset asset.logical_path.sub('.debug', '')
-            asset
-          end
-        end
+          path = path_with_extname(path, options)
 
-        def raise_unless_precompiled_asset(logical_path)
-          if !precompiled_asset_checker.call(logical_path)
-            raise AssetNotPrecompiled.new(logical_path)
+          resolve_asset do |resolver|
+            resolver.find_debug_asset path, options[:debug]
           end
         end
 
@@ -214,6 +201,103 @@ module Sprockets
           path = path.to_s
           "#{path}#{compute_asset_extname(path, options)}"
         end
+
+        # Try each asset resolver and return the first non-nil result.
+        def resolve_asset
+          asset_resolver_strategies.detect do |resolver|
+            if result = yield(resolver)
+              break result
+            end
+          end
+        end
+
+        # List of resolvers in `config.assets.resolve_with` order.
+        def asset_resolver_strategies
+          @asset_resolver_strategies ||=
+            Array(resolve_assets_with).map do |name|
+              HelperAssetResolvers[name].new(self)
+            end
+        end
+    end
+
+    # Use a separate module since Helper is mixed in and we needn't pollute
+    # the class namespace with our internals.
+    module HelperAssetResolvers #:nodoc:
+      def self.[](name)
+        case name
+        when :manifest
+          Manifest
+        when :environment
+          Environment
+        else
+          raise ArgumentError, "Unrecognized asset resolver: #{name.inspect}. Expected :manifest or :environment"
+        end
+      end
+
+      class Manifest #:nodoc:
+        def initialize(view)
+          @manifest = view.assets_manifest
+          raise ArgumentError, 'config.assets.resolve_with includes :manifest, but app.assets_manifest is nil' unless @manifest
+        end
+
+        def digest_path(path, debug = false)
+          @manifest.assets[path]
+        end
+
+        def integrity(path, debug = false)
+          if meta = metadata(path, debug)
+            meta["integrity"]
+          end
+        end
+
+        def find_debug_asset(path, debug = false)
+          nil
+        end
+
+        private
+          def metadata(path, debug = false)
+            if digest_path = digest_path(path, debug)
+              @manifest.files[digest_path]
+            end
+          end
+      end
+
+      class Environment #:nodoc:
+        def initialize(view)
+          raise ArgumentError, 'config.assets.resolve_with includes :environment, but app.assets is nil' unless view.assets_environment
+          @env = view.assets_environment
+          @precompiled_asset_checker = view.precompiled_asset_checker
+        end
+
+        def digest_path(path, debug = false)
+          if asset = find_asset(path)
+            raise_unless_precompiled_asset asset.logical_path unless debug
+            asset.digest_path
+          end
+        end
+
+        def integrity(path, debug = false)
+          find_asset(path).try :integrity
+        end
+
+        def find_debug_asset(path, options = {})
+          if asset = find_asset(path, pipeline: :debug)
+            raise_unless_precompiled_asset asset.logical_path.sub('.debug', '')
+            asset
+          end
+        end
+
+        private
+          def find_asset(path, options = {})
+            @env[path, options]
+          end
+
+          def raise_unless_precompiled_asset(logical_path)
+            if !@precompiled_asset_checker.call(logical_path)
+              raise Helper::AssetNotPrecompiled.new(logical_path)
+            end
+          end
+      end
     end
   end
 end

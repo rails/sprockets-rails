@@ -33,7 +33,6 @@ class TestBoot < Minitest::Test
     Dir.chdir ROOT
 
     @app = Class.new(Rails::Application)
-    # Get bitched at if you don't set these
     @app.config.eager_load = false
     @app.config.time_zone = 'UTC'
     @app.config.middleware ||= Rails::Configuration::MiddlewareStackProxy.new
@@ -52,12 +51,24 @@ class TestRailtie < TestBoot
     super
   end
 
-  def test_defaults
+  def test_defaults_to_compile_assets_with_env_and_manifest_available
+    assert_equal true, app.config.assets.compile
+
     app.initialize!
 
-    assert env = app.assets
+    # Env is available
+    refute_nil env = app.assets
     assert_kind_of Sprockets::Environment, env
 
+    # Manifest is always available
+    assert manifest = app.assets_manifest
+    assert_equal app.assets, manifest.environment
+    assert_equal File.join(ROOT, "public/assets"), manifest.dir
+
+    # Resolves against manifest then environment by default
+    assert_equal [ :manifest, :environment ], app.config.assets.resolve_with
+
+    # Sprockets config
     assert_equal ROOT, env.root
     assert_equal "", env.version
     assert env.cache
@@ -66,25 +77,7 @@ class TestRailtie < TestBoot
     assert_nil env.css_compressor
   end
 
-  def test_app_asset_available_when_compile
-    assert_equal true, app.config.assets.compile
-
-    app.initialize!
-
-    assert app.assets
-  end
-
-  def test_app_asset_manifest_available_when_compile
-    assert_equal true, app.config.assets.compile
-
-    app.initialize!
-
-    assert manifest = app.assets_manifest
-    assert_equal app.assets, manifest.environment
-    assert_equal File.join(ROOT, "public/assets"), manifest.dir
-  end
-
-  def test_app_asset_not_available_when_no_compile
+  def test_disabling_compile_has_manifest_but_no_env
     app.configure do
       config.assets.compile = false
     end
@@ -93,21 +86,30 @@ class TestRailtie < TestBoot
 
     app.initialize!
 
-    refute app.assets
+    # No env when compile is disabled
+    assert_nil app.assets
+
+    # Manifest is always available
+    refute_nil manifest = app.assets_manifest
+    assert_nil manifest.environment
+    assert_equal File.join(ROOT, "public/assets"), manifest.dir
+
+    # Resolves against manifest only
+    assert_equal [ :manifest ], app.config.assets.resolve_with
   end
 
-  def test_app_asset_manifest_available_when_no_compile
+  def test_enabling_debug_resolves_with_env_only
     app.configure do
-      config.assets.compile = false
+      config.assets.debug = true
     end
 
-    assert_equal false, app.config.assets.compile
+    assert_equal true, app.config.assets.debug
+    assert_equal true, app.config.assets.compile
 
     app.initialize!
 
-    assert manifest = app.assets_manifest
-    refute manifest.environment
-    assert_equal File.join(ROOT, "public/assets"), manifest.dir
+    # Resolves against environment only
+    assert_equal [ :environment ], app.config.assets.resolve_with
   end
 
   def test_copies_paths
