@@ -8,6 +8,7 @@ require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
 require 'sprockets/rails/route_wrapper'
 require 'sprockets/rails/version'
+require 'set'
 
 module Rails
   class Application
@@ -37,7 +38,7 @@ module Rails
     # boot time, but ensure we cache the list so we don't recompute it for each
     # request or test case.
     def precompiled_assets
-      @precompiled_assets ||= assets_manifest.find(config.assets.precompile).map(&:logical_path)
+      @precompiled_assets ||= assets_manifest.find(config.assets.precompile).map(&:logical_path).to_set
     end
   end
 
