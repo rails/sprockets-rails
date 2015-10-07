@@ -60,12 +60,20 @@ module Sprockets
       end
 
       def compute_asset_path(path, options = {})
-        if digest_path = asset_digest_path(path, options)
-          path = digest_path if digest_assets
-          path += "?body=1" if options[:debug] && !using_sprockets4?
-          File.join(assets_prefix || "/", path)
+        debug = options[:debug]
+
+        if asset_path = resolve_asset_path(path, debug)
+          File.join(assets_prefix || "/", legacy_debug_path(asset_path, debug))
         else
           super
+        end
+      end
+
+      # Resolve the asset path against the Sprockets manifest or environment.
+      # Returns nil if it's an asset we don't know about.
+      def resolve_asset_path(path, allow_non_precompiled = false) #:nodoc:
+        resolve_asset do |resolver|
+          resolver.asset_path path, digest_assets, allow_non_precompiled
         end
       end
 
@@ -91,7 +99,7 @@ module Sprockets
         path = path_with_extname(path, options)
 
         resolve_asset do |resolver|
-          resolver.integrity path, options[:debug]
+          resolver.integrity path
         end
       end
 
@@ -192,7 +200,7 @@ module Sprockets
           path = path_with_extname(path, options)
 
           resolve_asset do |resolver|
-            resolver.find_debug_asset path, options[:debug]
+            resolver.find_debug_asset path
           end
         end
 
@@ -218,6 +226,15 @@ module Sprockets
               HelperAssetResolvers[name].new(self)
             end
         end
+
+        # Append ?body=1 if debug is on and we're on old Sprockets.
+        def legacy_debug_path(path, debug)
+          if debug && !using_sprockets4?
+            "#{path}?body=1"
+          else
+            path
+          end
+        end
     end
 
     # Use a separate module since Helper is mixed in and we needn't pollute
@@ -240,23 +257,29 @@ module Sprockets
           raise ArgumentError, 'config.assets.resolve_with includes :manifest, but app.assets_manifest is nil' unless @manifest
         end
 
-        def digest_path(path, debug = false)
+        def asset_path(path, digest, allow_non_precompiled = false)
+          if digest
+            digest_path path, allow_non_precompiled
+          end
+        end
+
+        def digest_path(path, allow_non_precompiled = false)
           @manifest.assets[path]
         end
 
-        def integrity(path, debug = false)
-          if meta = metadata(path, debug)
+        def integrity(path)
+          if meta = metadata(path)
             meta["integrity"]
           end
         end
 
-        def find_debug_asset(path, debug = false)
+        def find_debug_asset(path)
           nil
         end
 
         private
-          def metadata(path, debug = false)
-            if digest_path = digest_path(path, debug)
+          def metadata(path)
+            if digest_path = digest_path(path)
               @manifest.files[digest_path]
             end
           end
@@ -269,18 +292,31 @@ module Sprockets
           @precompiled_asset_checker = view.precompiled_asset_checker
         end
 
-        def digest_path(path, debug = false)
+        def asset_path(path, digest, allow_non_precompiled = false)
+          # Digests enabled? Do the work to calculate the full asset path.
+          if digest
+            digest_path path, allow_non_precompiled
+
+          # Otherwise, ask the Sprockets environment whether the asset exists
+          # and check whether it's also precompiled for production deploys.
+          elsif find_asset(path)
+            raise_unless_precompiled_asset path unless allow_non_precompiled
+            path
+          end
+        end
+
+        def digest_path(path, allow_non_precompiled = false)
           if asset = find_asset(path)
-            raise_unless_precompiled_asset asset.logical_path unless debug
+            raise_unless_precompiled_asset path unless allow_non_precompiled
             asset.digest_path
           end
         end
 
-        def integrity(path, debug = false)
+        def integrity(path)
           find_asset(path).try :integrity
         end
 
-        def find_debug_asset(path, options = {})
+        def find_debug_asset(path)
           if asset = find_asset(path, pipeline: :debug)
             raise_unless_precompiled_asset asset.logical_path.sub('.debug', '')
             asset
@@ -292,10 +328,12 @@ module Sprockets
             @env[path, options]
           end
 
-          def raise_unless_precompiled_asset(logical_path)
-            if !@precompiled_asset_checker.call(logical_path)
-              raise Helper::AssetNotPrecompiled.new(logical_path)
-            end
+          def precompiled?(path)
+            @precompiled_asset_checker.call path
+          end
+
+          def raise_unless_precompiled_asset(path)
+            raise Helper::AssetNotPrecompiled.new(path) unless precompiled?(path)
           end
       end
     end
