@@ -7,11 +7,25 @@ module Sprockets
   module Rails
     module Helper
       class AssetNotPrecompiled < StandardError
+        include Sprockets::Rails::Utils
         def initialize(source)
-          msg = "Asset was not declared to be precompiled in production.\n" +
-                "Add `Rails.application.config.assets.precompile += " +
-                "%w( #{source} )` to `config/initializers/assets.rb` and " +
-                "restart your server"
+          msg =
+          if using_sprockets4?
+            "Asset `#{source}` was not declared to be precompiled in production.\n" +
+            "Declare links to your assets in `assets/config/manifest.js`.\n" +
+            "Examples:\n" +
+            "`//= link ../javascripts/application.js`\n" +
+            "`//= link_directory ../javascripts .js`\n" +
+            "`//= link_directory ../stylesheets .css`\n" +
+            "`//= link_tree ../javascripts .js`\n" +
+            "`//= link_tree ../images`\n" +
+            "and restart your server"
+          else
+            "Asset was not declared to be precompiled in production.\n" +
+            "Add `Rails.application.config.assets.precompile += " +
+            "%w( #{source} )` to `config/initializers/assets.rb` and " +
+            "restart your server"
+          end
           super(msg)
         end
       end
