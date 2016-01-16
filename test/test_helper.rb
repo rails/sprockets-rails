@@ -125,8 +125,6 @@ class NoHostHelperTest < HelperTest
 
     assert_dom_equal %(<script defer="defer" src="/javascripts/static.js"></script>),
       @view.javascript_include_tag("static", :defer => "defer")
-    assert_dom_equal %(<script async="async" src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", :async => "async")
   end
 
   def test_stylesheet_link_tag
@@ -467,6 +465,8 @@ class DebugHelperTest < NoHostHelperTest
         @view.javascript_include_tag(:bar)
       assert_dom_equal %(<script src="/assets/file1.debug.js"></script>\n<script src="/assets/file2.debug.js"></script>),
         @view.javascript_include_tag(:file1, :file2)
+      assert_dom_equal %(<script src="/assets/foo.debug.js"></script>)
+        @view.javascript_include_tag(:foo, :async => "async")
 
       assert_servable_asset_url "/assets/foo.debug.js"
       assert_servable_asset_url "/assets/bar.debug.js"
@@ -480,6 +480,8 @@ class DebugHelperTest < NoHostHelperTest
         @view.javascript_include_tag(:bar)
       assert_dom_equal %(<script src="/assets/dependency.self.js?body=1"></script>\n<script src="/assets/file1.self.js?body=1"></script>\n<script src="/assets/file2.self.js?body=1"></script>),
         @view.javascript_include_tag(:file1, :file2)
+      assert_dom_equal %(<script src="/assets/foo.self.js?body=1"></script>),
+        @view.javascript_include_tag(:foo, :async => "async")
 
       assert_servable_asset_url "/assets/foo.self.js?body=1"
       assert_servable_asset_url "/assets/bar.self.js?body=1"
