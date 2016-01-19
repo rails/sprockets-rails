@@ -121,7 +121,7 @@ is not enabled, then we check the environment if compiling is enabled:
 # Production default.
 %i[ manifest ]
 ```
-
+If the resolver list is empty (e.g. if debug is true and compile is false), the standard rails public path resolution will be used.
 
 ## Complementary plugins
 
