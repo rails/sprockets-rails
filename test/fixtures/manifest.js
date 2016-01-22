@@ -7,3 +7,4 @@
 //= link file1.js
 //= link file2.css
 //= link file2.js
+//= link bundle.js

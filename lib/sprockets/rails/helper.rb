@@ -313,15 +313,15 @@ module Sprockets
 
           # Otherwise, ask the Sprockets environment whether the asset exists
           # and check whether it's also precompiled for production deploys.
-          elsif find_asset(path)
-            raise_unless_precompiled_asset path unless allow_non_precompiled
+          elsif asset = find_asset(path)
+            raise_unless_precompiled_asset asset.logical_path unless allow_non_precompiled
             path
           end
         end
 
         def digest_path(path, allow_non_precompiled = false)
           if asset = find_asset(path)
-            raise_unless_precompiled_asset path unless allow_non_precompiled
+            raise_unless_precompiled_asset asset.logical_path unless allow_non_precompiled
             asset.digest_path
           end
         end
