@@ -99,8 +99,6 @@ config.assets.configure do |env|
   env.register_preprocessor 'application/javascript', MyProcessor
 
   env.logger = Rails.logger
-
-  env.cache = ActiveSupport::Cache::FileStore.new("tmp/cache/assets")
 end
 ```
 
