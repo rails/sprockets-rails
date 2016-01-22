@@ -7,8 +7,6 @@ require 'sprockets/rails/task'
 Minitest::Test = MiniTest::Unit::TestCase unless defined?(Minitest::Test)
 
 class TestTask < Minitest::Test
-  include ActiveSupport::Testing::Isolation
-
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
   def setup
