@@ -98,7 +98,7 @@ module Sprockets
 
     config.assets.configure do |env|
       env.cache = Sprockets::Cache::FileStore.new(
-        "#{env.root}/tmp/cache",
+        "#{env.root}/tmp/cache/assets",
         config.assets.cache_limit,
         env.logger
       )
