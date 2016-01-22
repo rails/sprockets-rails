@@ -803,6 +803,11 @@ class AssetUrlHelperLinksTarget < HelperTest
 end
 
 class PrecompiledAssetHelperTest < HelperTest
+  def setup
+    super
+    @bundle_js_name = '/assets/bundle.js'
+  end
+
   def test_javascript_precompile
     assert_raises(Sprockets::Rails::Helper::AssetNotPrecompiled) do
       @view.javascript_include_tag("not_precompiled")
@@ -814,11 +819,17 @@ class PrecompiledAssetHelperTest < HelperTest
       @view.stylesheet_link_tag("not_precompiled")
     end
   end
+
+  def test_index_files
+    assert_dom_equal %(<script src="#{@bundle_js_name}"></script>),
+      @view.javascript_include_tag("bundle")
+  end
 end
 
 class PrecompiledDebugAssetHelperTest < PrecompiledAssetHelperTest
   def setup
     super
     @view.debug_assets = true
+    @bundle_js_name = '/assets/bundle/index.self.js?body=1'
   end
 end
