@@ -125,13 +125,13 @@ module Sprockets
 
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
-            if asset = lookup_debug_asset(source, :type => :javascript)
+            if asset = lookup_debug_asset(source, type: :javascript)
               if asset.respond_to?(:to_a)
                 asset.to_a.map do |a|
-                  super(path_to_javascript(a.logical_path, :debug => true), options)
+                  super(path_to_javascript(a.logical_path, debug: true), options)
                 end
               else
-                super(path_to_javascript(asset.logical_path, :debug => true), options)
+                super(path_to_javascript(asset.logical_path, debug: true), options)
               end
             else
               super(source, options)
@@ -139,7 +139,7 @@ module Sprockets
           }.flatten.uniq.join("\n").html_safe
         else
           sources.map { |source|
-            options = options.merge('integrity' => asset_integrity(source, :type => :javascript)) if integrity
+            options = options.merge('integrity' => asset_integrity(source, type: :javascript)) if integrity
             super source, options
           }.join("\n").html_safe
         end
@@ -154,13 +154,13 @@ module Sprockets
 
         if options["debug"] != false && request_debug_assets?
           sources.map { |source|
-            if asset = lookup_debug_asset(source, :type => :stylesheet)
+            if asset = lookup_debug_asset(source, type: :stylesheet)
               if asset.respond_to?(:to_a)
                 asset.to_a.map do |a|
-                  super(path_to_stylesheet(a.logical_path, :debug => true), options)
+                  super(path_to_stylesheet(a.logical_path, debug: true), options)
                 end
               else
-                super(path_to_stylesheet(asset.logical_path, :debug => true), options)
+                super(path_to_stylesheet(asset.logical_path, debug: true), options)
               end
             else
               super(source, options)
@@ -168,7 +168,7 @@ module Sprockets
           }.flatten.uniq.join("\n").html_safe
         else
           sources.map { |source|
-            options = options.merge('integrity' => asset_integrity(source, :type => :stylesheet)) if integrity
+            options = options.merge('integrity' => asset_integrity(source, type: :stylesheet)) if integrity
             super source, options
           }.join("\n").html_safe
         end
