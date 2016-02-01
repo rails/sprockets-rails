@@ -147,7 +147,7 @@ The following plugins provide some extras for the Sprockets Asset Pipeline.
 Sprockets 3.x adds experimental support for subresource integrity checks. The spec is still evolving and the API may change in backwards incompatible ways.
 
 ``` ruby
-javascript_include_tag :application, integrity: true
+javascript_include_tag :application, integrity: 'sha256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs='
 # => "<script src="/assets/application.js" integrity="sha256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs="></script>"
 ```
 
