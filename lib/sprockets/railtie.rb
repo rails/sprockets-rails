@@ -60,7 +60,7 @@ module Sprockets
 
     LOOSE_APP_ASSETS = lambda do |logical_path, filename|
         filename.start_with?(::Rails.root.join("app/assets").to_s) &&
-        !%w(.js .css).include?(File.extname(logical_path))
+        !['.js', '.css', ''].include?(File.extname(logical_path))
     end
 
     class OrderedOptions < ActiveSupport::OrderedOptions
