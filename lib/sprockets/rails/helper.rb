@@ -11,14 +11,10 @@ module Sprockets
         def initialize(source)
           msg =
           if using_sprockets4?
-            "Asset `#{source}` was not declared to be precompiled in production.\n" +
-            "Declare links to your assets in `assets/config/manifest.js`.\n" +
-            "Examples:\n" +
-            "`//= link ../javascripts/application.js`\n" +
-            "`//= link_directory ../javascripts .js`\n" +
-            "`//= link_directory ../stylesheets .css`\n" +
-            "`//= link_tree ../javascripts .js`\n" +
-            "`//= link_tree ../images`\n"
+            "Asset `#{ source }` was not declared to be precompiled in production.\n" +
+            "Declare links to your assets in `app/assets/config/manifest.js`.\n\n" +
+            "  //= link #{ source }\n" +
+            "and restart your server"
           else
             "Asset was not declared to be precompiled in production.\n" +
             "Add `Rails.application.config.assets.precompile += " +
