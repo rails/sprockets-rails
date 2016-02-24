@@ -18,8 +18,7 @@ module Sprockets
             "`//= link_directory ../javascripts .js`\n" +
             "`//= link_directory ../stylesheets .css`\n" +
             "`//= link_tree ../javascripts .js`\n" +
-            "`//= link_tree ../images`\n" +
-            "and restart your server"
+            "`//= link_tree ../images`\n"
           else
             "Asset was not declared to be precompiled in production.\n" +
             "Add `Rails.application.config.assets.precompile += " +

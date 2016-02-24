@@ -31,13 +31,21 @@ module Rails
     # Called from asset helpers to alert you if you reference an asset URL that
     # isn't precompiled and hence won't be available in production.
     def asset_precompiled?(logical_path)
-      precompiled_assets.include? logical_path
+      if precompiled_assets.include?(logical_path)
+        true
+      elsif !config.cache_classes
+        # Check to see if precompile list has been updated
+        precompiled_assets(true).include?(logical_path)
+      else
+        false
+      end
     end
 
     # Lazy-load the precompile list so we don't cause asset compilation at app
     # boot time, but ensure we cache the list so we don't recompute it for each
     # request or test case.
-    def precompiled_assets
+    def precompiled_assets(clear_cache = false)
+      @precompiled_assets = nil if clear_cache
       @precompiled_assets ||= assets_manifest.find(config.assets.precompile).map(&:logical_path).to_set
     end
   end
