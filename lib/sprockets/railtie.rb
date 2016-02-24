@@ -8,6 +8,7 @@ require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
 require 'sprockets/rails/route_wrapper'
 require 'sprockets/rails/version'
+require 'sprockets/rails/flush_cache_middleware'
 require 'set'
 
 module Rails
@@ -40,9 +41,20 @@ module Rails
     def precompiled_assets
       @precompiled_assets ||= assets_manifest.find(config.assets.precompile).map(&:logical_path).to_set
     end
+
+    def clear_precompiled_assets_cache!
+      @precompiled_assets = nil
+    end
   end
 
   class Engine < Railtie
+    initializer :flush_precompiled_assets_cache do |app|
+      if app.config.assets.debug
+        app.config.app_middleware.insert_before ::ActionDispatch::Callbacks,
+            Sprockets::Rails::FlushCacheMiddleware, -> { app.clear_precompiled_assets_cache! }
+      end
+    end
+
     # Skip defining append_assets_path on Rails <= 4.2
     unless initializers.find { |init| init.name == :append_assets_path }
       initializer :append_assets_path, :group => :all do |app|
