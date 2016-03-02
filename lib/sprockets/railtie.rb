@@ -113,10 +113,11 @@ module Sprockets
     end
 
     Sprockets.register_dependency_resolver 'rails-env' do
-      ::Rails.env
+      ::Rails.env.to_s
     end
+
     config.assets.configure do |env|
-      env.depend_on 'environment-version'
+      env.depend_on 'rails-env'
     end
 
     config.assets.configure do |env|
