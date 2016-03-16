@@ -78,7 +78,7 @@ class HelperTest < ActionView::TestCase
   end
 
   def using_sprockets4?
-    Gem::Version.new(Sprockets::VERSION) >= Gem::Version.new('4.0.0')
+    Gem::Version.new(Sprockets::VERSION) >= Gem::Version.new('4.x')
   end
 
   def test_truth
@@ -827,9 +827,15 @@ class PrecompiledAssetHelperTest < HelperTest
 end
 
 class PrecompiledDebugAssetHelperTest < PrecompiledAssetHelperTest
+
+  # Re-run all PrecompiledAssetHelperTest with a different setup
   def setup
     super
     @view.debug_assets = true
-    @bundle_js_name = '/assets/bundle/index.self.js?body=1'
+    if using_sprockets4?
+      @bundle_js_name = '/assets/bundle.debug.js'
+    else
+      @bundle_js_name = '/assets/bundle/index.self.js?body=1'
+    end
   end
 end
