@@ -66,6 +66,20 @@ module Sprockets
   class Railtie < ::Rails::Railtie
     include Sprockets::Rails::Utils
 
+    class ManifestNeededError < StandardError
+      def initialize
+        msg = "Expected to find a manifest file in `app/assets/config/manifest.js`\n" +
+        "But did not, please create this file and use it to link any assets that need\n" +
+        "to be rendered by your app:\n\n" +
+        "Example:\n" +
+        "  //= link_tree ../images\n"  +
+        "  //= link_directory ../javascripts .js\n" +
+        "  //= link_directory ../stylesheets .css\n"  +
+        "and restart your server"
+        super msg
+      end
+    end
+
     LOOSE_APP_ASSETS = lambda do |logical_path, filename|
         filename.start_with?(::Rails.root.join("app/assets").to_s) &&
         !['.js', '.css', ''].include?(File.extname(logical_path))
@@ -80,13 +94,19 @@ module Sprockets
     config.assets = OrderedOptions.new
     config.assets._blocks     = []
     config.assets.paths       = []
+    config.assets.precompile  = []
     config.assets.prefix      = "/assets"
     config.assets.manifest    = nil
-    if using_sprockets4?
-      config.assets.precompile  = %w( manifest.js )
-    else
-      config.assets.precompile  = [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
+
+    initializer :set_default_precompile do |app|
+      if using_sprockets4?
+        raise ManifestNeededError if !::Rails.root.join("app/assets/config/manifest.js").exist?
+        app.config.assets.precompile  += %w( manifest.js )
+      else
+        app.config.assets.precompile  += [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
+      end
     end
+
     config.assets.version     = ""
     config.assets.debug       = false
     config.assets.compile     = true

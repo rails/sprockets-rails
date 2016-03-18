@@ -38,6 +38,14 @@ class TestBoot < Minitest::Test
     @app.config.middleware ||= Rails::Configuration::MiddlewareStackProxy.new
     @app.config.active_support.deprecation = :notify
     ActionView::Base # load ActionView
+
+    Dir.chdir(app.root) do
+      dir = "app/assets/config"
+      FileUtils.mkdir_p(dir)
+      File.open("#{ dir }/manifest.js", "w") do |f|
+        f << ""
+      end
+    end
   end
 
   def test_initialize
@@ -72,7 +80,7 @@ class TestRailtie < TestBoot
     assert_equal ROOT, env.root
     assert_equal "", env.version
     assert env.cache
-    assert_equal [], env.paths
+    assert_equal ["#{ROOT}/app/assets/config"], env.paths
     assert_nil env.js_compressor
     assert_nil env.css_compressor
   end
@@ -120,7 +128,7 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
-    assert_equal ["#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
+    assert_equal ["#{ROOT}/app/assets/config", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
       env.paths.sort
   end
 
@@ -179,7 +187,7 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
-    assert_equal ["#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
+    assert_equal ["#{ROOT}/app/assets/config", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
       env.paths.sort
   end
 
@@ -340,7 +348,7 @@ class TestRailtie < TestBoot
     assert_kind_of Sprockets::Environment, env
 
     assert_equal ROOT, env.root
-    assert_equal ["#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
+    assert_equal ["#{ROOT}/app/assets/config", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
       env.paths.sort
   end
 end
