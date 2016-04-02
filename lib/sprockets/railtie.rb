@@ -6,6 +6,7 @@ require 'active_support/core_ext/numeric/bytes'
 require 'sprockets'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
+require 'sprockets/rails/quiet_assets'
 require 'sprockets/rails/route_wrapper'
 require 'sprockets/rails/version'
 require 'set'
@@ -97,6 +98,7 @@ module Sprockets
     config.assets.precompile  = []
     config.assets.prefix      = "/assets"
     config.assets.manifest    = nil
+    config.assets.quiet       = true
 
     initializer :set_default_precompile do |app|
       if using_sprockets4?
@@ -104,6 +106,10 @@ module Sprockets
         app.config.assets.precompile  += %w( manifest.js )
       else
         app.config.assets.precompile  += [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
+      end
+
+      if app.config.assets.quiet
+        app.middleware.insert_before ::Rails::Rack::Logger, Sprockets::Rails::QuietAssets
       end
     end
 
