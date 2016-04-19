@@ -327,7 +327,7 @@ module Sprockets
 
         def find_debug_asset(path)
           if asset = find_asset(path, pipeline: :debug)
-            raise_unless_precompiled_asset asset.logical_path.sub('.debug', '')
+            raise_unless_precompiled_asset asset.logical_path
             asset
           end
         end
@@ -342,6 +342,7 @@ module Sprockets
           end
 
           def raise_unless_precompiled_asset(path)
+            path = path.sub(/\.(debug|self)/, '')
             raise Helper::AssetNotPrecompiled.new(path) unless precompiled?(path)
           end
       end
