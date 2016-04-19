@@ -165,6 +165,23 @@ class TestRailtie < TestBoot
     assert_equal compressor, env.css_compressor
   end
 
+  def test_default_gzip_config
+    app.initialize!
+
+    assert env = app.assets
+    assert_equal true, env.gzip?
+  end
+
+  def test_gzip_config
+    app.configure do
+      config.assets.gzip = false
+    end
+    app.initialize!
+
+    assert env = app.assets
+    assert_equal false, env.gzip?
+  end
+
   def test_version
     app.configure do
       config.assets.version = 'v2'
