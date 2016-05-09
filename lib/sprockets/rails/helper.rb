@@ -70,8 +70,10 @@ module Sprockets
 
       def compute_asset_path(path, options = {})
         debug = options[:debug]
+        allow_non_precompiled = options.key?(:allow_non_precompiled) ?
+          options[:allow_non_precompiled] : debug
 
-        if asset_path = resolve_asset_path(path, debug)
+        if asset_path = resolve_asset_path(path, allow_non_precompiled)
           File.join(assets_prefix || "/", legacy_debug_path(asset_path, debug))
         else
           super
