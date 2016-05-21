@@ -113,6 +113,7 @@ module Sprockets
     config.assets.digest      = true
     config.assets.cache_limit = 50.megabytes
     config.assets.gzip        = true
+    config.assets.raise_unless_precompiled_asset = true
 
     config.assets.configure do |env|
       config.assets.paths.each { |path| env.append_path(path) }
@@ -234,6 +235,8 @@ module Sprockets
         self.assets_manifest = app.assets_manifest
 
         self.resolve_assets_with = config.assets.resolve_with
+
+        self.raise_unless_precompiled_asset = config.assets.raise_unless_precompiled_asset
 
         # Expose the app precompiled asset check to the view
         self.precompiled_asset_checker = -> logical_path { app.asset_precompiled? logical_path }

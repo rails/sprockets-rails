@@ -33,7 +33,7 @@ module Sprockets
         :assets_environment, :assets_manifest,
         :assets_precompile, :precompiled_asset_checker,
         :assets_prefix, :digest_assets, :debug_assets,
-        :resolve_assets_with
+        :resolve_assets_with, :raise_unless_precompiled_asset
       ]
 
       def self.included(klass)
@@ -299,6 +299,7 @@ module Sprockets
           raise ArgumentError, 'config.assets.resolve_with includes :environment, but app.assets is nil' unless view.assets_environment
           @env = view.assets_environment
           @precompiled_asset_checker = view.precompiled_asset_checker
+          @raise_unless_precompiled_asset = view.raise_unless_precompiled_asset
         end
 
         def asset_path(path, digest, allow_non_precompiled = false)
@@ -342,6 +343,7 @@ module Sprockets
           end
 
           def raise_unless_precompiled_asset(path)
+            return unless @raise_unless_precompiled_asset
             raise Helper::AssetNotPrecompiled.new(path) unless precompiled?(path)
           end
       end
