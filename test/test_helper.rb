@@ -27,7 +27,7 @@ class HelperTest < ActionView::TestCase
     @view.assets_prefix       = "/assets"
     @view.assets_precompile   = %w( manifest.js )
     precompiled_assets = @manifest.find(@view.assets_precompile).map(&:logical_path)
-    @view.raise_unless_precompiled_asset = true
+    @view.check_precompiled_asset = true
     @view.precompiled_asset_checker = -> logical_path { precompiled_assets.include? logical_path }
     @view.request = ActionDispatch::Request.new({
       "rack.url_scheme" => "https"
@@ -828,15 +828,15 @@ class PrecompiledAssetHelperTest < HelperTest
 end
 
 class RaiseUnlessPrecompiledAssetDisabledTest < HelperTest
-  def test_raise_unless_precompiled_asset_enabled
-    @view.raise_unless_precompiled_asset = true
+  def test_check_precompiled_asset_enabled
+    @view.check_precompiled_asset = true
     assert_raises(Sprockets::Rails::Helper::AssetNotPrecompiled) do
       @view.asset_path("not_precompiled.css")
     end
   end
 
-  def test_raise_unless_precompiled_asset_disabled
-    @view.raise_unless_precompiled_asset = false
+  def test_check_precompiled_asset_disabled
+    @view.check_precompiled_asset = false
     assert @view.asset_path("not_precompiled.css")
   end
 end

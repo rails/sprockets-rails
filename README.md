@@ -121,7 +121,7 @@ is not enabled, then we check the environment if compiling is enabled:
 ```
 If the resolver list is empty (e.g. if debug is true and compile is false), the standard rails public path resolution will be used.
 
-**`config.assets.raise_unless_precompiled_asset`**
+**`config.assets.check_precompiled_asset`**
 
 When enabled, an exception is raised for missing assets. This option is enabled by default.
 

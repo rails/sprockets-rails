@@ -182,20 +182,20 @@ class TestRailtie < TestBoot
     assert_equal false, env.gzip?
   end
 
-  def test_default_raise_unless_precompiled_assets
-    assert app.config.assets.raise_unless_precompiled_asset
+  def test_default_check_precompiled_assets
+    assert app.config.assets.check_precompiled_asset
     app.initialize!
     @view = ActionView::Base.new
-    assert @view.raise_unless_precompiled_asset
+    assert @view.check_precompiled_asset
   end
 
-  def test_configure_raise_unless_precompiled_assets
+  def test_configure_check_precompiled_assets
     app.configure do
-      config.assets.raise_unless_precompiled_asset = false
+      config.assets.check_precompiled_asset = false
     end
     app.initialize!
     @view = ActionView::Base.new
-    refute @view.raise_unless_precompiled_asset
+    refute @view.check_precompiled_asset
   end
 
   def test_version
