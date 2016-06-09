@@ -59,6 +59,9 @@ Add additional assets to compile on deploy. Defaults to `application.js`, `appli
 
 Add additional load paths to this Array. Rails includes `app/assets`, `lib/assets` and `vendor/assets` for you already. Plugins might want to add their custom paths to this.
 
+**`config.assets.quiet`**
+
+Suppresses logger output for asset requests. Uses the `config.assets.prefix` path to match and wraps the request in a `Rails.logger.silence{ }` which silences all but `ERROR` level. Defaults to `false`.
 
 **`config.assets.version`**
 

@@ -384,4 +384,25 @@ class TestRailtie < TestBoot
     assert_equal ["#{ROOT}/app/assets/config", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
       env.paths.sort
   end
+
+  def test_quiet_assets_defaults_to_off
+    app.initialize!
+    app.load_tasks
+
+    assert_equal false, app.config.assets.quiet
+    refute app.config.middleware.include?(Sprockets::Rails::QuietAssets)
+  end
+
+  def test_quiet_assets_inserts_middleware
+    app.configure do
+      config.assets.quiet = true
+    end
+    app.initialize!
+    app.load_tasks
+    middleware = app.config.middleware
+
+    assert_equal true, app.config.assets.quiet
+    assert middleware.include?(Sprockets::Rails::QuietAssets)
+    assert middleware.each_cons(2).include?([Sprockets::Rails::QuietAssets, Rails::Rack::Logger])
+  end
 end
