@@ -205,44 +205,6 @@ class NoHostHelperTest < HelperTest
   end
 end
 
-class NoSSLHelperTest < NoHostHelperTest
-  def setup
-    super
-
-    @view.request = nil
-  end
-
-  def test_javascript_include_tag_integrity
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: true)
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: false)
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: nil)
-
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: "sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs=")
-
-    assert_dom_equal %(<script src="/assets/foo.js"></script>),
-      @view.javascript_include_tag("foo", integrity: true)
-  end
-
-  def test_stylesheet_link_tag_integrity
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static", integrity: true)
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static", integrity: false)
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static", integrity: nil)
-
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static", integrity: "sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=")
-
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("foo", integrity: true)
-  end
-end
-
 class RelativeHostHelperTest < HelperTest
   def setup
     super
