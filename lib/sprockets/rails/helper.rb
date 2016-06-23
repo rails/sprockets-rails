@@ -189,10 +189,11 @@ module Sprockets
           end
         end
 
-        # Only serve integrity metadata for HTTPS requests:
-        #   http://www.w3.org/TR/SRI/#non-secure-contexts-remain-non-secure
+        # The SRI spec does not require HTTPS, although you're
+        # not benefiting from the extra security without HTTPS.
+        #   https://www.w3.org/TR/SRI/#is-response-eligible-for-integrity-validation
         def secure_subresource_integrity_context?
-          respond_to?(:request) && self.request && self.request.ssl?
+          respond_to?(:request) && self.request
         end
 
         # Enable split asset debugging. Eventually will be deprecated
