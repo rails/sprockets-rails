@@ -158,6 +158,8 @@ javascript_include_tag :application, integrity: true
 # => "<script src="/assets/application.js" integrity="sha256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs="></script>"
 ```
 
+Note that sprockets-rails only adds integrity hashes to assets when served in a secure context (over an HTTPS connection or localhost).
+
 
 ## Contributing to Sprockets Rails
 

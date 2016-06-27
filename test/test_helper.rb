@@ -205,6 +205,93 @@ class NoHostHelperTest < HelperTest
   end
 end
 
+class NoSSLHelperTest < NoHostHelperTest
+  def setup
+    super
+
+    @view.request = nil
+  end
+
+  def test_javascript_include_tag_integrity
+    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+      @view.javascript_include_tag("static", integrity: true)
+    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+      @view.javascript_include_tag("static", integrity: false)
+    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+      @view.javascript_include_tag("static", integrity: nil)
+
+    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+      @view.javascript_include_tag("static", integrity: "sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs=")
+
+    assert_dom_equal %(<script src="/assets/foo.js"></script>),
+      @view.javascript_include_tag("foo", integrity: true)
+  end
+
+  def test_stylesheet_link_tag_integrity
+    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("static", integrity: true)
+    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("static", integrity: false)
+    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("static", integrity: nil)
+
+    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("static", integrity: "sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=")
+
+    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("foo", integrity: true)
+  end
+end
+
+class LocalhostHelperTest < NoHostHelperTest
+  def setup
+    super
+
+    @view.request = ActionDispatch::Request.new({
+      "rack.url_scheme" => "http",
+      "REMOTE_ADDR" => "127.0.0.1"
+    })
+  end
+
+  def test_javascript_include_tag_integrity
+    super
+
+    assert_dom_equal %(<script src="/assets/foo.js"></script>),
+      @view.javascript_include_tag("foo", integrity: false)
+    assert_dom_equal %(<script src="/assets/foo.js"></script>),
+      @view.javascript_include_tag("foo", integrity: nil)
+
+    assert_dom_equal %(<script src="/assets/foo.js" integrity="#{@foo_js_integrity}"></script>),
+      @view.javascript_include_tag("foo", integrity: true)
+    assert_dom_equal %(<script src="/assets/foo.js" integrity="#{@foo_js_integrity}"></script>),
+      @view.javascript_include_tag("foo.js", integrity: true)
+    assert_dom_equal %(<script src="/assets/foo.js" integrity="#{@foo_js_integrity}"></script>),
+      @view.javascript_include_tag(:foo, integrity: true)
+
+    assert_dom_equal %(<script src="/assets/foo.js" integrity="#{@foo_js_integrity}"></script>\n<script src="/assets/bar.js" integrity="#{@bar_js_integrity}"></script>),
+      @view.javascript_include_tag(:foo, :bar, integrity: true)
+  end
+
+  def test_stylesheet_link_tag_integrity
+    super
+
+    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("foo", integrity: false)
+    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
+      @view.stylesheet_link_tag("foo", integrity: nil)
+
+    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+      @view.stylesheet_link_tag("foo", integrity: true)
+    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+      @view.stylesheet_link_tag("foo.css", integrity: true)
+    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+      @view.stylesheet_link_tag(:foo, integrity: true)
+
+    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />\n<link href="/assets/bar.css" media="screen" rel="stylesheet" integrity="sha256-Vd370+VAW4D96CVpZcjFLXyeHoagI0VHwofmzRXetuE=" />),
+      @view.stylesheet_link_tag(:foo, :bar, integrity: true)
+  end
+end
+
 class RelativeHostHelperTest < HelperTest
   def setup
     super
