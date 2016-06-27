@@ -178,21 +178,10 @@ module Sprockets
         # doesn't bleed into the tag attributes, but also check its value if
         # it's boolean-ish.
         def compute_integrity?(options)
-          if secure_subresource_integrity_context?
-            case options['integrity']
-            when nil, false, true
-              options.delete('integrity') == true
-            end
-          else
-            options.delete 'integrity'
-            false
+          case options['integrity']
+          when nil, false, true
+            options.delete('integrity') == true
           end
-        end
-
-        # Only serve integrity metadata for HTTPS requests:
-        #   http://www.w3.org/TR/SRI/#non-secure-contexts-remain-non-secure
-        def secure_subresource_integrity_context?
-          respond_to?(:request) && self.request && self.request.ssl?
         end
 
         # Enable split asset debugging. Eventually will be deprecated
