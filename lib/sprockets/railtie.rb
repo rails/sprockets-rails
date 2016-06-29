@@ -155,7 +155,7 @@ module Sprockets
     end
 
     config.assets.configure do |env|
-      env.gzip = config.assets.gzip
+      env.gzip = config.assets.gzip if env.respond_to?(:gzip=)
     end
 
     rake_tasks do |app|
