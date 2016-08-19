@@ -827,6 +827,41 @@ class PrecompiledAssetHelperTest < HelperTest
   end
 end
 
+class DeprecationTest < HelperTest
+  def test_deprecations_for_asset_path
+    @view.send(:define_singleton_method, :public_asset_path, -> {})
+    assert_deprecated(/public_asset_path/) do
+      @view.asset_path("does_not_exist.noextension")
+    end
+  ensure
+    @view.instance_eval('undef :public_asset_path')
+  end
+
+  def test_deprecations_for_asset_url
+    @view.send(:define_singleton_method, :public_asset_path, -> {})
+    @view.send(:define_singleton_method, :public_asset_url, -> {})
+
+    assert_deprecated(/public_asset_url/) do
+      @view.asset_url("does_not_exist.noextension")
+    end
+  ensure
+    @view.instance_eval('undef :public_asset_path')
+    @view.instance_eval('undef :public_asset_url')
+  end
+
+  def test_deprecations_for_image_tag
+    @view.send(:define_singleton_method, :public_asset_path, -> {})
+    @view.send(:define_singleton_method, :public_image_tag, -> {})
+
+    assert_deprecated(/public_image_tag/) do
+      @view.image_tag("does_not_exist.noextension")
+    end
+  ensure
+    @view.instance_eval('undef :public_asset_path')
+    @view.instance_eval('undef :public_image_tag')
+  end
+end
+
 class RaiseUnlessPrecompiledAssetDisabledTest < HelperTest
   def test_check_precompiled_asset_enabled
     @view.check_precompiled_asset = true

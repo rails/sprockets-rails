@@ -68,15 +68,35 @@ module Sprockets
         end
       end
 
+      # Writes over the built in ActionView::Helpers::AssetUrlHelper#compute_asset_path
+      # to use the asset pipeline.
       def compute_asset_path(path, options = {})
         debug = options[:debug]
 
         if asset_path = resolve_asset_path(path, debug)
           File.join(assets_prefix || "/", legacy_debug_path(asset_path, debug))
         else
-          super
+          result = super
+          if respond_to?(:public_asset_path)
+            throw(:asset_not_found, result)
+          else
+            result
+          end
         end
       end
+
+      # Writes over the built in ActionView::Helpers::AssetUrlHelper#asset_path
+      # to use the asset pipeline.
+      def asset_path(*args)
+        catch_asset_not_found = catch(:asset_not_found) do
+          return super(*args)
+        end
+
+        result = catch_asset_not_found
+        deprecate_invalid_asset_lookup(result, caller)
+        result
+      end
+      alias_method :path_to_asset, :asset_path # aliased to avoid conflicts with an asset_path named route
 
       # Resolve the asset path against the Sprockets manifest or environment.
       # Returns nil if it's an asset we don't know about.
@@ -243,6 +263,49 @@ module Sprockets
           else
             path
           end
+        end
+
+      private
+        # Attempts to extract a method name from a given caller line
+        #
+        # Example:
+        #
+        #   extractd_method_from_call_frame('console.rb:65:in `start'') => 'start'
+        def extract_method_from_call_frame(frame)
+          frame.split("in ".freeze).last.gsub(/`|'/, ''.freeze)
+        end
+
+        # Emits a deprecation warning when asset pipeline
+        # is used with an asset that is not part of the pipeline.
+        #
+        # Attempts to determine proper method name based on caller.
+        def deprecate_invalid_asset_lookup(name, call_stack)
+          message =  "The asset #{ name.inspect } you are looking for is not present in the asset pipeline.\n"
+          message << "The public fallback behavior is being deprecated and will be removed.\n"
+
+          append = nil
+          # Search for the most likely top level method where deprecation occured.
+          # Hash contains, in order, the suffix we're looking for, and where it would appear
+          # in the call stack.
+          # This is needed because every deprecated method eventually calls `asset_path`.
+          { "_url" => [0, 1] , "_tag" => [1, 2], "_path" => [0] }.detect do |suffix, positions|
+
+            positions.detect do |position|
+              public_method_name = "public_" + extract_method_from_call_frame(call_stack[position])
+
+              if public_method_name.end_with?(suffix) && respond_to?(public_method_name)
+                position.times { call_stack.shift }
+                append = "please use the `public_*` helper instead. For example `#{ public_method_name }`.\n"
+              else
+                false
+              end
+            end
+          end
+
+          append ||= "please use the `public_*` helper instead for example `public_asset_path`.\n"
+          message << append
+
+          ActiveSupport::Deprecation.warn(message, call_stack)
         end
     end
 
