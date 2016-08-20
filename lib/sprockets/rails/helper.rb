@@ -284,24 +284,23 @@ module Sprockets
           message << "The public fallback behavior is being deprecated and will be removed.\n"
 
           append = nil
-          # Search for the most likely top level method where deprecation occured.
-          # Hash contains, in order, the suffix we're looking for, and where it would appear
-          # in the call stack.
-          # This is needed because every deprecated method eventually calls `asset_path`.
-          { "_url" => [0, 1] , "_tag" => [1, 2], "_path" => [0] }.detect do |suffix, positions|
 
-            positions.detect do |position|
-              public_method_name = "public_" + extract_method_from_call_frame(call_stack[position])
+          # We need to figure out the actually deprecated method. This is complicated since
+          # the deprecation always comes from `asset_path` but that might not be the API that
+          # is being used. To solve this we look at the call stack methods backwards and figure out the first
+          # `*_url`, `*_tag` or `*_path` method that is called. If that method also has a `public_*`
+          # counterpart it is the first method that was called that could be deprecated.
+          call_stack.reverse_each.detect.with_index do |call_frame, index|
+            method_name = extract_method_from_call_frame(call_frame)
+            next if !method_name.end_with?("_url".freeze) &&
+                      !method_name.end_with?("_tag".freeze) &&
+                      !method_name.end_with?("_path".freeze)
 
-              if public_method_name.end_with?(suffix) && respond_to?(public_method_name)
-                position.times { call_stack.shift }
-                append = "please use the `public_*` helper instead. For example `#{ public_method_name }`.\n"
-              else
-                false
-              end
+            if self.respond_to?("public_#{ method_name }")
+              append = "please use the `public_*` helper instead. For example `#{ "public_#{ method_name }" }`.\n"
+              call_stack.shift(call_stack.length - index - 1)
             end
           end
-
           append ||= "please use the `public_*` helper instead for example `public_asset_path`.\n"
           message << append
 
