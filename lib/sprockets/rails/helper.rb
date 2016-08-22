@@ -77,7 +77,7 @@ module Sprockets
           File.join(assets_prefix || "/", legacy_debug_path(asset_path, debug))
         else
           result = super
-          if respond_to?(:public_asset_path)
+          if respond_to?(:public_compute_asset_path)
             throw(:asset_not_found, result)
           else
             result
@@ -93,7 +93,7 @@ module Sprockets
         end
 
         result = catch_asset_not_found
-        deprecate_invalid_asset_lookup(result, caller)
+        deprecate_invalid_asset_lookup(result, respond_to?(:caller_locations) ? caller_locations : caller)
         result
       end
       alias_method :path_to_asset, :asset_path # aliased to avoid conflicts with an asset_path named route
@@ -266,15 +266,6 @@ module Sprockets
         end
 
       private
-        # Attempts to extract a method name from a given caller line
-        #
-        # Example:
-        #
-        #   extractd_method_from_call_frame('console.rb:65:in `start'') => 'start'
-        def extract_method_from_call_frame(frame)
-          frame.split("in ".freeze).last.gsub(/`|'/, ''.freeze)
-        end
-
         # Emits a deprecation warning when asset pipeline
         # is used with an asset that is not part of the pipeline.
         #
@@ -282,27 +273,7 @@ module Sprockets
         def deprecate_invalid_asset_lookup(name, call_stack)
           message =  "The asset #{ name.inspect } you are looking for is not present in the asset pipeline.\n"
           message << "The public fallback behavior is being deprecated and will be removed.\n"
-
-          append = nil
-
-          # We need to figure out the actually deprecated method. This is complicated since
-          # the deprecation always comes from `asset_path` but that might not be the API that
-          # is being used. To solve this we look at the call stack methods backwards and figure out the first
-          # `*_url`, `*_tag` or `*_path` method that is called. If that method also has a `public_*`
-          # counterpart it is the first method that was called that could be deprecated.
-          call_stack.reverse_each.detect.with_index do |call_frame, index|
-            method_name = extract_method_from_call_frame(call_frame)
-            next if !method_name.end_with?("_url".freeze) &&
-                      !method_name.end_with?("_tag".freeze) &&
-                      !method_name.end_with?("_path".freeze)
-
-            if self.respond_to?("public_#{ method_name }")
-              append = "please use the `public_*` helper instead. For example `#{ "public_#{ method_name }" }`.\n"
-              call_stack.shift(call_stack.length - index - 1)
-            end
-          end
-          append ||= "please use the `public_*` helper instead for example `public_asset_path`.\n"
-          message << append
+          message << "pass in `public_folder: true` instead.\n"
 
           ActiveSupport::Deprecation.warn(message, call_stack)
         end

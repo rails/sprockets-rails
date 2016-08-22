@@ -829,36 +829,32 @@ end
 
 class DeprecationTest < HelperTest
   def test_deprecations_for_asset_path
-    @view.send(:define_singleton_method, :public_asset_path, -> {})
-    assert_deprecated(/public_asset_path/) do
+    @view.send(:define_singleton_method, :public_compute_asset_path, -> {})
+    assert_deprecated do
       @view.asset_path("does_not_exist.noextension")
     end
   ensure
-    @view.instance_eval('undef :public_asset_path')
+    @view.instance_eval('undef :public_compute_asset_path')
   end
 
   def test_deprecations_for_asset_url
-    @view.send(:define_singleton_method, :public_asset_path, -> {})
-    @view.send(:define_singleton_method, :public_asset_url, -> {})
+    @view.send(:define_singleton_method, :public_compute_asset_path, -> {})
 
-    assert_deprecated(/public_asset_url/) do
+    assert_deprecated do
       @view.asset_url("does_not_exist.noextension")
     end
   ensure
-    @view.instance_eval('undef :public_asset_path')
-    @view.instance_eval('undef :public_asset_url')
+    @view.instance_eval('undef :public_compute_asset_path')
   end
 
   def test_deprecations_for_image_tag
-    @view.send(:define_singleton_method, :public_asset_path, -> {})
-    @view.send(:define_singleton_method, :public_image_tag, -> {})
+    @view.send(:define_singleton_method, :public_compute_asset_path, -> {})
 
-    assert_deprecated(/public_image_tag/) do
+    assert_deprecated do
       @view.image_tag("does_not_exist.noextension")
     end
   ensure
-    @view.instance_eval('undef :public_asset_path')
-    @view.instance_eval('undef :public_image_tag')
+    @view.instance_eval('undef :public_compute_asset_path')
   end
 end
 
