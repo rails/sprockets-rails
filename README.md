@@ -48,8 +48,11 @@ Each asset task will invoke `assets:environment` first. By default this loads th
 
 Also see [Sprockets::Rails::Task](https://github.com/rails/sprockets-rails/blob/master/lib/sprockets/rails/task.rb) and [Rake::SprocketsTask](https://github.com/rails/sprockets/blob/master/lib/rake/sprocketstask.rb).
 
-
 ### Initializer options
+
+**`config.assets.unknown_asset_fallback`**
+
+When set to a truthy value, the a result will be returned even if the requested asset is not found in the asset pipeline. When set to `false` it will raise an error.
 
 **`config.assets.precompile`**
 

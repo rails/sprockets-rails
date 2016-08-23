@@ -6,6 +6,7 @@ require 'sprockets/rails/utils'
 module Sprockets
   module Rails
     module Helper
+      class AssetNotFound < StandardError; end
       class AssetNotPrecompiled < StandardError
         include Sprockets::Rails::Utils
         def initialize(source)
@@ -33,7 +34,8 @@ module Sprockets
         :assets_environment, :assets_manifest,
         :assets_precompile, :precompiled_asset_checker,
         :assets_prefix, :digest_assets, :debug_assets,
-        :resolve_assets_with, :check_precompiled_asset
+        :resolve_assets_with, :check_precompiled_asset,
+        :unknown_asset_fallback
       ]
 
       def self.included(klass)
@@ -76,27 +78,19 @@ module Sprockets
         if asset_path = resolve_asset_path(path, debug)
           File.join(assets_prefix || "/", legacy_debug_path(asset_path, debug))
         else
-          result = super
+          message =  "The asset #{ path.inspect } you are looking for is not present in the asset pipeline."
+          raise AssetNotFound, message unless unknown_asset_fallback
+
           if respond_to?(:public_compute_asset_path)
-            throw(:asset_not_found, result)
-          else
-            result
+            message << "The public fallback behavior is being deprecaed and will be removed.\n"
+            message << "pass in `public_folder: true` instead.\n"
+
+            call_stack = respond_to?(:caller_locations) ? caller_locations : caller
+            ActiveSupport::Deprecation.warn(message, call_stack)
           end
+          super
         end
       end
-
-      # Writes over the built in ActionView::Helpers::AssetUrlHelper#asset_path
-      # to use the asset pipeline.
-      def asset_path(*args)
-        catch_asset_not_found = catch(:asset_not_found) do
-          return super(*args)
-        end
-
-        result = catch_asset_not_found
-        deprecate_invalid_asset_lookup(result, respond_to?(:caller_locations) ? caller_locations : caller)
-        result
-      end
-      alias_method :path_to_asset, :asset_path # aliased to avoid conflicts with an asset_path named route
 
       # Resolve the asset path against the Sprockets manifest or environment.
       # Returns nil if it's an asset we don't know about.

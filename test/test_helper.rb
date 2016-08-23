@@ -28,6 +28,7 @@ class HelperTest < ActionView::TestCase
     @view.assets_precompile   = %w( manifest.js )
     precompiled_assets = @manifest.find(@view.assets_precompile).map(&:logical_path)
     @view.check_precompiled_asset = true
+    @view.unknown_asset_fallback  = true
     @view.precompiled_asset_checker = -> logical_path { precompiled_assets.include? logical_path }
     @view.request = ActionDispatch::Request.new({
       "rack.url_scheme" => "https"
