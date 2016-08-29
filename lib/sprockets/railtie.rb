@@ -82,8 +82,8 @@ module Sprockets
     end
 
     LOOSE_APP_ASSETS = lambda do |logical_path, filename|
-        filename.start_with?(::Rails.root.join("app/assets").to_s) &&
-        !['.js', '.css', ''].include?(File.extname(logical_path))
+      filename.start_with?(::Rails.root.join("app/assets").to_s) &&
+      !['.js', '.css', ''].include?(File.extname(logical_path))
     end
 
     class OrderedOptions < ActiveSupport::OrderedOptions
@@ -102,10 +102,10 @@ module Sprockets
 
     initializer :set_default_precompile do |app|
       if using_sprockets4?
-        raise ManifestNeededError if !::Rails.root.join("app/assets/config/manifest.js").exist?
-        app.config.assets.precompile  += %w( manifest.js )
+        raise ManifestNeededError unless ::Rails.root.join("app/assets/config/manifest.js").exist?
+        app.config.assets.precompile += %w( manifest.js )
       else
-        app.config.assets.precompile  += [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
+        app.config.assets.precompile += [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
       end
     end
 
