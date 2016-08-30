@@ -83,7 +83,7 @@ module Sprockets
 
           if respond_to?(:public_compute_asset_path)
             message << "The public fallback behavior is being deprecaed and will be removed.\n"
-            message << "pass in `public_folder: true` instead.\n"
+            message << "pass in `skip_pipeline: true` instead.\n"
 
             call_stack = respond_to?(:caller_locations) ? caller_locations : caller
             ActiveSupport::Deprecation.warn(message, call_stack)
@@ -267,7 +267,7 @@ module Sprockets
         def deprecate_invalid_asset_lookup(name, call_stack)
           message =  "The asset #{ name.inspect } you are looking for is not present in the asset pipeline.\n"
           message << "The public fallback behavior is being deprecated and will be removed.\n"
-          message << "pass in `public_folder: true` instead.\n"
+          message << "pass in `skip_pipeline: true` instead.\n"
 
           ActiveSupport::Deprecation.warn(message, call_stack)
         end
