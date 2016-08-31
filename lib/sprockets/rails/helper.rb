@@ -79,7 +79,7 @@ module Sprockets
         if asset_path = resolve_asset_path(path, debug)
           File.join(assets_prefix || "/", legacy_debug_path(asset_path, debug))
         else
-          message =  "The asset #{ path.inspect } you are looking for is not present in the asset pipeline."
+          message =  "The asset #{ path.inspect } is not present in the asset pipeline."
           raise AssetNotFound, message unless unknown_asset_fallback
 
           if respond_to?(:public_compute_asset_path)
