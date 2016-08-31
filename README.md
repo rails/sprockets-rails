@@ -52,7 +52,7 @@ Also see [Sprockets::Rails::Task](https://github.com/rails/sprockets-rails/blob/
 
 **`config.assets.unknown_asset_fallback`**
 
-When set to a truthy value, the a result will be returned even if the requested asset is not found in the asset pipeline. When set to `false` it will raise an error.
+When set to a truthy value, a result will be returned even if the requested asset is not found in the asset pipeline. When set to a falsey value it will raise an error when no asset is found in the pipeline. Defaults to `true`.
 
 **`config.assets.precompile`**
 

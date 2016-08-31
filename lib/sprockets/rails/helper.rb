@@ -7,6 +7,7 @@ module Sprockets
   module Rails
     module Helper
       class AssetNotFound < StandardError; end
+
       class AssetNotPrecompiled < StandardError
         include Sprockets::Rails::Utils
         def initialize(source)
@@ -82,8 +83,10 @@ module Sprockets
           raise AssetNotFound, message unless unknown_asset_fallback
 
           if respond_to?(:public_compute_asset_path)
-            message << "The public fallback behavior is being deprecaed and will be removed.\n"
-            message << "pass in `skip_pipeline: true` instead.\n"
+            message << "Falling back to an asset that may be in the public folder.\n"
+            message << "This behavior is deprecated and will be removed.\n"
+            message << "To bypass the asset pipeline and preserve this behavior,\n"
+            message << "use the `skip_pipeline: true` option.\n"
 
             call_stack = respond_to?(:caller_locations) ? caller_locations : caller
             ActiveSupport::Deprecation.warn(message, call_stack)
