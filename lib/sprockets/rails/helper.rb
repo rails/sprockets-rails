@@ -261,19 +261,6 @@ module Sprockets
             path
           end
         end
-
-      private
-        # Emits a deprecation warning when asset pipeline
-        # is used with an asset that is not part of the pipeline.
-        #
-        # Attempts to determine proper method name based on caller.
-        def deprecate_invalid_asset_lookup(name, call_stack)
-          message =  "The asset #{ name.inspect } you are looking for is not present in the asset pipeline.\n"
-          message << "The public fallback behavior is being deprecated and will be removed.\n"
-          message << "pass in `skip_pipeline: true` instead.\n"
-
-          ActiveSupport::Deprecation.warn(message, call_stack)
-        end
     end
 
     # Use a separate module since Helper is mixed in and we needn't pollute
