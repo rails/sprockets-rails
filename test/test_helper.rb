@@ -28,6 +28,7 @@ class HelperTest < ActionView::TestCase
     @view.assets_precompile   = %w( manifest.js )
     precompiled_assets = @manifest.find(@view.assets_precompile).map(&:logical_path)
     @view.check_precompiled_asset = true
+    @view.unknown_asset_fallback  = true
     @view.precompiled_asset_checker = -> logical_path { precompiled_assets.include? logical_path }
     @view.request = ActionDispatch::Request.new({
       "rack.url_scheme" => "https"
@@ -873,6 +874,37 @@ class PrecompiledAssetHelperTest < HelperTest
   def test_index_files
     assert_dom_equal %(<script src="#{@bundle_js_name}"></script>),
       @view.javascript_include_tag("bundle")
+  end
+end
+
+class DeprecationTest < HelperTest
+  def test_deprecations_for_asset_path
+    @view.send(:define_singleton_method, :public_compute_asset_path, -> {})
+    assert_deprecated do
+      @view.asset_path("does_not_exist.noextension")
+    end
+  ensure
+    @view.instance_eval('undef :public_compute_asset_path')
+  end
+
+  def test_deprecations_for_asset_url
+    @view.send(:define_singleton_method, :public_compute_asset_path, -> {})
+
+    assert_deprecated do
+      @view.asset_url("does_not_exist.noextension")
+    end
+  ensure
+    @view.instance_eval('undef :public_compute_asset_path')
+  end
+
+  def test_deprecations_for_image_tag
+    @view.send(:define_singleton_method, :public_compute_asset_path, -> {})
+
+    assert_deprecated do
+      @view.image_tag("does_not_exist.noextension")
+    end
+  ensure
+    @view.instance_eval('undef :public_compute_asset_path')
   end
 end
 

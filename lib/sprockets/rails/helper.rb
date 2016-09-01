@@ -6,6 +6,8 @@ require 'sprockets/rails/utils'
 module Sprockets
   module Rails
     module Helper
+      class AssetNotFound < StandardError; end
+
       class AssetNotPrecompiled < StandardError
         include Sprockets::Rails::Utils
         def initialize(source)
@@ -33,7 +35,8 @@ module Sprockets
         :assets_environment, :assets_manifest,
         :assets_precompile, :precompiled_asset_checker,
         :assets_prefix, :digest_assets, :debug_assets,
-        :resolve_assets_with, :check_precompiled_asset
+        :resolve_assets_with, :check_precompiled_asset,
+        :unknown_asset_fallback
       ]
 
       def self.included(klass)
@@ -68,12 +71,26 @@ module Sprockets
         end
       end
 
+      # Writes over the built in ActionView::Helpers::AssetUrlHelper#compute_asset_path
+      # to use the asset pipeline.
       def compute_asset_path(path, options = {})
         debug = options[:debug]
 
         if asset_path = resolve_asset_path(path, debug)
           File.join(assets_prefix || "/", legacy_debug_path(asset_path, debug))
         else
+          message =  "The asset #{ path.inspect } is not present in the asset pipeline."
+          raise AssetNotFound, message unless unknown_asset_fallback
+
+          if respond_to?(:public_compute_asset_path)
+            message << "Falling back to an asset that may be in the public folder.\n"
+            message << "This behavior is deprecated and will be removed.\n"
+            message << "To bypass the asset pipeline and preserve this behavior,\n"
+            message << "use the `skip_pipeline: true` option.\n"
+
+            call_stack = respond_to?(:caller_locations) ? caller_locations : caller
+            ActiveSupport::Deprecation.warn(message, call_stack)
+          end
           super
         end
       end
