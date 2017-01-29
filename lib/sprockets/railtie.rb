@@ -54,7 +54,7 @@ module Rails
   class Engine < Railtie
     # Skip defining append_assets_path on Rails <= 4.2
     unless initializers.find { |init| init.name == :append_assets_path }
-      initializer :append_assets_path, :group => :all do |app|
+      initializer :append_assets_path, before: :finisher_hook, :group => :all do |app|
         app.config.assets.paths.unshift(*paths["vendor/assets"].existent_directories)
         app.config.assets.paths.unshift(*paths["lib/assets"].existent_directories)
         app.config.assets.paths.unshift(*paths["app/assets"].existent_directories)
