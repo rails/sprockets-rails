@@ -65,7 +65,7 @@ module Sprockets
           desc "Compile all the assets named in config.assets.precompile"
           task :precompile => :environment do
             with_logger do
-              manifest.compile(assets)
+              manifest.compile(::Rails.application.config.assets.precompile)
             end
           end
 
