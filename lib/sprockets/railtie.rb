@@ -73,9 +73,9 @@ module Sprockets
         "But did not, please create this file and use it to link any assets that need\n" +
         "to be rendered by your app:\n\n" +
         "Example:\n" +
-        "  //= link_tree ../images\n"  +
-        "  //= link_directory ../javascripts .js\n" +
-        "  //= link_directory ../stylesheets .css\n"  +
+        "  //= link application.js\n" +
+        "  //= link application.css\n" +
+        "  //= link_tree ../images\n" +
         "and restart your server"
         super msg
       end
