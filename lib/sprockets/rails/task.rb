@@ -62,11 +62,17 @@ module Sprockets
             Rake::Task['environment'].invoke
           end
 
-          desc "Compile all the assets named in config.assets.precompile"
-          task :precompile => :environment do
+          desc "Compile all the assets named in manifest.js"
+          task :manifest => :environment do
             with_logger do
               manifest.compile(assets)
             end
+          end
+
+          # This is enhanced for yarn:install and webpacker:compile
+          desc "Compile all the assets on the asset pipeline"
+          task :precompile do
+            Rake::Task['assets:manifest'].invoke
           end
 
           desc "Remove old compiled assets"
