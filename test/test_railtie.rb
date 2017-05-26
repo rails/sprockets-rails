@@ -51,6 +51,10 @@ class TestBoot < Minitest::Test
   def test_initialize
     app.initialize!
   end
+
+  def self.test_order
+    :alpha
+  end
 end
 
 class TestRailtie < TestBoot
