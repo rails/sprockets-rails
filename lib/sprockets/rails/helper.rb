@@ -137,6 +137,7 @@ module Sprockets
         integrity = compute_integrity?(options)
 
         if options["debug"] != false && request_debug_assets?
+          options.delete("async")
           sources.map { |source|
             if asset = lookup_debug_asset(source, type: :javascript)
               if asset.respond_to?(:to_a)
