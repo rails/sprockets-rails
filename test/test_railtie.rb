@@ -282,7 +282,7 @@ class TestRailtie < TestBoot
     assert env = app.assets
     assert_equal "/assets", env.context_class.assets_prefix
     assert_equal true, env.context_class.digest_assets
-    assert_equal nil, env.context_class.config.asset_host
+    assert_nil env.context_class.config.asset_host
   end
 
   def test_manifest_path
