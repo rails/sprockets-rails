@@ -80,7 +80,8 @@ class TestRailtie < TestBoot
     assert_equal ROOT, env.root
     assert_equal "", env.version
     assert env.cache
-    assert_equal ["#{ROOT}/app/assets/config"], env.paths
+    assert_includes(env.paths, "#{ROOT}/app/assets/config")
+
     assert_nil env.js_compressor
     assert_nil env.css_compressor
   end
@@ -128,8 +129,9 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
-    assert_equal ["#{ROOT}/app/assets/config", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
-      env.paths.sort
+    assert_includes(env.paths, "#{ROOT}/javascripts")
+    assert_includes(env.paths, "#{ROOT}/stylesheets")
+    assert_includes(env.paths, "#{ROOT}/app/assets/config")
   end
 
   def test_compressors
@@ -220,8 +222,10 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert env = app.assets
-    assert_equal ["#{ROOT}/app/assets/config", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
-      env.paths.sort
+
+    assert_includes(env.paths, "#{ROOT}/javascripts")
+    assert_includes(env.paths, "#{ROOT}/stylesheets")
+    assert_includes(env.paths, "#{ROOT}/app/assets/config")
   end
 
   def test_environment_is_frozen_if_caching_classes
@@ -381,8 +385,9 @@ class TestRailtie < TestBoot
     assert_kind_of Sprockets::Environment, env
 
     assert_equal ROOT, env.root
-    assert_equal ["#{ROOT}/app/assets/config", "#{ROOT}/javascripts", "#{ROOT}/stylesheets"],
-      env.paths.sort
+    assert_includes(env.paths, "#{ROOT}/javascripts")
+    assert_includes(env.paths, "#{ROOT}/stylesheets")
+    assert_includes(env.paths, "#{ROOT}/app/assets/config")
   end
 
   def test_quiet_assets_defaults_to_off
