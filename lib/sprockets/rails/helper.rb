@@ -88,7 +88,7 @@ module Sprockets
             message << "To bypass the asset pipeline and preserve this behavior,\n"
             message << "use the `skip_pipeline: true` option.\n"
 
-            call_stack = Kernel.respond_to?(:caller_locations) ? caller_locations : caller
+            call_stack = Kernel.respond_to?(:caller_locations) && ::Rails::VERSION::MAJOR >= 5 ? caller_locations : caller
             ActiveSupport::Deprecation.warn(message, call_stack)
           end
           super
