@@ -6,8 +6,9 @@ rvm:
   - 1.9.3
   - 2.0.0
   - 2.1
-  - 2.2.4
-  - 2.3.0
+  - 2.2.7
+  - 2.3.4
+  - 2.4.1
 
 gemfile:
   - Gemfile
@@ -16,9 +17,15 @@ gemfile:
   - gemfiles/Gemfile.rails-4.2.x
   - gemfiles/Gemfile.rails-5.0.x
   - gemfiles/Gemfile.rails-5.0.x.sprockets-4.x
+  - gemfiles/Gemfile.rails-5.1.x
+  - gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
 
 matrix:
   exclude:
+    - gemfile: gemfiles/Gemfile.rails-4.0.x
+      rvm: 2.4.1
+    - gemfile: gemfiles/Gemfile.rails-4.1.x
+      rvm: 2.4.1
     - gemfile: Gemfile
       rvm: 1.9.3
     - gemfile: Gemfile
@@ -36,6 +43,18 @@ matrix:
     - gemfile: gemfiles/Gemfile.rails-5.0.x.sprockets-4.x
       rvm: 2.0.0
     - gemfile: gemfiles/Gemfile.rails-5.0.x.sprockets-4.x
+      rvm: 2.1
+    - gemfile: gemfiles/Gemfile.rails-5.1.x
+      rvm: 1.9.3
+    - gemfile: gemfiles/Gemfile.rails-5.1.x
+      rvm: 2.0.0
+    - gemfile: gemfiles/Gemfile.rails-5.1.x
+      rvm: 2.1
+    - gemfile: gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
+      rvm: 1.9.3
+    - gemfile: gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
+      rvm: 2.0.0
+    - gemfile: gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
       rvm: 2.1
 
 notifications:
