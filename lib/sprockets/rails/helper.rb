@@ -16,7 +16,7 @@ module Sprockets
           if using_sprockets4?
             "Asset `#{ source }` was not declared to be precompiled in production.\n" +
             "Declare links to your assets in `app/assets/config/manifest.js`.\n\n" +
-            "  //= link #{ source }\n" +
+            "  //= link #{ source }\n\n" +
             "and restart your server"
           else
             "Asset was not declared to be precompiled in production.\n" +
