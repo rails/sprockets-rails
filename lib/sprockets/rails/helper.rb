@@ -7,8 +7,9 @@ module Sprockets
   module Rails
     module Helper
       class AssetNotFound < StandardError; end
+      class AssetNotPrecompiled < StandardError; end
 
-      class AssetNotPrecompiled < StandardError
+      class AssetNotPrecompiledError < AssetNotPrecompiled
         include Sprockets::Rails::Utils
         def initialize(source)
           msg =
