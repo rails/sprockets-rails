@@ -410,4 +410,18 @@ class TestRailtie < TestBoot
     assert middleware.include?(Sprockets::Rails::QuietAssets)
     assert middleware.each_cons(2).include?([Sprockets::Rails::QuietAssets, Rails::Rack::Logger])
   end
+
+  def test_config_asset_host_can_be_set_inside_an_initializer
+    app.configure do
+      initializer 'asset_host_and_relative_url_root' do |app|
+        app.config.asset_host        = 'https://example.com'
+        app.config.relative_url_root = '/myassets'
+      end
+    end
+    app.initialize!
+    context_class = Sprockets::Railtie.build_environment(app).context_class
+
+    assert_equal 'https://example.com', context_class.config.asset_host
+    assert_equal '/myassets',           context_class.config.relative_url_root
+  end
 end
