@@ -81,9 +81,11 @@ module Sprockets
       end
     end
 
-    LOOSE_APP_ASSETS = lambda do |logical_path, filename|
-      filename.start_with?(::Rails.root.join("app/assets").to_s) &&
-      !['.js', '.css', ''].include?(File.extname(logical_path))
+    def generate_asset_copy_ignore(ignored_extensions)
+      lambda do |logical_path, filename|
+        filename.start_with?(::Rails.root.join("app/assets").to_s) &&
+        !ignored_extensions.include?(File.extname(logical_path))
+      end
     end
 
     class OrderedOptions < ActiveSupport::OrderedOptions
@@ -99,13 +101,14 @@ module Sprockets
     config.assets.prefix      = "/assets"
     config.assets.manifest    = nil
     config.assets.quiet       = false
+    config.assets.exts_not_to_copy = ['.js', '.css', '']
 
     initializer :set_default_precompile do |app|
       if using_sprockets4?
         raise ManifestNeededError unless ::Rails.root.join("app/assets/config/manifest.js").exist?
         app.config.assets.precompile += %w( manifest.js )
       else
-        app.config.assets.precompile += [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
+        app.config.assets.precompile += [generate_asset_copy_ignore(app.config.assets.exts_not_to_copy), /(?:\/|\\|\A)application\.(css|js)$/]
       end
     end
 
