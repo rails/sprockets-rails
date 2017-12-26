@@ -95,9 +95,13 @@ class TestRailtie < TestBoot
 
     ignore_proc = app.config.assets.precompile[0]
 
-    assert_equal false, ignore_proc.call('foo.js', Rails.root.join('app', 'assets', 'foo.js').to_s)
-    assert_equal false, ignore_proc.call('foo.css', Rails.root.join('app', 'assets', 'foo.css').to_s)
-    assert_equal false, ignore_proc.call('foo.elm', Rails.root.join('app', 'assets', 'foo.elm').to_s)
+    call_ignore_proc_with_asset = lambda { |filename|
+      ignore_proc.call(filename, Rails.root.join('app', 'assets', filename).to_s)
+    }
+
+    assert_equal false, call_ignore_proc_with_asset.call('foo.js')
+    assert_equal false, call_ignore_proc_with_asset.call('foo.css')
+    assert_equal false, call_ignore_proc_with_asset.call('foo.elm')
   end
 
   def test_disabling_compile_has_manifest_but_no_env

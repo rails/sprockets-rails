@@ -81,7 +81,7 @@ module Sprockets
       end
     end
 
-    def generate_asset_copy_ignore(ignored_extensions)
+    def generate_assets_copy_ignore_lambda(ignored_extensions)
       lambda do |logical_path, filename|
         filename.start_with?(::Rails.root.join("app/assets").to_s) &&
         !ignored_extensions.include?(File.extname(logical_path))
@@ -108,7 +108,7 @@ module Sprockets
         raise ManifestNeededError unless ::Rails.root.join("app/assets/config/manifest.js").exist?
         app.config.assets.precompile += %w( manifest.js )
       else
-        app.config.assets.precompile += [generate_asset_copy_ignore(app.config.assets.exts_not_to_copy), /(?:\/|\\|\A)application\.(css|js)$/]
+        app.config.assets.precompile += [generate_assets_copy_ignore_lambda(app.config.assets.exts_not_to_copy), /(?:\/|\\|\A)application\.(css|js)$/]
       end
     end
 
