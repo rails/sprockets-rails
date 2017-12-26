@@ -94,6 +94,7 @@ class TestRailtie < TestBoot
     app.initialize!
 
     ignore_proc = app.config.assets.precompile[0]
+    return unless ignore_proc.respond_to? :call
 
     call_ignore_proc_with_asset = lambda { |filename|
       ignore_proc.call(filename, Rails.root.join('app', 'assets', filename).to_s)
