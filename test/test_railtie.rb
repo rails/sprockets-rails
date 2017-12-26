@@ -86,6 +86,20 @@ class TestRailtie < TestBoot
     assert_nil env.css_compressor
   end
 
+  def test_files_are_not_copied
+    app.configure do
+      config.assets.exts_not_to_copy << '.elm'
+    end
+
+    app.initialize!
+
+    ignore_proc = app.config.assets.precompile[0]
+
+    assert_equal false, ignore_proc.call('foo.js', Rails.root.join('app', 'assets', 'foo.js').to_s)
+    assert_equal false, ignore_proc.call('foo.css', Rails.root.join('app', 'assets', 'foo.css').to_s)
+    assert_equal false, ignore_proc.call('foo.elm', Rails.root.join('app', 'assets', 'foo.elm').to_s)
+  end
+
   def test_disabling_compile_has_manifest_but_no_env
     app.configure do
       config.assets.compile = false
