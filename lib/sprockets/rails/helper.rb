@@ -137,7 +137,7 @@ module Sprockets
         options = sources.extract_options!.stringify_keys
         integrity = compute_integrity?(options)
 
-        if options["debug"] != false && request_debug_assets?
+        if options["debug"] || (request_debug_assets? && options["debug"] != false)
           sources.map { |source|
             if asset = lookup_debug_asset(source, type: :javascript)
               if asset.respond_to?(:to_a)
@@ -166,7 +166,7 @@ module Sprockets
         options = sources.extract_options!.stringify_keys
         integrity = compute_integrity?(options)
 
-        if options["debug"] != false && request_debug_assets?
+        if options["debug"] || (request_debug_assets? && options["debug"] != false)
           sources.map { |source|
             if asset = lookup_debug_asset(source, type: :stylesheet)
               if asset.respond_to?(:to_a)
