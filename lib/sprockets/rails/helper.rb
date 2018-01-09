@@ -81,7 +81,14 @@ module Sprockets
           File.join(assets_prefix || "/", legacy_debug_path(asset_path, debug))
         else
           message =  "The asset #{ path.inspect } is not present in the asset pipeline."
-          raise AssetNotFound, message unless unknown_asset_fallback
+
+          unless unknown_asset_fallback
+            message << "\nThe following asset resolver strategies were used: "
+            message << (asset_resolver_strategies.join(', ').presence ||
+              'none (refer to: `config.assets.resolve_with` on https://github.com/rails/sprockets-rails)')
+
+            raise AssetNotFound, message
+          end
 
           if respond_to?(:public_compute_asset_path)
             message << "Falling back to an asset that may be in the public folder.\n"
