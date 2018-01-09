@@ -91,7 +91,7 @@ module Sprockets
           end
 
           if respond_to?(:public_compute_asset_path)
-            message << "Falling back to an asset that may be in the public folder.\n"
+            message << "\nFalling back to an asset that may be in the public folder.\n"
             message << "This behavior is deprecated and will be removed.\n"
             message << "To bypass the asset pipeline and preserve this behavior,\n"
             message << "use the `skip_pipeline: true` option.\n"
