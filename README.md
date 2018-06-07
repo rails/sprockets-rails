@@ -150,6 +150,13 @@ The following plugins provide some extras for the Sprockets Asset Pipeline.
 * `config.assets.manifest` (if used) must now include the manifest filename, e.g. `Rails.root.join('config/manifest.json')`. It cannot be a directory.
 * Two cleanup tasks: `rake assets:clean` is now a safe cleanup that only removes older assets that are no longer used, while `rake assets:clobber` nukes the entire `public/assets` directory. The clean task allows for rolling deploys that may still be linking to an old asset while the new assets are being built.
 
+### But what if I want sprockets to generate non-digest assets?
+
+You have several options:
+
+* Use the [non-stupid-digest-assets gem](https://github.com/alexspeller/non-stupid-digest-assets).
+* Create [a rake task](https://github.com/rails/sprockets-rails/issues/49#issuecomment-20535134) to pre-generate a non-digest version in `public/`.
+
 ## Experimental
 
 ### [SRI](http://www.w3.org/TR/SRI/) support
