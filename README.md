@@ -154,7 +154,7 @@ The following plugins provide some extras for the Sprockets Asset Pipeline.
 
 You have several options:
 
-* Use the [non-stupid-digest-assets gem](https://github.com/alexspeller/non-stupid-digest-assets).
+* Use the [non-digest-assets gem](https://github.com/mvz/non-digest-assets).
 * Create [a rake task](https://github.com/rails/sprockets-rails/issues/49#issuecomment-20535134) to pre-generate a non-digest version in `public/`.
 
 ## Experimental
