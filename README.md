@@ -155,6 +155,8 @@ The following plugins provide some extras for the Sprockets Asset Pipeline.
 You have several options:
 
 * Use the [non-digest-assets gem](https://github.com/mvz/non-digest-assets).
+* Use the [sprockets-redirect gem](https://github.com/sikachu/sprockets-redirect).
+* Use the [smart_assets gem](https://github.com/zarqman/smart_assets).
 * Create [a rake task](https://github.com/rails/sprockets-rails/issues/49#issuecomment-20535134) to pre-generate a non-digest version in `public/`.
 
 ## Experimental
