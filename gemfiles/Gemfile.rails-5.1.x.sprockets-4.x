@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gemspec path: '..'
 
 gem 'actionpack', '~> 5.1.0'
