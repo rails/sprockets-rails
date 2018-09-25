@@ -22,6 +22,8 @@ gemfile:
   - gemfiles/Gemfile.rails-5.0.x.sprockets-4.x
   - gemfiles/Gemfile.rails-5.1.x
   - gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
+  - gemfiles/Gemfile.rails-5.2.x
+  - gemfiles/Gemfile.rails-5.2.x.sprockets-4.x
 
 matrix:
   exclude:
@@ -39,6 +41,10 @@ matrix:
       rvm: 2.0.0
     - gemfile: Gemfile
       rvm: 2.1
+    - gemfile: Gemfile
+      rvm: 2.2.7
+    - gemfile: Gemfile
+      rvm: 2.3.4
     - gemfile: gemfiles/Gemfile.rails-5.0.x
       rvm: 1.9.3
     - gemfile: gemfiles/Gemfile.rails-5.0.x
@@ -62,6 +68,18 @@ matrix:
     - gemfile: gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
       rvm: 2.0.0
     - gemfile: gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
+      rvm: 2.1
+    - gemfile: gemfiles/Gemfile.rails-5.2.x
+      rvm: 1.9.3
+    - gemfile: gemfiles/Gemfile.rails-5.2.x
+      rvm: 2.0.0
+    - gemfile: gemfiles/Gemfile.rails-5.2.x
+      rvm: 2.1
+    - gemfile: gemfiles/Gemfile.rails-5.2.x.sprockets-4.x
+      rvm: 1.9.3
+    - gemfile: gemfiles/Gemfile.rails-5.2.x.sprockets-4.x
+      rvm: 2.0.0
+    - gemfile: gemfiles/Gemfile.rails-5.2.x.sprockets-4.x
       rvm: 2.1
 
 notifications:
