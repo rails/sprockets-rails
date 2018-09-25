@@ -57,6 +57,12 @@ class TestRailtie < TestBoot
   def setup
     require 'sprockets/railtie'
     super
+
+    # sprockets-4.0.0.beta8 does not like 'rake assets:clobber' when this directory does not exist
+    Dir.chdir(app.root) do
+      dir = "tmp/cache/assets/sprockets"
+      FileUtils.mkdir_p(dir)
+    end
   end
 
   def test_defaults_to_compile_assets_with_env_and_manifest_available
