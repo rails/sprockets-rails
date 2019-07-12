@@ -198,4 +198,3 @@ Sprockets Rails is released under the [MIT License](MIT-LICENSE).
 
 * [![Travis CI](https://travis-ci.org/rails/sprockets-rails.svg?branch=master)](http://travis-ci.org/rails/sprockets-rails)
 * [![Gem Version](https://badge.fury.io/rb/sprockets-rails.svg)](http://badge.fury.io/rb/sprockets-rails)
-* [![Dependencies](https://gemnasium.com/rails/sprockets-rails.svg)](https://gemnasium.com/rails/sprockets-rails)
