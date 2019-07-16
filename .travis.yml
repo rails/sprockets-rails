@@ -1,6 +1,5 @@
 language: ruby
 cache: bundler
-sudo: false
 
 before_install: gem install bundler -v '<2'
 
@@ -64,6 +63,12 @@ matrix:
       rvm: 2.0.0
     - gemfile: gemfiles/Gemfile.rails-5.0.x.sprockets-4.x
       rvm: 2.1.10
+    - gemfile: gemfiles/Gemfile.rails-5.0.x.sprockets-4.x
+      rvm: 2.2.10
+    - gemfile: gemfiles/Gemfile.rails-5.0.x.sprockets-4.x
+      rvm: 2.3.8
+    - gemfile: gemfiles/Gemfile.rails-5.0.x.sprockets-4.x
+      rvm: 2.4.5
     - gemfile: gemfiles/Gemfile.rails-5.1.x
       rvm: 1.9.3
     - gemfile: gemfiles/Gemfile.rails-5.1.x
@@ -76,6 +81,12 @@ matrix:
       rvm: 2.0.0
     - gemfile: gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
       rvm: 2.1.10
+    - gemfile: gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
+      rvm: 2.2.10
+    - gemfile: gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
+      rvm: 2.3.8
+    - gemfile: gemfiles/Gemfile.rails-5.1.x.sprockets-4.x
+      rvm: 2.4.5      
     - gemfile: gemfiles/Gemfile.rails-5.2.x
       rvm: 1.9.3
     - gemfile: gemfiles/Gemfile.rails-5.2.x
@@ -88,6 +99,12 @@ matrix:
       rvm: 2.0.0
     - gemfile: gemfiles/Gemfile.rails-5.2.x.sprockets-4.x
       rvm: 2.1.10
+    - gemfile: gemfiles/Gemfile.rails-5.2.x.sprockets-4.x
+      rvm: 2.2.10
+    - gemfile: gemfiles/Gemfile.rails-5.2.x.sprockets-4.x
+      rvm: 2.3.8
+    - gemfile: gemfiles/Gemfile.rails-5.2.x.sprockets-4.x
+      rvm: 2.4.5      
 
 notifications:
   email: false
