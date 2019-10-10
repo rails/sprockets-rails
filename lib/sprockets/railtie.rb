@@ -76,7 +76,8 @@ module Sprockets
         "  //= link_tree ../images\n"  +
         "  //= link_directory ../javascripts .js\n" +
         "  //= link_directory ../stylesheets .css\n"  +
-        "and restart your server"
+        "and restart your server\n\n" +
+        "For more information see: https://github.com/rails/sprockets/blob/070fc01947c111d35bb4c836e9bb71962a8e0595/UPGRADING.md#manifestjs"
         super msg
       end
     end
