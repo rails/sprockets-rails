@@ -68,8 +68,8 @@ module Sprockets
     include Sprockets::Rails::Utils
 
     class ManifestNeededError < StandardError
-      def initialize
-        msg = "Expected to find a manifest file in `app/assets/config/manifest.js`\n" +
+      def initialize(manifest_path)
+        msg = "Expected to find a manifest file in `#{manifest_path}`\n" +
         "But did not, please create this file and use it to link any assets that need\n" +
         "to be rendered by your app:\n\n" +
         "Example:\n" +
@@ -99,11 +99,22 @@ module Sprockets
     config.assets.prefix      = "/assets"
     config.assets.manifest    = nil
     config.assets.quiet       = false
+    config.assets.config_manifest = nil
+
+    initializer :set_config_manifest_path do |app|
+      config_manifest = if app.config.assets.config_manifest.present?
+                          Pathname.new(app.config.assets.config_manifest)
+                        else
+                          ::Rails.root.join("app/assets/config/manifest.js")
+                        end
+      raise ManifestNeededError, config_manifest unless config_manifest.exist?
+
+      app.config.assets.config_manifest = config_manifest.to_s
+    end
 
     initializer :set_default_precompile do |app|
       if using_sprockets4?
-        raise ManifestNeededError unless ::Rails.root.join("app/assets/config/manifest.js").exist?
-        app.config.assets.precompile += %w( manifest.js )
+        app.config.assets.precompile += [app.config.assets.config_manifest]
       else
         app.config.assets.precompile += [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
       end
