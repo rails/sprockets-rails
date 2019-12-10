@@ -15,7 +15,8 @@ module Sprockets
           def internal_with_sprockets?
             internal_without_sprockets? || internal_assets_path?
           end
-          alias_method_chain :internal?, :sprockets
+          alias_method :internal_without_sprockets?, :internal?
+          alias_method :internal?, :internal_with_sprockets?
         end
       end
     end
