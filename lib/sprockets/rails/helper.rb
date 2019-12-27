@@ -353,7 +353,7 @@ module Sprockets
 
         private
           def find_asset(path, options = {})
-            @env[path, options]
+            @env[path, **options]
           end
 
           def precompiled?(path)
