@@ -37,7 +37,6 @@ class TestBoot < Minitest::Test
     @app.config.time_zone = 'UTC'
     @app.config.middleware ||= Rails::Configuration::MiddlewareStackProxy.new
     @app.config.active_support.deprecation = :notify
-    ActionView::Base # load ActionView
 
     Dir.chdir(app.root) do
       dir = "app/assets/config"
@@ -330,12 +329,12 @@ class TestRailtie < TestBoot
   def test_task_precompile
     app.configure do
       config.assets.paths << FIXTURES_PATH
-      config.assets.precompile += ["foo.js"]
+      config.assets.precompile += ["foo.js", "url.css"]
     end
     app.initialize!
     app.load_tasks
 
-    path = "#{app.assets_manifest.dir}/foo-4ef5541f349f7ed5a0d6b71f2fa4c82745ca106ae02f212aea5129726ac6f6ab.js"
+    path = "#{app.assets_manifest.dir}/foo-#{Rails.application.assets['foo.js'].etag}.js"
 
     silence_stderr do
       Rake.application['assets:clobber'].execute
@@ -346,6 +345,8 @@ class TestRailtie < TestBoot
       Rake.application['assets:precompile'].execute
     end
     assert File.exist?(path)
+    url_css_path = File.join(app.assets_manifest.dir, Rails.application.assets['url.css'].digest_path)
+    assert_match(%r{/assets/logo-#{Rails.application.assets['logo.png'].etag}.png}, File.read(url_css_path))
 
     silence_stderr do
       Rake.application['assets:clobber'].execute

@@ -2,7 +2,6 @@ require 'rake'
 require 'rake/sprocketstask'
 require 'sprockets'
 require 'action_view'
-require 'action_view/base'
 
 module Sprockets
   module Rails
