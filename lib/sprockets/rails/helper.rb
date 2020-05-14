@@ -321,6 +321,8 @@ module Sprockets
         end
 
         def asset_path(path, digest, allow_non_precompiled = false)
+          raise ArgumentError, "asset #{path} should be declared with a filename extension" if File.extname(path).blank?
+
           # Digests enabled? Do the work to calculate the full asset path.
           if digest
             digest_path path, allow_non_precompiled

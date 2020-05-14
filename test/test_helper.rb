@@ -851,6 +851,14 @@ class AssetUrlHelperLinksTarget < HelperTest
     assert_kind_of Sprockets::CachedEnvironment, env
     assert @view.assets_environment.equal?(env), "view didn't return the same cached instance"
   end
+
+  def test_environment_asset_path_without_extension
+    @view.resolve_assets_with = [ :environment ]
+
+    assert_raises(Sprockets::ArgumentError) do
+      @view.asset_path("logo")
+    end
+  end
 end
 
 class PrecompiledAssetHelperTest < HelperTest
