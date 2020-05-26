@@ -141,4 +141,45 @@ class TestTask < Minitest::Test
   ensure
     FileUtils.rm(new_path) if new_path
   end
+
+  def test_clean_with_age_and_keep_specified
+    assert !@environment_ran
+    path     = Pathname.new(@assets['foo.js'].filename)
+    new_path = path.join("../foo-modified.js")
+
+    FileUtils.cp(path, new_path)
+
+    assert File.exist?(new_path)
+    age = 3000
+    mtime = Time.now - age
+    File.utime(mtime, mtime, new_path.to_s)
+    digest_path = @assets['foo-modified.js'].digest_path
+    @rake['assets:precompile'].invoke
+    assert File.exist?("#{@dir}/#{digest_path}")
+    assert @environment_ran
+
+    # clean environment
+    setup
+
+    # modify file
+    File.open(new_path, "a") {|f| f.write("var Bar;") }
+    @rake['assets:precompile'].invoke
+    old_digest_path = digest_path
+    digest_path     = @assets['foo-modified.js'].digest_path
+
+    refute_equal old_digest_path, digest_path
+    assert File.exist?("#{@dir}/#{old_digest_path}")
+    assert File.exist?("#{@dir}/#{digest_path}")
+
+    @rake['assets:clean'].invoke(0, age + 500)
+    assert File.exist?("#{@dir}/#{digest_path}")
+    assert File.exist?("#{@dir}/#{old_digest_path}")
+
+    @rake['assets:clean'].reenable
+    @rake['assets:clean'].invoke(0, age - 500)
+    assert File.exist?("#{@dir}/#{digest_path}")
+    refute File.exist?("#{@dir}/#{old_digest_path}")
+  ensure
+    FileUtils.rm(new_path) if new_path
+  end
 end
