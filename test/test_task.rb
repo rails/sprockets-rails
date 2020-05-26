@@ -114,6 +114,8 @@ class TestTask < Minitest::Test
     FileUtils.cp(path, new_path)
 
     assert File.exist?(new_path)
+    mtime = Time.now - 3601
+    File.utime(mtime, mtime, new_path.to_s)
     digest_path = @assets['foo-modified.js'].digest_path
 
     @rake['assets:precompile'].invoke
@@ -135,7 +137,7 @@ class TestTask < Minitest::Test
 
     @rake['assets:clean'].invoke(0)
     assert File.exist?("#{@dir}/#{digest_path}")
-    # refute File.exist?("#{@dir}/#{old_digest_path}")
+    refute File.exist?("#{@dir}/#{old_digest_path}")
   ensure
     FileUtils.rm(new_path) if new_path
   end
