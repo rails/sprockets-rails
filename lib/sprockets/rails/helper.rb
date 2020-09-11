@@ -352,8 +352,16 @@ module Sprockets
         end
 
         private
-          def find_asset(path, options = {})
-            @env[path, **options]
+          if RUBY_VERSION >= "2.7"
+            class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              def find_asset(path, options = {})
+                @env[path, **options]
+              end
+            RUBY
+          else
+            def find_asset(path, options = {})
+              @env[path, options]
+            end
           end
 
           def precompiled?(path)
