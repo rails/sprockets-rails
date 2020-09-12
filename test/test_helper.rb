@@ -4,6 +4,7 @@ require 'action_view'
 require 'sprockets'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
+require 'rails/version'
 
 ActiveSupport::TestCase.test_order = :random if ActiveSupport::TestCase.respond_to?(:test_order=)
 
@@ -19,7 +20,7 @@ class HelperTest < ActionView::TestCase
     tmp = File.expand_path("../../tmp", __FILE__)
     @manifest = Sprockets::Manifest.new(@assets, tmp)
 
-    @view = ActionView::Base.new
+    @view = ActionView::Base.new(ActionView::LookupContext.new([]))
     @view.extend ::Sprockets::Rails::Helper
     @view.assets_environment  = @assets
     @view.assets_manifest     = @manifest
@@ -106,103 +107,115 @@ end
 
 class NoHostHelperTest < HelperTest
   def test_javascript_include_tag
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static")
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static.js")
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag(:static)
+    ActiveSupport::Deprecation.silence do
+      assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static")
+      assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static.js")
+      assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag(:static)
 
-    assert_dom_equal %(<script src="/elsewhere.js"></script>),
-      @view.javascript_include_tag("/elsewhere.js")
-    assert_dom_equal %(<script src="/script1.js"></script>\n<script src="/javascripts/script2.js"></script>),
-      @view.javascript_include_tag("/script1.js", "script2.js")
+      assert_dom_equal %(<script src="/elsewhere.js"></script>),
+        @view.javascript_include_tag("/elsewhere.js")
+      assert_dom_equal %(<script src="/script1.js"></script>\n<script src="/javascripts/script2.js"></script>),
+        @view.javascript_include_tag("/script1.js", "script2.js")
 
-    assert_dom_equal %(<script src="http://example.com/script"></script>),
-      @view.javascript_include_tag("http://example.com/script")
-    assert_dom_equal %(<script src="http://example.com/script.js"></script>),
-      @view.javascript_include_tag("http://example.com/script.js")
-    assert_dom_equal %(<script src="//example.com/script.js"></script>),
-      @view.javascript_include_tag("//example.com/script.js")
+      assert_dom_equal %(<script src="http://example.com/script"></script>),
+        @view.javascript_include_tag("http://example.com/script")
+      assert_dom_equal %(<script src="http://example.com/script.js"></script>),
+        @view.javascript_include_tag("http://example.com/script.js")
+      assert_dom_equal %(<script src="//example.com/script.js"></script>),
+        @view.javascript_include_tag("//example.com/script.js")
 
-    assert_dom_equal %(<script defer="defer" src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", :defer => "defer")
-    assert_dom_equal %(<script async="async" src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", :async => "async")
+      assert_dom_equal %(<script defer="defer" src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static", :defer => "defer")
+      assert_dom_equal %(<script async="async" src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static", :async => "async")
+    end
   end
 
   def test_stylesheet_link_tag
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static")
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static.css")
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag(:static)
+    ActiveSupport::Deprecation.silence do
+      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("static")
+      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("static.css")
+      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag(:static)
 
-    assert_dom_equal %(<link href="/elsewhere.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("/elsewhere.css")
-    assert_dom_equal %(<link href="/style1.css" media="screen" rel="stylesheet" />\n<link href="/stylesheets/style2.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("/style1.css", "style2.css")
+      assert_dom_equal %(<link href="/elsewhere.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("/elsewhere.css")
+      assert_dom_equal %(<link href="/style1.css" media="screen" rel="stylesheet" />\n<link href="/stylesheets/style2.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("/style1.css", "style2.css")
 
-    assert_dom_equal %(<link href="http://www.example.com/styles/style" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("http://www.example.com/styles/style")
-    assert_dom_equal %(<link href="http://www.example.com/styles/style.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("http://www.example.com/styles/style.css")
-    assert_dom_equal %(<link href="//www.example.com/styles/style.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("//www.example.com/styles/style.css")
+      assert_dom_equal %(<link href="http://www.example.com/styles/style" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("http://www.example.com/styles/style")
+      assert_dom_equal %(<link href="http://www.example.com/styles/style.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("http://www.example.com/styles/style.css")
+      assert_dom_equal %(<link href="//www.example.com/styles/style.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("//www.example.com/styles/style.css")
 
-    assert_dom_equal %(<link href="/stylesheets/print.css" media="print" rel="stylesheet" />),
-      @view.stylesheet_link_tag("print", :media => "print")
-    assert_dom_equal %(<link href="/stylesheets/print.css" media="&lt;hax&gt;" rel="stylesheet" />),
-      @view.stylesheet_link_tag("print", :media => "<hax>")
+      assert_dom_equal %(<link href="/stylesheets/print.css" media="print" rel="stylesheet" />),
+        @view.stylesheet_link_tag("print", :media => "print")
+      assert_dom_equal %(<link href="/stylesheets/print.css" media="&lt;hax&gt;" rel="stylesheet" />),
+        @view.stylesheet_link_tag("print", :media => "<hax>")
+    end
   end
 
   def test_javascript_include_tag_integrity
-    assert_dom_equal %(<script src="/javascripts/static.js" integrity="sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs="></script>),
-      @view.javascript_include_tag("static", integrity: "sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs=")
+    ActiveSupport::Deprecation.silence do
+      assert_dom_equal %(<script src="/javascripts/static.js" integrity="sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs="></script>),
+        @view.javascript_include_tag("static", integrity: "sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs=")
 
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: true)
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: false)
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: nil)
+      assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static", integrity: true)
+      assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static", integrity: false)
+      assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static", integrity: nil)
+    end
   end
 
   def test_stylesheet_link_tag_integrity
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" integrity="sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=" />),
-      @view.stylesheet_link_tag("static", integrity: "sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=")
+    ActiveSupport::Deprecation.silence do
+      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" integrity="sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=" />),
+        @view.stylesheet_link_tag("static", integrity: "sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=")
 
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static", integrity: true)
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static", integrity: false)
+      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("static", integrity: true)
+      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("static", integrity: false)
+    end
   end
 
   def test_javascript_path
-    assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
-    assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
-    assert_equal "/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
-    assert_equal "/super/xmlhr.js", @view.javascript_path("/super/xmlhr")
+    ActiveSupport::Deprecation.silence do
+      assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
+      assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
+      assert_equal "/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
+      assert_equal "/super/xmlhr.js", @view.javascript_path("/super/xmlhr")
 
-    assert_equal "/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr.js?foo=1")
-    assert_equal "/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr?foo=1")
-    assert_equal "/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr.js#hash")
-    assert_equal "/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr#hash")
-    assert_equal "/javascripts/xmlhr.js?foo=1#hash", @view.javascript_path("xmlhr.js?foo=1#hash")
+      assert_equal "/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr.js?foo=1")
+      assert_equal "/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr?foo=1")
+      assert_equal "/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr.js#hash")
+      assert_equal "/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr#hash")
+      assert_equal "/javascripts/xmlhr.js?foo=1#hash", @view.javascript_path("xmlhr.js?foo=1#hash")
+    end
   end
 
   def test_stylesheet_path
-    assert_equal "/stylesheets/bank.css", @view.stylesheet_path("bank")
-    assert_equal "/stylesheets/bank.css", @view.stylesheet_path("bank.css")
-    assert_equal "/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
-    assert_equal "/subdir/subdir.css", @view.stylesheet_path("/subdir/subdir.css")
+    ActiveSupport::Deprecation.silence do
+      assert_equal "/stylesheets/bank.css", @view.stylesheet_path("bank")
+      assert_equal "/stylesheets/bank.css", @view.stylesheet_path("bank.css")
+      assert_equal "/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
+      assert_equal "/subdir/subdir.css", @view.stylesheet_path("/subdir/subdir.css")
 
-    assert_equal "/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank.css?foo=1")
-    assert_equal "/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank?foo=1")
-    assert_equal "/stylesheets/bank.css#hash", @view.stylesheet_path("bank.css#hash")
-    assert_equal "/stylesheets/bank.css#hash", @view.stylesheet_path("bank#hash")
-    assert_equal "/stylesheets/bank.css?foo=1#hash", @view.stylesheet_path("bank.css?foo=1#hash")
+      assert_equal "/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank.css?foo=1")
+      assert_equal "/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank?foo=1")
+      assert_equal "/stylesheets/bank.css#hash", @view.stylesheet_path("bank.css#hash")
+      assert_equal "/stylesheets/bank.css#hash", @view.stylesheet_path("bank#hash")
+      assert_equal "/stylesheets/bank.css?foo=1#hash", @view.stylesheet_path("bank.css?foo=1#hash")
+    end
   end
 end
 
@@ -214,30 +227,34 @@ class NoSSLHelperTest < NoHostHelperTest
   end
 
   def test_javascript_include_tag_integrity
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: true)
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: false)
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: nil)
+    ActiveSupport::Deprecation.silence do
+      assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static", integrity: true)
+      assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static", integrity: false)
+      assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static", integrity: nil)
 
-    assert_dom_equal %(<script src="/javascripts/static.js"></script>),
-      @view.javascript_include_tag("static", integrity: "sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs=")
+      assert_dom_equal %(<script src="/javascripts/static.js"></script>),
+        @view.javascript_include_tag("static", integrity: "sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs=")
+    end
 
     assert_dom_equal %(<script src="/assets/foo.js"></script>),
       @view.javascript_include_tag("foo", integrity: true)
   end
 
   def test_stylesheet_link_tag_integrity
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static", integrity: true)
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static", integrity: false)
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static", integrity: nil)
+    ActiveSupport::Deprecation.silence do
+      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("static", integrity: true)
+      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("static", integrity: false)
+      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("static", integrity: nil)
 
-    assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
-      @view.stylesheet_link_tag("static", integrity: "sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=")
+      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+        @view.stylesheet_link_tag("static", integrity: "sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=")
+    end
 
     assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag("foo", integrity: true)
@@ -301,16 +318,18 @@ class RelativeHostHelperTest < HelperTest
   end
 
   def test_javascript_path
-    assert_equal "https://assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
-    assert_equal "https://assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
-    assert_equal "https://assets.example.com/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
-    assert_equal "https://assets.example.com/super/xmlhr.js", @view.javascript_path("/super/xmlhr")
+    ActiveSupport::Deprecation.silence do
+      assert_equal "https://assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
+      assert_equal "https://assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
+      assert_equal "https://assets.example.com/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
+      assert_equal "https://assets.example.com/super/xmlhr.js", @view.javascript_path("/super/xmlhr")
 
-    assert_equal "https://assets.example.com/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr.js?foo=1")
-    assert_equal "https://assets.example.com/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr?foo=1")
-    assert_equal "https://assets.example.com/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr.js#hash")
-    assert_equal "https://assets.example.com/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr#hash")
-    assert_equal "https://assets.example.com/javascripts/xmlhr.js?foo=1#hash", @view.javascript_path("xmlhr.js?foo=1#hash")
+      assert_equal "https://assets.example.com/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr.js?foo=1")
+      assert_equal "https://assets.example.com/javascripts/xmlhr.js?foo=1", @view.javascript_path("xmlhr?foo=1")
+      assert_equal "https://assets.example.com/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr.js#hash")
+      assert_equal "https://assets.example.com/javascripts/xmlhr.js#hash", @view.javascript_path("xmlhr#hash")
+      assert_equal "https://assets.example.com/javascripts/xmlhr.js?foo=1#hash", @view.javascript_path("xmlhr.js?foo=1#hash")
+    end
 
     assert_dom_equal %(<script src="https://assets.example.com/assets/foo.js"></script>),
       @view.javascript_include_tag("foo")
@@ -321,16 +340,18 @@ class RelativeHostHelperTest < HelperTest
   end
 
   def test_stylesheet_path
-    assert_equal "https://assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank")
-    assert_equal "https://assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank.css")
-    assert_equal "https://assets.example.com/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
-    assert_equal "https://assets.example.com/subdir/subdir.css", @view.stylesheet_path("/subdir/subdir.css")
+    ActiveSupport::Deprecation.silence do
+      assert_equal "https://assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank")
+      assert_equal "https://assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank.css")
+      assert_equal "https://assets.example.com/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
+      assert_equal "https://assets.example.com/subdir/subdir.css", @view.stylesheet_path("/subdir/subdir.css")
 
-    assert_equal "https://assets.example.com/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank.css?foo=1")
-    assert_equal "https://assets.example.com/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank?foo=1")
-    assert_equal "https://assets.example.com/stylesheets/bank.css#hash", @view.stylesheet_path("bank.css#hash")
-    assert_equal "https://assets.example.com/stylesheets/bank.css#hash", @view.stylesheet_path("bank#hash")
-    assert_equal "https://assets.example.com/stylesheets/bank.css?foo=1#hash", @view.stylesheet_path("bank.css?foo=1#hash")
+      assert_equal "https://assets.example.com/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank.css?foo=1")
+      assert_equal "https://assets.example.com/stylesheets/bank.css?foo=1", @view.stylesheet_path("bank?foo=1")
+      assert_equal "https://assets.example.com/stylesheets/bank.css#hash", @view.stylesheet_path("bank.css#hash")
+      assert_equal "https://assets.example.com/stylesheets/bank.css#hash", @view.stylesheet_path("bank#hash")
+      assert_equal "https://assets.example.com/stylesheets/bank.css?foo=1#hash", @view.stylesheet_path("bank.css?foo=1#hash")
+    end
 
     assert_dom_equal %(<link href="https://assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
       @view.stylesheet_link_tag("foo")

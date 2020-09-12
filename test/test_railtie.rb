@@ -156,7 +156,12 @@ class TestRailtie < TestBoot
   end
 
   def test_custom_compressors
-    compressor = Class.new
+    compressor = Class.new do
+      def self.call(input)
+        { data: input[:data] }
+      end
+    end
+
     app.configure do
       config.assets.configure do |env|
         env.register_compressor "application/javascript", :test_js, compressor
