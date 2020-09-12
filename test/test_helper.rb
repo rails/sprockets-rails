@@ -20,7 +20,7 @@ class HelperTest < ActionView::TestCase
     tmp = File.expand_path("../../tmp", __FILE__)
     @manifest = Sprockets::Manifest.new(@assets, tmp)
 
-    @view = ActionView::Base.new
+    @view = ActionView::Base.new(ActionView::LookupContext.new([]))
     @view.extend ::Sprockets::Rails::Helper
     @view.assets_environment  = @assets
     @view.assets_manifest     = @manifest
