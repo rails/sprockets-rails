@@ -58,7 +58,7 @@ module Sprockets
       end
 
       def self.extended(obj)
-        obj.class_eval do
+        obj.singleton_class.class_eval do
           attr_accessor(*VIEW_ACCESSORS)
 
           remove_method :assets_environment
