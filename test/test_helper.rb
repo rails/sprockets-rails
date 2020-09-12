@@ -4,6 +4,7 @@ require 'action_view'
 require 'sprockets'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
+require 'rails/version'
 
 ActiveSupport::TestCase.test_order = :random if ActiveSupport::TestCase.respond_to?(:test_order=)
 
