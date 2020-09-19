@@ -209,10 +209,17 @@ module Sprockets
         app.routes.prepend do
           mount app.assets => config.assets.prefix
         end
+        env = app.assets
+      else
+        env = Sprockets::Environment.new(app.root.to_s)
+        # Run app.assets.configure blocks
+        config.assets._blocks.each do |block|
+          block.call(env)
+        end
       end
 
       if using_sprockets4?
-        raise ManifestNeededError if app.assets.find_asset('manifest.js').nil?
+        raise ManifestNeededError if env.find_asset('manifest.js').nil?
       end
 
       app.assets_manifest = build_manifest(app)
