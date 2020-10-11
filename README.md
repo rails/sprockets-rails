@@ -129,7 +129,11 @@ If the resolver list is empty (e.g. if debug is true and compile is false), the 
 
 **`config.assets.check_precompiled_asset`**
 
-When enabled, an exception is raised for missing assets. This option is enabled by default.
+When enabled, an exception is raised for missing assets. This option is enabled
+by default. When `config.assets.compile` is true and asset precompilation is not
+used, this setting causes sprockets to compile all assets on the first request
+for any asset. Therefore, disabling `check_precompiled_asset` can drastically
+reduce the time taken to request the first asset in development.
 
 ## Complementary plugins
 
