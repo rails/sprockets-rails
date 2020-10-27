@@ -203,6 +203,11 @@ module Sprockets
     end
 
     config.after_initialize do |app|
+      config.action_controller.asset_host        ||= app.config.asset_host
+      config.action_controller.relative_url_root ||= app.config.relative_url_root
+    end
+
+    config.after_initialize do |app|
       config = app.config
 
       if config.assets.compile
