@@ -48,6 +48,17 @@ Each asset task will invoke `assets:environment` first. By default this loads th
 
 Also see [Sprockets::Rails::Task](https://github.com/rails/sprockets-rails/blob/master/lib/sprockets/rails/task.rb) and [Rake::SprocketsTask](https://github.com/rails/sprockets/blob/master/lib/rake/sprocketstask.rb).
 
+##### Example: Customizing the log_level of a single task
+
+After `Rails.application.load_tasks` has happened, it's necessary to `clear` existing tasks before re-generating them.
+
+```
+Rake::Task['assets:precompile'].clear
+Rake::SprocketsTask.new do |t|
+  t.log_level = ::Logger::WARN # Default is INFO
+end
+```
+
 ### Initializer options
 
 **`config.assets.unknown_asset_fallback`**
