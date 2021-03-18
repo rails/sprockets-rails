@@ -880,8 +880,16 @@ class PrecompiledAssetHelperTest < HelperTest
     @bundle_js_name = '/assets/bundle.js'
   end
 
+  # both subclass and more specific error are supported due to
+  # https://github.com/rails/sprockets-rails/pull/414/commits/760a805a9f56d3df0d4b83bd4a5a6476eb3aeb29
   def test_javascript_precompile
     assert_raises(Sprockets::Rails::Helper::AssetNotPrecompiled) do
+      @view.javascript_include_tag("not_precompiled")
+    end
+  end
+
+  def test_javascript_precompile_thows_the_descriptive_error
+    assert_raises(Sprockets::Rails::Helper::AssetNotPrecompiledError) do
       @view.javascript_include_tag("not_precompiled")
     end
   end
