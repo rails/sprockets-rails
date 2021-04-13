@@ -34,7 +34,7 @@ class TestQuietAssets < Minitest::Test
     assert_equal Logger::ERROR, middleware.call("PATH_INFO" => "/assets/stylesheets/application.css")
   end
 
-  def test_silencess_with_custom_prefix
+  def test_silences_with_custom_prefix
     Rails.application.config.assets.prefix = "path/to"
     assert_equal Logger::ERROR, middleware.call("PATH_INFO" => "/path/to/thing")
   end
