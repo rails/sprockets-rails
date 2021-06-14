@@ -369,7 +369,7 @@ module Sprockets
           end
 
           def raise_unless_precompiled_asset(path)
-            raise Helper::AssetNotPrecompiled.new(path) if @check_precompiled_asset && !precompiled?(path)
+            raise Helper::AssetNotPrecompiledError.new(path) if @check_precompiled_asset && !precompiled?(path)
           end
       end
     end
