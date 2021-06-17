@@ -1,8 +1,6 @@
 Contributing to Sprockets Rails
 =====================
 
-[![Build Status](https://travis-ci.org/rails/sprockets-rails.svg?branch=master)](https://travis-ci.org/rails/sprockets-rails)
-
 Sprockets Rails is work of [many contributors](https://github.com/rails/sprockets-rails/graphs/contributors). You're encouraged to submit [pull requests](https://github.com/rails/sprockets-rails/pulls), [propose features and discuss issues](https://github.com/rails/sprockets-rails/issues).
 
 #### Fork the Project
