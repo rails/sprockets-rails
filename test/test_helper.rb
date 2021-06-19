@@ -8,6 +8,12 @@ require 'rails/version'
 
 ActiveSupport::TestCase.test_order = :random if ActiveSupport::TestCase.respond_to?(:test_order=)
 
+def append_media_attribute
+  if ::Rails::VERSION::MAJOR < 7
+    "media=\"screen\""
+  end
+end
+
 class HelperTest < ActionView::TestCase
   FIXTURES_PATH = File.expand_path("../fixtures", __FILE__)
 
@@ -20,7 +26,7 @@ class HelperTest < ActionView::TestCase
     tmp = File.expand_path("../../tmp", __FILE__)
     @manifest = Sprockets::Manifest.new(@assets, tmp)
 
-    @view = ActionView::Base.new(ActionView::LookupContext.new([]))
+    @view = ActionView::Base.new(ActionView::LookupContext.new([]), {}, nil)
     @view.extend ::Sprockets::Rails::Helper
     @view.assets_environment  = @assets
     @view.assets_manifest     = @manifest
@@ -136,23 +142,23 @@ class NoHostHelperTest < HelperTest
 
   def test_stylesheet_link_tag
     ActiveSupport::Deprecation.silence do
-      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("static")
-      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("static.css")
-      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:static)
 
-      assert_dom_equal %(<link href="/elsewhere.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/elsewhere.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("/elsewhere.css")
-      assert_dom_equal %(<link href="/style1.css" media="screen" rel="stylesheet" />\n<link href="/stylesheets/style2.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/style1.css" #{append_media_attribute} rel="stylesheet" />\n<link href="/stylesheets/style2.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("/style1.css", "style2.css")
 
-      assert_dom_equal %(<link href="http://www.example.com/styles/style" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="http://www.example.com/styles/style" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("http://www.example.com/styles/style")
-      assert_dom_equal %(<link href="http://www.example.com/styles/style.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="http://www.example.com/styles/style.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("http://www.example.com/styles/style.css")
-      assert_dom_equal %(<link href="//www.example.com/styles/style.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="//www.example.com/styles/style.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("//www.example.com/styles/style.css")
 
       assert_dom_equal %(<link href="/stylesheets/print.css" media="print" rel="stylesheet" />),
@@ -178,12 +184,12 @@ class NoHostHelperTest < HelperTest
 
   def test_stylesheet_link_tag_integrity
     ActiveSupport::Deprecation.silence do
-      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" integrity="sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=" />),
+      assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" integrity="sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=" />),
         @view.stylesheet_link_tag("static", integrity: "sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=")
 
-      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("static", integrity: true)
-      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("static", integrity: false)
     end
   end
@@ -245,18 +251,18 @@ class NoSSLHelperTest < NoHostHelperTest
 
   def test_stylesheet_link_tag_integrity
     ActiveSupport::Deprecation.silence do
-      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("static", integrity: true)
-      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("static", integrity: false)
-      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("static", integrity: nil)
 
-      assert_dom_equal %(<link href="/stylesheets/static.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("static", integrity: "sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=")
     end
 
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo", integrity: true)
   end
 end
@@ -293,19 +299,19 @@ class LocalhostHelperTest < NoHostHelperTest
   def test_stylesheet_link_tag_integrity
     super
 
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo", integrity: false)
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo", integrity: nil)
 
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+    assert_dom_equal %(<link href="/assets/foo.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />),
       @view.stylesheet_link_tag("foo", integrity: true)
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+    assert_dom_equal %(<link href="/assets/foo.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />),
       @view.stylesheet_link_tag("foo.css", integrity: true)
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+    assert_dom_equal %(<link href="/assets/foo.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />),
       @view.stylesheet_link_tag(:foo, integrity: true)
 
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />\n<link href="/assets/bar.css" media="screen" rel="stylesheet" integrity="sha256-Vd370+VAW4D96CVpZcjFLXyeHoagI0VHwofmzRXetuE=" />),
+    assert_dom_equal %(<link href="/assets/foo.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />\n<link href="/assets/bar.css" #{append_media_attribute} rel="stylesheet" integrity="sha256-Vd370+VAW4D96CVpZcjFLXyeHoagI0VHwofmzRXetuE=" />),
       @view.stylesheet_link_tag(:foo, :bar, integrity: true)
   end
 end
@@ -353,11 +359,11 @@ class RelativeHostHelperTest < HelperTest
       assert_equal "https://assets.example.com/stylesheets/bank.css?foo=1#hash", @view.stylesheet_path("bank.css?foo=1#hash")
     end
 
-    assert_dom_equal %(<link href="https://assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="https://assets.example.com/assets/foo.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo")
-    assert_dom_equal %(<link href="https://assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="https://assets.example.com/assets/foo.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo.css")
-    assert_dom_equal %(<link href="https://assets.example.com/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="https://assets.example.com/assets/foo.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
   end
 
@@ -366,7 +372,6 @@ class RelativeHostHelperTest < HelperTest
     assert_equal "p { background: url(//assets.example.com/assets/logo.png); }\n", @assets["url.css"].to_s
   end
 end
-
 
 class NoDigestHelperTest < NoHostHelperTest
   def setup
@@ -391,11 +396,11 @@ class NoDigestHelperTest < NoHostHelperTest
   def test_stylesheet_link_tag
     super
 
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo")
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo.css")
-    assert_dom_equal %(<link href="/assets/foo.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
 
     assert_servable_asset_url "/assets/foo.css"
@@ -447,14 +452,14 @@ class DigestHelperTest < NoHostHelperTest
   def test_stylesheet_link_tag
     super
 
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo")
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo.css")
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
 
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />\n<link href="/assets/bar-#{@bar_css_digest}.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" />\n<link href="/assets/bar-#{@bar_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo, :bar)
 
     assert_servable_asset_url "/assets/foo-#{@foo_css_digest}.css"
@@ -482,19 +487,19 @@ class DigestHelperTest < NoHostHelperTest
   def test_stylesheet_link_tag_integrity
     super
 
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo", integrity: false)
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo", integrity: nil)
 
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />),
       @view.stylesheet_link_tag("foo", integrity: true)
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />),
       @view.stylesheet_link_tag("foo.css", integrity: true)
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />),
       @view.stylesheet_link_tag(:foo, integrity: true)
 
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />\n<link href="/assets/bar-#{@bar_css_digest}.css" media="screen" rel="stylesheet" integrity="sha256-Vd370+VAW4D96CVpZcjFLXyeHoagI0VHwofmzRXetuE=" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />\n<link href="/assets/bar-#{@bar_css_digest}.css" #{append_media_attribute} rel="stylesheet" integrity="sha256-Vd370+VAW4D96CVpZcjFLXyeHoagI0VHwofmzRXetuE=" />),
       @view.stylesheet_link_tag(:foo, :bar, integrity: true)
   end
 
@@ -565,11 +570,11 @@ class DebugHelperTest < NoHostHelperTest
     super
 
     if using_sprockets4?
-      assert_dom_equal %(<link href="/assets/foo.debug.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/foo.debug.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:foo)
-      assert_dom_equal %(<link href="/assets/bar.debug.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/bar.debug.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:bar)
-      assert_dom_equal %(<link href="/assets/file1.debug.css" media="screen" rel="stylesheet" />\n<link href="/assets/file2.debug.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/file1.debug.css" #{append_media_attribute} rel="stylesheet" />\n<link href="/assets/file2.debug.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:file1, :file2)
 
       assert_servable_asset_url "/assets/foo.self.css"
@@ -578,11 +583,11 @@ class DebugHelperTest < NoHostHelperTest
       assert_servable_asset_url "/assets/file1.self.css"
       assert_servable_asset_url "/assets/file2.self.css"
     else
-      assert_dom_equal %(<link href="/assets/foo.self.css?body=1" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/foo.self.css?body=1" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:foo)
-      assert_dom_equal %(<link href="/assets/foo.self.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/bar.self.css?body=1" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/foo.self.css?body=1" #{append_media_attribute} rel="stylesheet" />\n<link href="/assets/bar.self.css?body=1" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:bar)
-      assert_dom_equal %(<link href="/assets/dependency.self.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file1.self.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file2.self.css?body=1" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/dependency.self.css?body=1" #{append_media_attribute} rel="stylesheet" />\n<link href="/assets/file1.self.css?body=1" #{append_media_attribute} rel="stylesheet" />\n<link href="/assets/file2.self.css?body=1" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:file1, :file2)
 
       assert_servable_asset_url "/assets/foo.self.css?body=1"
@@ -652,11 +657,11 @@ class DebugDigestHelperTest < NoHostHelperTest
     super
 
     if using_sprockets4?
-      assert_dom_equal %(<link href="/assets/foo.debug-#{@foo_debug_css_digest}.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/foo.debug-#{@foo_debug_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:foo)
-      assert_dom_equal %(<link href="/assets/bar.debug-#{@bar_debug_css_digest}.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/bar.debug-#{@bar_debug_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:bar)
-      assert_dom_equal %(<link href="/assets/file1.debug-#{@file1_debug_css_digest}.css" media="screen" rel="stylesheet" />\n<link href="/assets/file2.debug-#{@file2_debug_css_digest}.css" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/file1.debug-#{@file1_debug_css_digest}.css" #{append_media_attribute} rel="stylesheet" />\n<link href="/assets/file2.debug-#{@file2_debug_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:file1, :file2)
 
       assert_servable_asset_url "/assets/foo.self-#{@foo_self_css_digest}.css"
@@ -665,11 +670,11 @@ class DebugDigestHelperTest < NoHostHelperTest
       assert_servable_asset_url "/assets/file1.self-#{@file1_self_css_digest}.css"
       assert_servable_asset_url "/assets/file2.self-#{@file2_self_css_digest}.css"
     else
-      assert_dom_equal %(<link href="/assets/foo.self-#{@foo_self_css_digest}.css?body=1" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/foo.self-#{@foo_self_css_digest}.css?body=1" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:foo)
-      assert_dom_equal %(<link href="/assets/foo.self-#{@foo_self_css_digest}.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/bar.self-#{@bar_self_css_digest}.css?body=1" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/foo.self-#{@foo_self_css_digest}.css?body=1" #{append_media_attribute} rel="stylesheet" />\n<link href="/assets/bar.self-#{@bar_self_css_digest}.css?body=1" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:bar)
-      assert_dom_equal %(<link href="/assets/dependency.self-#{@dependency_self_css_digest}.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file1.self-#{@file1_self_css_digest}.css?body=1" media="screen" rel="stylesheet" />\n<link href="/assets/file2.self-#{@file2_self_css_digest}.css?body=1" media="screen" rel="stylesheet" />),
+      assert_dom_equal %(<link href="/assets/dependency.self-#{@dependency_self_css_digest}.css?body=1" #{append_media_attribute} rel="stylesheet" />\n<link href="/assets/file1.self-#{@file1_self_css_digest}.css?body=1" #{append_media_attribute} rel="stylesheet" />\n<link href="/assets/file2.self-#{@file2_self_css_digest}.css?body=1" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag(:file1, :file2)
 
       assert_servable_asset_url "/assets/foo.self-#{@foo_self_css_digest}.css?body=1"
@@ -736,11 +741,11 @@ class ManifestHelperTest < NoHostHelperTest
   def test_stylesheet_link_tag
     super
 
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo")
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag("foo.css")
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" />),
       @view.stylesheet_link_tag(:foo)
   end
 
@@ -758,11 +763,11 @@ class ManifestHelperTest < NoHostHelperTest
   def test_stylesheet_link_tag_integrity
     super
 
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />),
       @view.stylesheet_link_tag("foo", integrity: true)
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />),
       @view.stylesheet_link_tag("foo.css", integrity: true)
-    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" media="screen" rel="stylesheet" integrity="#{@foo_css_integrity}" />),
+    assert_dom_equal %(<link href="/assets/foo-#{@foo_css_digest}.css" #{append_media_attribute} rel="stylesheet" integrity="#{@foo_css_integrity}" />),
       @view.stylesheet_link_tag(:foo, integrity: true)
   end
 
