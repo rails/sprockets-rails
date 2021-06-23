@@ -197,7 +197,7 @@ class TestRailtie < TestBoot
   def test_default_check_precompiled_assets
     assert app.config.assets.check_precompiled_asset
     app.initialize!
-    @view = ActionView::Base.new
+    @view = action_view
     assert @view.check_precompiled_asset
   end
 
@@ -206,7 +206,7 @@ class TestRailtie < TestBoot
       config.assets.check_precompiled_asset = false
     end
     app.initialize!
-    @view = ActionView::Base.new
+    @view = action_view
     refute @view.check_precompiled_asset
   end
 
@@ -264,7 +264,7 @@ class TestRailtie < TestBoot
     assert_equal app.assets_manifest, ActionView::Base.assets_manifest
     assert_kind_of Sprockets::Environment, ActionView::Base.assets_environment
 
-    @view = ActionView::Base.new
+    @view = action_view
     assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
     assert_equal "/assets/foo-4ef5541f349f7ed5a0d6b71f2fa4c82745ca106ae02f212aea5129726ac6f6ab.js", @view.javascript_path("foo")
 
@@ -285,7 +285,7 @@ class TestRailtie < TestBoot
     refute ActionView::Base.assets_environment
     assert_equal app.assets_manifest, ActionView::Base.assets_manifest
 
-    @view = ActionView::Base.new
+    @view = action_view
     refute @view.assets_environment
     assert_equal app.assets_manifest, @view.assets_manifest
   end
@@ -422,4 +422,9 @@ class TestRailtie < TestBoot
     assert middleware.include?(Sprockets::Rails::QuietAssets)
     assert middleware.each_cons(2).include?([Sprockets::Rails::QuietAssets, Rails::Rack::Logger])
   end
+
+  private
+    def action_view
+      ActionView::Base.new(ActionView::LookupContext.new([]), {}, nil)
+    end
 end
