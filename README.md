@@ -58,6 +58,14 @@ When set to a truthy value, a result will be returned even if the requested asse
 
 Add additional assets to compile on deploy. Defaults to `application.js`, `application.css` and any other non-js/css file under `app/assets`.
 
+**`config.assets.exts_not_to_copy`**
+
+Override this in case you want to prevent sprockets from copying files with a certain extension to public folder during assets compilation. The default extensions are `.js`, `.css` and empty extension. In case you want to ignore all elm files for example, all you have to do is:
+
+```
+config.assets.exts_not_to_copy << '.elm'
+```
+
 **`config.assets.paths`**
 
 Add additional load paths to this Array. Rails includes `app/assets`, `lib/assets` and `vendor/assets` for you already. Plugins might want to add their custom paths to this.
