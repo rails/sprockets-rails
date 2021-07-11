@@ -43,6 +43,12 @@ class TestQuietAssets < Minitest::Test
     assert_equal Logger::DEBUG, middleware.call("PATH_INFO" => "/path/to/thing")
   end
 
+  def test_logger_does_not_respond_to_silence
+    ::Rails.logger.stub :respond_to?, false do
+      assert_raises(Sprockets::Rails::LoggerSilenceError) { middleware.call("PATH_INFO" => "/assets/stylesheets/application.css") }
+    end
+  end
+
   private
 
   def middleware
