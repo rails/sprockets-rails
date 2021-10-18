@@ -4,6 +4,8 @@ require 'action_controller/railtie'
 require 'active_support/core_ext/module/remove_method'
 require 'active_support/core_ext/numeric/bytes'
 require 'sprockets'
+
+require 'sprockets/rails/asset_url_processor'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
 require 'sprockets/rails/quiet_assets'
@@ -114,6 +116,10 @@ module Sprockets
       if app.config.assets.quiet
         app.middleware.insert_before ::Rails::Rack::Logger, ::Sprockets::Rails::QuietAssets
       end
+    end
+
+    initializer :asset_url_processor do |app|
+      Sprockets.register_postprocessor "text/css", ::Sprockets::Rails::AssetUrlProcessor
     end
 
     config.assets.version     = ""
