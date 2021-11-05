@@ -6,7 +6,7 @@ module Sprockets
       
       def self.call(input)
         context = input[:environment].context_class.new(input)
-        data    = input[:data].gsub(REGEX, "url(#{context.asset_path($1)})")
+        data    = input[:data].gsub(REGEX) { |_match| "url(#{context.asset_path($1)})" }
 
         { data: data }
       end
