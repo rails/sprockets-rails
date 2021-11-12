@@ -6,6 +6,7 @@ require 'active_support/core_ext/numeric/bytes'
 require 'sprockets'
 
 require 'sprockets/rails/asset_url_processor'
+require 'sprockets/rails/sourcemap_url_processor'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
 require 'sprockets/rails/quiet_assets'
@@ -120,6 +121,10 @@ module Sprockets
 
     initializer :asset_url_processor do |app|
       Sprockets.register_postprocessor "text/css", ::Sprockets::Rails::AssetUrlProcessor
+    end
+
+    initializer :asset_sourcemap_url_processor do |app|
+      Sprockets.register_postprocessor "application/javascript", ::Sprockets::Rails::SourcemappingUrlProcessor
     end
 
     config.assets.version     = ""
