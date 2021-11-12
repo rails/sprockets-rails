@@ -7,6 +7,7 @@ module Sprockets
       def self.call(input)
         context = input[:environment].context_class.new(input)
         data    = input[:data].gsub(REGEX) do |_match|
+          ensure_file_is_present = context.resolve($1)
           "//# sourceMappingURL=#{context.asset_path($1)}\n//!\n"
         rescue Sprockets::FileNotFound
           # Remove source mapping when the target cannot be found
