@@ -8,7 +8,7 @@ module Sprockets
         env     = input[:environment]
         context = env.context_class.new(input)
         data    = input[:data].gsub(REGEX) do |_match|
-          ensure_file_is_present = context.resolve($1)
+          context.resolve($1) # Ensure file is present
           "//# sourceMappingURL=#{context.asset_path($1)}\n//!\n"
         rescue Sprockets::FileNotFound
           env.logger.warn "Removed sourceMappingURL comment for missing asset '#{$1}' from #{input[:filename]}"
