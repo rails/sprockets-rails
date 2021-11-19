@@ -48,4 +48,17 @@ class TestAssetUrlProcessor < Minitest::Test
     assert_equal(1, output[:links].size)
     assert_equal(@logo_uri, output[:links].first)
   end
+
+  def test_relative
+    input = { environment: @env, data: 'background: url(./logo.png);', filename: 'url2.css', metadata: {} }
+    output = Sprockets::Rails::AssetUrlProcessor.call(input)
+    assert_equal("background: url(/logo-#{@logo_digest}.png);", output[:data])
+  end
+
+  def test_subdirectory
+    input = { environment: @env, data: "background: url('jquery/jquery.js');", filename: 'url2.css', metadata: {} }
+    output = Sprockets::Rails::AssetUrlProcessor.call(input)
+    jquery_digest = 'c6910e1db4a5ed4905be728ab786471e81565f4a9d544734b199f3790de9f9a3'
+    assert_equal("background: url(/jquery/jquery-#{jquery_digest}.js);", output[:data])
+  end
 end
