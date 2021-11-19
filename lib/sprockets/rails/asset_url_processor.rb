@@ -8,7 +8,7 @@ module Sprockets
         context = input[:environment].context_class.new(input)
         data    = input[:data].gsub(REGEX) { |_match| "url(#{context.asset_path($1)})" }
 
-        { data: data }
+        context.metadata.merge(data: data)
       end
     end
   end
