@@ -24,6 +24,16 @@ class TestSourceMappingUrlProcessor < Minitest::Test
     assert_equal({ data: "var mapped;\n//# sourceMappingURL=mapped-HEXGOESHERE.js.map\n//!\n" }, output)
   end
 
+  def test_prevent_recursion
+    input = { environment: @env, data: "var mapped;\n//# sourceMappingURL=/assets/mapped.js.map", filename: 'mapped.js', metadata: {} }
+    output = Sprockets::Rails::SourcemappingUrlProcessor.call(input)
+    assert_equal({ data: "var mapped;\n//# sourceMappingURL=/assets/mapped.js.map" }, output)
+
+    input = { environment: @env, data: "var mapped;\n//# sourceMappingURL=https://cdn.example.com/assets/mapped.js.map", filename: 'mapped.js', metadata: {} }
+    output = Sprockets::Rails::SourcemappingUrlProcessor.call(input)
+    assert_equal({ data: "var mapped;\n//# sourceMappingURL=https://cdn.example.com/assets/mapped.js.map" }, output)
+  end
+
   def test_missing
     @env.context_class.class_eval do
       def resolve(path, **kargs)
