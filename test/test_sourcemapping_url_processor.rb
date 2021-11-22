@@ -23,6 +23,18 @@ class TestSourceMappingUrlProcessor < Minitest::Test
     assert_equal({ data: "var mapped;\n//# sourceMappingURL=/assets/mapped-HEXGOESHERE.js.map\n//!\n" }, output)
   end
 
+  def test_resolving_erroneously_without_map_extension
+    @env.context_class.class_eval do
+      def resolve(path, **kargs)
+        "/assets/mapped.js"
+      end
+    end
+
+    input = { environment: @env, data: "var mapped;\n//# sourceMappingURL=mapped.js.map", name: 'mapped', filename: 'mapped.js', metadata: {} }
+    output = Sprockets::Rails::SourcemappingUrlProcessor.call(input)
+    assert_equal({ data: "var mapped;\n" }, output)
+  end
+
   def test_missing
     @env.context_class.class_eval do
       def resolve(path, **kargs)
