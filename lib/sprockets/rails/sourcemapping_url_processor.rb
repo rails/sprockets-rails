@@ -12,9 +12,9 @@ module Sprockets
             sourcemap_logical_path = combine_sourcemap_logical_path(sourcefile: input[:name], sourcemap: $1)
 
             begin
-              sourcemap_comment(sourcemap_logical_path, context)
+              resolved_sourcemap_comment(sourcemap_logical_path, context: context)
             rescue Sprockets::FileNotFound
-              sourcemap_comment_removed(sourcemap_logical_path, filename: input[:filename], env: env)
+              removed_sourcemap_comment(sourcemap_logical_path, filename: input[:filename], env: env)
             end
           end
 
@@ -30,7 +30,7 @@ module Sprockets
             end
           end
 
-          def sourcemap_comment(sourcemap_logical_path, context)
+          def resolved_sourcemap_comment(sourcemap_logical_path, context:)
             "//# sourceMappingURL=#{sourcemap_asset_path(sourcemap_logical_path, context: context)}\n//!\n"
           end
 
@@ -44,7 +44,7 @@ module Sprockets
             end
           end
 
-          def sourcemap_comment_removed(sourcemap_logical_path, filename:, env:)
+          def removed_sourcemap_comment(sourcemap_logical_path, filename:, env:)
             env.logger.warn "Removed sourceMappingURL comment for missing asset '#{sourcemap_logical_path}' from #{filename}"
             nil
           end
