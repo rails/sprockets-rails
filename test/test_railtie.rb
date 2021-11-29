@@ -12,6 +12,15 @@ ensure
   $stderr.reopen orig_stderr
 end
 
+def create_config_manifest(dir = "app/assets/config")
+  Dir.chdir(app.root) do
+    FileUtils.mkdir_p(dir)
+    File.open("#{ dir }/manifest.js", "w") do |f|
+      f << ""
+    end
+  end
+end
+
 class TestBoot < Minitest::Test
   include ActiveSupport::Testing::Isolation
 
@@ -38,13 +47,7 @@ class TestBoot < Minitest::Test
     @app.config.middleware ||= Rails::Configuration::MiddlewareStackProxy.new
     @app.config.active_support.deprecation = :notify
 
-    Dir.chdir(app.root) do
-      dir = "app/assets/config"
-      FileUtils.mkdir_p(dir)
-      File.open("#{ dir }/manifest.js", "w") do |f|
-        f << ""
-      end
-    end
+    create_config_manifest
   end
 
   def test_initialize
@@ -297,6 +300,31 @@ class TestRailtie < TestBoot
     assert_equal "/assets", env.context_class.assets_prefix
     assert_equal true, env.context_class.digest_assets
     assert_nil env.context_class.config.asset_host
+  end
+
+  def test_default_config_manifest_path
+    app.initialize!
+    assert_match %r{app/assets/config.manifest.js$}, app.config.assets.config_manifest
+  end
+
+  def test_custom_config_manifest_path
+    create_config_manifest("my/custom/path")
+    app.configure do
+      config.assets.config_manifest = 'my/custom/path/manifest.js'
+    end
+    app.initialize!
+
+    assert_match %r{my/custom/path/manifest.js$}, app.config.assets.config_manifest
+  end
+
+  def test_config_manifest_raises_when_does_not_exist
+    app.configure do
+      config.assets.config_manifest = 'not/found/manifest.js'
+    end
+
+    assert_raises Sprockets::Railtie::ManifestNeededError do
+      app.initialize!
+    end
   end
 
   def test_manifest_path
