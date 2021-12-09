@@ -86,7 +86,7 @@ When enabled, fingerprints will be added to asset filenames.
 
 **`config.assets.debug`**
 
-Enable expanded asset debugging mode. Individual files will be served to make referencing filenames in the web console easier. **This feature has been replaced by Source Maps and does nothing in Sprockets 4+.**
+Enable asset debugging mode. A source map will be included with each asset when this is true.
 
 **`config.assets.compile`**
 
