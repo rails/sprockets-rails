@@ -423,20 +423,20 @@ class TestRailtie < TestBoot
     assert middleware.each_cons(2).include?([Sprockets::Rails::QuietAssets, Rails::Rack::Logger])
   end
 
-  def test_rewrite_css_urls_defaults_to_true
+  def test_resolve_assets_in_css_urls_defaults_to_true
     app.initialize!
 
-    assert_equal true, app.config.assets.rewrite_css_urls
+    assert_equal true, app.config.assets.resolve_assets_in_css_urls
     assert_includes Sprockets.postprocessors['text/css'], Sprockets::Rails::AssetUrlProcessor
   end
 
-  def test_rewrite_css_urls_when_false_avoids_registering_postprocessor
+  def test_resolve_assets_in_css_urls_when_false_avoids_registering_postprocessor
     app.configure do
-      config.assets.rewrite_css_urls = false
+      config.assets.resolve_assets_in_css_urls = false
     end
     app.initialize!
 
-    assert_equal false, app.config.assets.rewrite_css_urls
+    assert_equal false, app.config.assets.resolve_assets_in_css_urls
     refute_includes Sprockets.postprocessors['text/css'], Sprockets::Rails::AssetUrlProcessor
   end
 
