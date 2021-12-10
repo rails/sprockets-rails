@@ -1,6 +1,6 @@
 module Sprockets
   module Rails
-    # Rewrites urls in CSS files with the digested paths
+    # Resolve assets referenced in CSS `url()` calls and replace them with the digested paths
     class AssetUrlProcessor
       REGEX = /url\(\s*["']?(?!(?:\#|data|http))(?<relativeToCurrentDir>\.\/)?(?<path>[^"'\s)]+)\s*["']?\)/
       def self.call(input)
