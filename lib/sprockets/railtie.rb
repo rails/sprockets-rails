@@ -97,12 +97,13 @@ module Sprockets
     end
 
     config.assets = OrderedOptions.new
-    config.assets._blocks     = []
-    config.assets.paths       = []
-    config.assets.precompile  = []
-    config.assets.prefix      = "/assets"
-    config.assets.manifest    = nil
-    config.assets.quiet       = false
+    config.assets._blocks                    = []
+    config.assets.paths                      = []
+    config.assets.precompile                 = []
+    config.assets.prefix                     = "/assets"
+    config.assets.manifest                   = nil
+    config.assets.quiet                      = false
+    config.assets.resolve_assets_in_css_urls = true
 
     initializer :set_default_precompile do |app|
       if using_sprockets4?
@@ -120,7 +121,9 @@ module Sprockets
     end
 
     initializer :asset_url_processor do |app|
-      Sprockets.register_postprocessor "text/css", ::Sprockets::Rails::AssetUrlProcessor
+      if app.config.assets.resolve_assets_in_css_urls
+        Sprockets.register_postprocessor "text/css", ::Sprockets::Rails::AssetUrlProcessor
+      end
     end
 
     initializer :asset_sourcemap_url_processor do |app|
