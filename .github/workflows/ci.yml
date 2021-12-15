@@ -50,7 +50,7 @@ jobs:
             os: ubuntu-latest
             gemfile: Gemfile
             allow-failure: true
-          - ruby: 3.0
+          - ruby: '3.0'
             os: ubuntu-latest
             gemfile: Gemfile
             allow-failure: true
