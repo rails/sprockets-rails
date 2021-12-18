@@ -5,7 +5,7 @@ require 'active_support/core_ext/module/remove_method'
 require 'active_support/core_ext/numeric/bytes'
 require 'sprockets'
 
-require 'sprockets/rails/asset_url_processor'
+require 'sprockets/rails/css_asset_url_processor'
 require 'sprockets/rails/sourcemapping_url_processor'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
@@ -120,9 +120,9 @@ module Sprockets
       end
     end
 
-    initializer :asset_url_processor do |app|
+    initializer :css_asset_url_processor do |app|
       if app.config.assets.resolve_assets_in_css_urls
-        Sprockets.register_postprocessor "text/css", ::Sprockets::Rails::AssetUrlProcessor
+        Sprockets.register_postprocessor "text/css", ::Sprockets::Rails::CssAssetUrlProcessor
       end
     end
 
