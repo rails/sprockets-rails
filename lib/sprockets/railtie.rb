@@ -5,6 +5,7 @@ require 'active_support/core_ext/module/remove_method'
 require 'sprockets'
 require 'sprockets/rails/helper'
 require 'sprockets/rails/version'
+require 'sprockets/rails/asset_url_processor'
 
 module Rails
   class Application
@@ -77,6 +78,13 @@ module Sprockets
     config.assets.debug      = false
     config.assets.compile    = true
     config.assets.digest     = false
+    config.assets.resolve_assets_in_css_urls = true
+
+    initializer :asset_url_processor do |app|
+      if app.config.assets.resolve_assets_in_css_urls
+        Sprockets.register_postprocessor "text/css", ::Sprockets::Rails::AssetUrlProcessor
+      end
+    end
 
     rake_tasks do |app|
       require 'sprockets/rails/task'
