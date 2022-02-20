@@ -256,4 +256,21 @@ class TestRailtie < TestBoot
       assert_match %r{test_public/assets$}, manifest.dir
     end
   end
+
+  def test_resolve_assets_in_css_urls_defaults_to_true
+    app.initialize!
+
+    assert_equal true, app.config.assets.resolve_assets_in_css_urls
+    assert_includes Sprockets.postprocessors['text/css'], Sprockets::Rails::AssetUrlProcessor
+  end
+
+  def test_resolve_assets_in_css_urls_when_false_avoids_registering_postprocessor
+    app.configure do
+      config.assets.resolve_assets_in_css_urls = false
+    end
+    app.initialize!
+
+    assert_equal false, app.config.assets.resolve_assets_in_css_urls
+    refute_includes Sprockets.postprocessors['text/css'], Sprockets::Rails::AssetUrlProcessor
+  end
 end
