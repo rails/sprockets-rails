@@ -893,7 +893,7 @@ class PrecompiledAssetHelperTest < HelperTest
     end
   end
 
-  def test_javascript_precompile_thows_the_descriptive_error
+  def test_javascript_precompile_throws_the_descriptive_error
     assert_raises(Sprockets::Rails::Helper::AssetNotPrecompiledError) do
       @view.javascript_include_tag("not_precompiled")
     end
