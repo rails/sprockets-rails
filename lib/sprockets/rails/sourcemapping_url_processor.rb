@@ -2,7 +2,7 @@ module Sprockets
   module Rails
     # Rewrites source mapping urls with the digested paths and protect against semicolon appending with a dummy comment line
     class SourcemappingUrlProcessor
-      REGEX = /\/\/# sourceMappingURL=(.*\.map)/
+      REGEX = /\/\/# sourceMappingURL=(.*\.map\.?\w*)/
 
       class << self
         def call(input)
