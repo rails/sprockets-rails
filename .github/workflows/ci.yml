@@ -39,10 +39,19 @@ jobs:
             gemfile: "gemfiles/Gemfile.rails-6.0.x.sprockets-4.x"
           - ruby: '3.0'
             gemfile: "gemfiles/Gemfile.rails-6.1.x.sprockets-4.x"
+          - ruby: 3.1
+            gemfile: "gemfiles/Gemfile.rails-6.0.x"
+          - ruby: 3.1
+            gemfile: "gemfiles/Gemfile.rails-6.0.x.sprockets-4.x"
+          - ruby: 3.1
+            gemfile: "gemfiles/Gemfile.rails-6.1.x.sprockets-4.x"
           - ruby: 2.7
             gemfile: Gemfile
             allow-failure: true
           - ruby: '3.0'
+            gemfile: Gemfile
+            allow-failure: true
+          - ruby: '3.1'
             gemfile: Gemfile
             allow-failure: true
           - ruby: head
