@@ -4,4 +4,4 @@ gemspec path: '..'
 
 gem 'actionpack', '~> 6.0.0'
 gem 'railties', '~> 6.0.0'
-gem 'sprockets', github: 'rails/sprockets', branch: 'master'
+gem 'sprockets', github: 'rails/sprockets', branch: 'main'
