@@ -5,10 +5,11 @@ Sprockets Rails is work of [many contributors](https://github.com/rails/sprocket
 
 #### Fork the Project
 
-Fork the [project on Github](https://github.com/rails/sprockets-rails) and check out your copy.
+Fork the [project on GitHub](https://github.com/rails/sprockets-rails) and clone your fork.
+Use your GitHub username instead of `YOUR-USERNAME`.
 
 ```
-git clone https://github.com/contributor/sprockets-rails.git
+git clone https://github.com/YOUR-USERNAME/sprockets-rails.git
 cd sprockets-rails
 git remote add upstream https://github.com/rails/sprockets-rails.git
 ```
