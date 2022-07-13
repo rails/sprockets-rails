@@ -232,11 +232,7 @@ module Sprockets
       ActionDispatch::Routing::RouteWrapper.class_eval do
         class_attribute :assets_prefix
 
-        if defined?(prepend) && ::Rails.version >= '4'
-          prepend Sprockets::Rails::RouteWrapper
-        else
-          include Sprockets::Rails::RouteWrapper
-        end
+        prepend Sprockets::Rails::RouteWrapper
 
         self.assets_prefix = config.assets.prefix
       end
