@@ -1,6 +1,6 @@
 # Sprockets Rails
 
-Provides Sprockets implementation for Rails 4.x (and beyond) Asset Pipeline.
+Provides [Sprockets](https://github.com/rails/sprockets) implementation for Rails 4.x (and beyond) Asset Pipeline.
 
 
 ## Installation
