@@ -53,17 +53,6 @@ module Rails
       @precompiled_assets ||= assets_manifest.find(config.assets.precompile).map(&:logical_path).to_set
     end
   end
-
-  class Engine < Railtie
-    # Skip defining append_assets_path on Rails <= 4.2
-    unless initializers.find { |init| init.name == :append_assets_path }
-      initializer :append_assets_path, :group => :all do |app|
-        app.config.assets.paths.unshift(*paths["vendor/assets"].existent_directories)
-        app.config.assets.paths.unshift(*paths["lib/assets"].existent_directories)
-        app.config.assets.paths.unshift(*paths["app/assets"].existent_directories)
-      end
-    end
-  end
 end
 
 module Sprockets
@@ -94,6 +83,12 @@ module Sprockets
       def configure(&block)
         self._blocks << block
       end
+    end
+
+    ::Rails::Engine.initializer :append_assets_path, :group => :all do |app|
+      app.config.assets.paths.unshift(*paths["vendor/assets"].existent_directories)
+      app.config.assets.paths.unshift(*paths["lib/assets"].existent_directories)
+      app.config.assets.paths.unshift(*paths["app/assets"].existent_directories)
     end
 
     config.assets = OrderedOptions.new
@@ -237,11 +232,7 @@ module Sprockets
       ActionDispatch::Routing::RouteWrapper.class_eval do
         class_attribute :assets_prefix
 
-        if defined?(prepend) && ::Rails.version >= '4'
-          prepend Sprockets::Rails::RouteWrapper
-        else
-          include Sprockets::Rails::RouteWrapper
-        end
+        prepend Sprockets::Rails::RouteWrapper
 
         self.assets_prefix = config.assets.prefix
       end
