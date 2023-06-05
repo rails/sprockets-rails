@@ -2,6 +2,7 @@ require 'minitest/autorun'
 
 require 'action_view'
 require 'sprockets'
+require 'sprockets/rails'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
 require 'rails/version'
@@ -113,7 +114,7 @@ end
 
 class NoHostHelperTest < HelperTest
   def test_javascript_include_tag
-    ActiveSupport::Deprecation.silence do
+    Sprockets::Rails.deprecator.silence do
       assert_dom_equal %(<script src="/javascripts/static.js"></script>),
         @view.javascript_include_tag("static")
       assert_dom_equal %(<script src="/javascripts/static.js"></script>),
@@ -141,7 +142,7 @@ class NoHostHelperTest < HelperTest
   end
 
   def test_stylesheet_link_tag
-    ActiveSupport::Deprecation.silence do
+    Sprockets::Rails.deprecator.silence do
       assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("static")
       assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
@@ -169,7 +170,7 @@ class NoHostHelperTest < HelperTest
   end
 
   def test_javascript_include_tag_integrity
-    ActiveSupport::Deprecation.silence do
+    Sprockets::Rails.deprecator.silence do
       assert_dom_equal %(<script src="/javascripts/static.js" integrity="sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs="></script>),
         @view.javascript_include_tag("static", integrity: "sha-256-TvVUHzSfftWg1rcfL6TIJ0XKEGrgLyEq6lEpcmrG9qs=")
 
@@ -183,7 +184,7 @@ class NoHostHelperTest < HelperTest
   end
 
   def test_stylesheet_link_tag_integrity
-    ActiveSupport::Deprecation.silence do
+    Sprockets::Rails.deprecator.silence do
       assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" integrity="sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=" />),
         @view.stylesheet_link_tag("static", integrity: "sha-256-5YzTQPuOJz/EpeXfN/+v1sxsjAj/dw8q26abiHZM3A4=")
 
@@ -195,7 +196,7 @@ class NoHostHelperTest < HelperTest
   end
 
   def test_javascript_path
-    ActiveSupport::Deprecation.silence do
+    Sprockets::Rails.deprecator.silence do
       assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
       assert_equal "/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
       assert_equal "/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
@@ -210,7 +211,7 @@ class NoHostHelperTest < HelperTest
   end
 
   def test_stylesheet_path
-    ActiveSupport::Deprecation.silence do
+    Sprockets::Rails.deprecator.silence do
       assert_equal "/stylesheets/bank.css", @view.stylesheet_path("bank")
       assert_equal "/stylesheets/bank.css", @view.stylesheet_path("bank.css")
       assert_equal "/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
@@ -233,7 +234,7 @@ class NoSSLHelperTest < NoHostHelperTest
   end
 
   def test_javascript_include_tag_integrity
-    ActiveSupport::Deprecation.silence do
+    Sprockets::Rails.deprecator.silence do
       assert_dom_equal %(<script src="/javascripts/static.js"></script>),
         @view.javascript_include_tag("static", integrity: true)
       assert_dom_equal %(<script src="/javascripts/static.js"></script>),
@@ -250,7 +251,7 @@ class NoSSLHelperTest < NoHostHelperTest
   end
 
   def test_stylesheet_link_tag_integrity
-    ActiveSupport::Deprecation.silence do
+    Sprockets::Rails.deprecator.silence do
       assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
         @view.stylesheet_link_tag("static", integrity: true)
       assert_dom_equal %(<link href="/stylesheets/static.css" #{append_media_attribute} rel="stylesheet" />),
@@ -324,7 +325,7 @@ class RelativeHostHelperTest < HelperTest
   end
 
   def test_javascript_path
-    ActiveSupport::Deprecation.silence do
+    Sprockets::Rails.deprecator.silence do
       assert_equal "https://assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr")
       assert_equal "https://assets.example.com/javascripts/xmlhr.js", @view.javascript_path("xmlhr.js")
       assert_equal "https://assets.example.com/javascripts/super/xmlhr.js", @view.javascript_path("super/xmlhr")
@@ -346,7 +347,7 @@ class RelativeHostHelperTest < HelperTest
   end
 
   def test_stylesheet_path
-    ActiveSupport::Deprecation.silence do
+    Sprockets::Rails.deprecator.silence do
       assert_equal "https://assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank")
       assert_equal "https://assets.example.com/stylesheets/bank.css", @view.stylesheet_path("bank.css")
       assert_equal "https://assets.example.com/stylesheets/subdir/subdir.css", @view.stylesheet_path("subdir/subdir")
@@ -914,7 +915,7 @@ end
 class DeprecationTest < HelperTest
   def test_deprecations_for_asset_path
     @view.send(:define_singleton_method, :public_compute_asset_path, -> {})
-    assert_deprecated do
+    assert_deprecated("use the `skip_pipeline: true` option", Sprockets::Rails.deprecator) do
       @view.asset_path("does_not_exist.noextension")
     end
   ensure
@@ -924,7 +925,7 @@ class DeprecationTest < HelperTest
   def test_deprecations_for_asset_url
     @view.send(:define_singleton_method, :public_compute_asset_path, -> {})
 
-    assert_deprecated do
+    assert_deprecated("use the `skip_pipeline: true` option", Sprockets::Rails.deprecator) do
       @view.asset_url("does_not_exist.noextension")
     end
   ensure
@@ -934,7 +935,7 @@ class DeprecationTest < HelperTest
   def test_deprecations_for_image_tag
     @view.send(:define_singleton_method, :public_compute_asset_path, -> {})
 
-    assert_deprecated do
+    assert_deprecated("use the `skip_pipeline: true` option", Sprockets::Rails.deprecator) do
       @view.image_tag("does_not_exist.noextension")
     end
   ensure

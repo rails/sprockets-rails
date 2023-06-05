@@ -125,6 +125,10 @@ module Sprockets
       Sprockets.register_postprocessor "application/javascript", ::Sprockets::Rails::SourcemappingUrlProcessor
     end
 
+    initializer "sprockets-rails.deprecator" do |app|
+      app.deprecators[:sprockets_rails] = Sprockets::Rails.deprecator if app.respond_to?(:deprecators)
+    end
+
     config.assets.version     = ""
     config.assets.debug       = false
     config.assets.compile     = true
