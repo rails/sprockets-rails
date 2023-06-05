@@ -6,7 +6,9 @@ require 'active_support/core_ext/numeric/bytes'
 require 'sprockets'
 
 require 'sprockets/rails/asset_url_processor'
+require 'sprockets/rails/base_sourcemapping_url_processor'
 require 'sprockets/rails/sourcemapping_url_processor'
+require 'sprockets/rails/css_sourcemapping_url_processor'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
 require 'sprockets/rails/quiet_assets'
@@ -123,6 +125,7 @@ module Sprockets
 
     initializer :asset_sourcemap_url_processor do |app|
       Sprockets.register_postprocessor "application/javascript", ::Sprockets::Rails::SourcemappingUrlProcessor
+      Sprockets.register_postprocessor "text/css", ::Sprockets::Rails::CssSourcemappingUrlProcessor
     end
 
     initializer "sprockets-rails.deprecator" do |app|
