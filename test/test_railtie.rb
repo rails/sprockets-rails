@@ -427,7 +427,7 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert_equal true, app.config.assets.resolve_assets_in_css_urls
-    assert_includes Sprockets.postprocessors['text/css'], Sprockets::Rails::AssetUrlProcessor
+    assert_includes Sprockets.postprocessors['text/css'], Sprockets::Rails::CssAssetUrlProcessor
   end
 
   def test_resolve_assets_in_css_urls_when_false_avoids_registering_postprocessor
@@ -437,7 +437,7 @@ class TestRailtie < TestBoot
     app.initialize!
 
     assert_equal false, app.config.assets.resolve_assets_in_css_urls
-    refute_includes Sprockets.postprocessors['text/css'], Sprockets::Rails::AssetUrlProcessor
+    refute_includes Sprockets.postprocessors['text/css'], Sprockets::Rails::CssAssetUrlProcessor
   end
 
   private
