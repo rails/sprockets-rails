@@ -46,4 +46,16 @@ class TestSourceMappingUrlProcessor < Minitest::Test
     output = Sprockets::Rails::SourcemappingUrlProcessor.call(input)
     assert_equal({ data: "var mapped;\n" }, output)
   end
+
+  def test_inline_successful
+    @env.context_class.class_eval do
+      def resolve(path, **kargs)
+        "/assets/mapped.js.map"
+      end
+    end
+
+    input = { environment: @env, data: "var mapped;\n//# sourceMappingURL=data:application/json;base64,abc123=", name: 'mapped', filename: 'mapped.js', metadata: {} }
+    output = Sprockets::Rails::SourcemappingUrlProcessor.call(input)
+    assert_equal({ data: "var mapped;\n//# sourceMappingURL=data:application/json;base64,abc123=\n//!\n" }, output)
+  end
 end
