@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+gemspec path: '..'
+
+gem 'actionpack', '~> 7.0.0'
+gem 'railties', '~> 7.0.0'
+gem 'sprockets', '~> 4.0'

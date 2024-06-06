@@ -8,56 +8,30 @@ jobs:
       matrix:
         include:
           - ruby: 2.5
-            gemfile: "gemfiles/Gemfile.rails-5.2.x"
+            gemfile: "gemfiles/Gemfile.rails-6.1-sprockets-3"
           - ruby: 2.5
-            gemfile: "gemfiles/Gemfile.rails-5.2.x.sprockets-4.x"
-          - ruby: 2.5
-            gemfile: "gemfiles/Gemfile.rails-6.0.x"
-          - ruby: 2.5
-            gemfile: "gemfiles/Gemfile.rails-6.0.x.sprockets-4.x"
-          - ruby: 2.6
-            gemfile: "gemfiles/Gemfile.rails-5.2.x"
-          - ruby: 2.6
-            gemfile: "gemfiles/Gemfile.rails-5.2.x.sprockets-4.x"
-          - ruby: 2.6
-            gemfile: "gemfiles/Gemfile.rails-6.0.x"
-          - ruby: 2.6
-            gemfile: "gemfiles/Gemfile.rails-6.0.x.sprockets-4.x"
+            gemfile: "gemfiles/Gemfile.rails-6.1-sprockets-4"
+
           - ruby: 2.7
-            gemfile: "gemfiles/Gemfile.rails-5.2.x"
+            gemfile: "gemfiles/Gemfile.rails-7.0-sprockets-3"
           - ruby: 2.7
-            gemfile: "gemfiles/Gemfile.rails-5.2.x.sprockets-4.x"
+            gemfile: "gemfiles/Gemfile.rails-7.0-sprockets-4"
+
           - ruby: 2.7
-            gemfile: "gemfiles/Gemfile.rails-6.0.x"
+            gemfile: "gemfiles/Gemfile.rails-7.1-sprockets-3"
           - ruby: 2.7
-            gemfile: "gemfiles/Gemfile.rails-6.0.x.sprockets-4.x"
-          - ruby: 2.7
-            gemfile: "gemfiles/Gemfile.rails-6.1.x.sprockets-4.x"
-          - ruby: '3.0'
-            gemfile: "gemfiles/Gemfile.rails-6.0.x"
-          - ruby: '3.0'
-            gemfile: "gemfiles/Gemfile.rails-6.0.x.sprockets-4.x"
-          - ruby: '3.0'
-            gemfile: "gemfiles/Gemfile.rails-6.1.x.sprockets-4.x"
+            gemfile: "gemfiles/Gemfile.rails-7.1-sprockets-4"
+
           - ruby: 3.1
-            gemfile: "gemfiles/Gemfile.rails-6.0.x"
+            gemfile: "gemfiles/Gemfile.rails-7.2-sprockets-3"
           - ruby: 3.1
-            gemfile: "gemfiles/Gemfile.rails-6.0.x.sprockets-4.x"
+            gemfile: "gemfiles/Gemfile.rails-7.2-sprockets-4"
+
           - ruby: 3.1
-            gemfile: "gemfiles/Gemfile.rails-6.1.x.sprockets-4.x"
-          - ruby: 3.2
-            gemfile: "gemfiles/Gemfile.rails-6.0.x"
-          - ruby: 3.2
-            gemfile: "gemfiles/Gemfile.rails-6.0.x.sprockets-4.x"
-          - ruby: 3.2
-            gemfile: "gemfiles/Gemfile.rails-6.1.x.sprockets-4.x"
-          - ruby: 2.7
-            gemfile: Gemfile
-          - ruby: '3.0'
-            gemfile: Gemfile
-          - ruby: '3.1'
             gemfile: Gemfile
           - ruby: 3.2
+            gemfile: Gemfile
+          - ruby: 3.3
             gemfile: Gemfile
           - ruby: head
             gemfile: Gemfile
