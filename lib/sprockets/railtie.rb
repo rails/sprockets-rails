@@ -6,6 +6,7 @@ require 'active_support/core_ext/numeric/bytes'
 require 'sprockets'
 
 require 'sprockets/rails/asset_url_processor'
+require 'sprockets/rails/deprecator'
 require 'sprockets/rails/sourcemapping_url_processor'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
