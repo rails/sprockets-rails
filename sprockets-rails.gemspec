@@ -23,4 +23,6 @@ Gem::Specification.new do |s|
 
   s.author = "Joshua Peek"
   s.email  = "josh@joshpeek.com"
+
+  s.metadata["changelog_uri"] = "https://github.com/rails/sprockets-rails/releases"
 end
