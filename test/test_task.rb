@@ -25,7 +25,7 @@ class TestTask < Minitest::Test
     Sprockets::Rails::Task.new do |t|
       t.environment = @assets
       t.manifest    = @manifest
-      t.assets      = ['foo.js', 'foo-modified.js']
+      t.assets      = ['foo.js', 'foo-modified.js', 'file1.js', 'file2.js']
       t.log_level   = :fatal
     end
 
@@ -138,5 +138,39 @@ class TestTask < Minitest::Test
     # refute File.exist?("#{@dir}/#{old_digest_path}")
   ensure
     FileUtils.rm(new_path) if new_path
+  end
+
+  def test_generate_nondigests
+    assert !@environment_ran
+    asset1_name = "file1.js"
+    asset2_name = "file2.js"
+
+    digest1_path = @assets[asset1_name].digest_path
+    digest2_path = @assets[asset2_name].digest_path
+
+    @rake['assets:precompile'].invoke
+    assert @environment_ran
+
+    setup
+
+    assert !@environment_ran
+    assert File.exist?("#{@dir}/#{digest1_path}")
+    refute File.exist?("#{@dir}/#{asset1_name}")
+    assert File.exist?("#{@dir}/#{digest2_path}")
+    refute File.exist?("#{@dir}/#{asset2_name}")
+
+    @rake['assets:generate_nondigest'].invoke("#{asset1_name} #{asset2_name}")
+
+    assert @environment_ran
+    assert File.exist?("#{@dir}/#{digest1_path}"), "digest file 1 not found"
+    assert File.exist?("#{@dir}/#{asset1_name}"), "nondigest file 1 not found"
+    assert File.exist?("#{@dir}/#{digest2_path}"), "digest file 2 not found"
+    assert File.exist?("#{@dir}/#{asset2_name}"), "nondigest file 2 not found"
+  end
+
+  def test_generate_nondigests_with_no_params
+    assert_raises Sprockets::Rails::Task::MissingParamsError do
+      @rake['assets:generate_nondigest'].invoke
+    end
   end
 end
