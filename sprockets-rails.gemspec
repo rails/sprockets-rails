@@ -9,6 +9,10 @@ Gem::Specification.new do |s|
   s.summary  = "Sprockets Rails integration"
   s.license  = "MIT"
 
+  s.metadata = {
+    "changelog_uri" => "#{s.homepage}/releases/tag/v#{s.version}"
+  }
+
   s.files = Dir["README.md", "lib/**/*.rb", "MIT-LICENSE"]
 
   s.required_ruby_version = '>= 2.5'
