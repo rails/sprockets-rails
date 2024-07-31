@@ -21,6 +21,7 @@ class TestQuietAssets < Minitest::Test
     @app = Class.new(Rails::Application)
     @app.config.eager_load = false
     @app.config.logger = ActiveSupport::Logger.new("/dev/null")
+    @app.config.active_support.to_time_preserves_timezone = :zone
 
     FileUtils.mkdir_p(ASSET_PATH)
     File.open(ASSET_PATH.join("manifest.js"), "w") { |f| f << "" }

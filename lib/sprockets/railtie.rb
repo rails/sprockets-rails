@@ -222,7 +222,7 @@ module Sprockets
       if config.assets.compile
         app.assets = self.build_environment(app, true)
         app.routes.prepend do
-          mount app.assets => config.assets.prefix
+          mount app.assets, at: config.assets.prefix
         end
       end
 
