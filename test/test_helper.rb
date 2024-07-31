@@ -91,9 +91,6 @@ class HelperTest < ActionView::TestCase
     Gem::Version.new(Sprockets::VERSION) >= Gem::Version.new('4.x')
   end
 
-  def test_truth
-  end
-
   def test_foo_and_bar_different_digests
     refute_equal @foo_js_digest, @bar_js_digest
     refute_equal @foo_css_digest, @bar_css_digest
@@ -802,9 +799,11 @@ class DebugManifestHelperTest < ManifestHelperTest
   end
 
   def test_javascript_include_tag_integrity
+    pass
   end
 
   def test_stylesheet_link_tag_integrity
+    pass
   end
 end
 
