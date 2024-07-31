@@ -2,7 +2,9 @@ require 'minitest/autorun'
 
 require 'action_view'
 require 'sprockets'
-require 'sprockets/rails'
+# Apps generated before Rails 7.0 without rails/all require sprockets/railtie, not sprockets/rails
+# Same with other reverse dependencies like sassc-rails
+require 'sprockets/railtie'
 require 'sprockets/rails/context'
 require 'sprockets/rails/helper'
 require 'rails/version'
