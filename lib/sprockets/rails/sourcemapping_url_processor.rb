@@ -23,7 +23,7 @@ module Sprockets
 
         private
           def combine_sourcemap_logical_path(sourcefile:, sourcemap:)
-            if (parts = sourcefile.split("/")).many?
+            if (parts = sourcefile.split("/")).many? && !sourcemap.split("/").many?
               parts[0..-2].append(sourcemap).join("/")
             else
               sourcemap
