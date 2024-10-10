@@ -62,6 +62,18 @@ class TestAssetUrlProcessor < Minitest::Test
     assert_equal("background: url(/jquery/jquery-#{jquery_digest}.js);", output[:data])
   end
 
+  def test_data_subdirectory
+    input = { environment: @env, data: "background: url('data/logo.png');", filename: 'url2.css', metadata: {} }
+    output = Sprockets::Rails::AssetUrlProcessor.call(input)
+    assert_equal("background: url(/data/logo-#{@logo_digest}.png);", output[:data])
+  end
+
+  def test_protocol_data
+    input = { environment: @env, data: "background: url('data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjMwMCIgd2lkdGg9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBkYXRhLW5hbWU9IkxheWVyIDEiIHZpZXdCb3g9IjAgMCA1MCA1MCI+PHBhdGggZD0iTTQ4LjcxIDQyLjkxTDM0LjA4IDI4LjI5IDQ0LjMzIDE4YTEgMSAwIDAwLS4zMy0xLjYxTDIuMzUgMS4wNmExIDEgMCAwMC0xLjI5IDEuMjlMMTYuMzkgNDRhMSAxIDAgMDAxLjY1LjM2bDEwLjI1LTEwLjI4IDE0LjYyIDE0LjYzYTEgMSAwIDAwMS40MSAwbDQuMzgtNC4zOGExIDEgMCAwMC4wMS0xLjQyem0tNS4wOSAzLjY3TDI5IDMyYTEgMSAwIDAwLTEuNDEgMGwtOS44NSA5Ljg1TDMuNjkgMy42OWwzOC4xMiAxNEwzMiAyNy41OEExIDEgMCAwMDMyIDI5bDE0LjU5IDE0LjYyeiIvPjwvc3ZnPg==');", filename: 'url2.css', metadata: {} }
+    output = Sprockets::Rails::AssetUrlProcessor.call(input)
+    assert_equal(input[:data], output[:data])
+  end
+
   def test_protocol_relative_paths
     input = { environment: @env, data: "background: url(//assets.example.com/assets/fontawesome-webfont-82ff0fe46a6f60e0ab3c4a9891a0ae0a1f7b7e84c625f55358379177a2dcb202.eot);", filename: 'url2.css', metadata: {} }
     output = Sprockets::Rails::AssetUrlProcessor.call(input)
