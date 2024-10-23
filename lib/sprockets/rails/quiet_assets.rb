@@ -20,10 +20,14 @@ module Sprockets
 
       private
         def raise_logger_silence_error
-          error = "You have enabled `config.assets.quiet`, but your `Rails.logger`\n"
-          error << "does not use the `LoggerSilence` module.\n\n"
-          error << "Please use a compatible logger such as `ActiveSupport::Logger`\n"
-          error << "to take advantage of quiet asset logging.\n\n"
+          error = <<~ERROR
+            You have enabled `config.assets.quiet`, but your `Rails.logger`
+            does not use the `LoggerSilence` module.
+
+            Please use a compatible logger such as `ActiveSupport::Logger`
+            to take advantage of quiet asset logging.
+
+          ERROR
 
           raise LoggerSilenceError, error
         end
