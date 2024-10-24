@@ -110,7 +110,9 @@ end
 
 **`config.assets.resolve_assets_in_css_urls`**
 
-When this option is enabled, sprockets-rails will register a CSS postprocessor to resolve assets referenced in [`url()`](https://developer.mozilla.org/en-US/docs/Web/CSS/url()) function calls and replace them with the digested paths. Defaults to `true`.
+When this option is enabled, sprockets-rails will register a CSS postprocessor to resolve assets referenced in [`url()`](https://developer.mozilla.org/en-US/docs/Web/CSS/url()) function calls and replace them with the digested paths. Defaults to `true`. 
+
+It is no longer necessary to use the asset-url() helper in your SASS files (which was introduced by sass-rails). All `url(...)` references in CSS are  transparently processed to use appropriately digested filenames automatically now.
 
 **`config.assets.resolve_with`**
 
