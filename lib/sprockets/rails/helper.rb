@@ -80,7 +80,11 @@ module Sprockets
         if asset_path = resolve_asset_path(path, debug)
           File.join(assets_prefix || "/", legacy_debug_path(asset_path, debug))
         else
-          message =  "The asset #{ path.inspect } is not present in the asset pipeline.\n"
+          message = String.new("The asset #{ path.inspect } is not present in the asset pipeline.\n")
+          asset_resolver_strategies.each do |strat|
+            message << "Checked in manifest file: #{strat.filename}\n" if strat.filename
+          end
+
           raise AssetNotFound, message unless unknown_asset_fallback
 
           if respond_to?(:public_compute_asset_path)
@@ -283,6 +287,10 @@ module Sprockets
           raise ArgumentError, 'config.assets.resolve_with includes :manifest, but app.assets_manifest is nil' unless @manifest
         end
 
+        def filename
+          @manifest.try(:filename)
+        end
+
         def asset_path(path, digest, allow_non_precompiled = false)
           if digest
             digest_path path, allow_non_precompiled
@@ -317,6 +325,10 @@ module Sprockets
           @env = view.assets_environment
           @precompiled_asset_checker = view.precompiled_asset_checker
           @check_precompiled_asset = view.check_precompiled_asset
+        end
+
+        def filename
+          nil
         end
 
         def asset_path(path, digest, allow_non_precompiled = false)

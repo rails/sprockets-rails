@@ -290,6 +290,25 @@ class TestRailtie < TestBoot
     assert_equal app.assets_manifest, @view.assets_manifest
   end
 
+  def test_lists_manifest_files_on_failed_asset_lookup_in_prod
+    app.configure do
+      config.assets.compile = false
+      config.assets.unknown_asset_fallback = false
+    end
+
+    assert_equal false, app.config.assets.compile
+
+    app.initialize!
+
+    @view = ActionView::Base.new
+    error = assert_raises do
+      @view.asset_path("does_not_exist.js")
+    end
+
+    assert_match(/Checked in manifest/, error.message)
+    assert_match(/\.sprockets-manifest-/, error.message)
+  end
+
   def test_sprockets_context_helper
     app.initialize!
 
