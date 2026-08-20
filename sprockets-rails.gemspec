@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake"
   s.add_development_dependency "sass"
   s.add_development_dependency "uglifier"
+  s.add_development_dependency "m"
 
   s.author = "Joshua Peek"
   s.email  = "josh@joshpeek.com"
