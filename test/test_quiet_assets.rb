@@ -32,27 +32,31 @@ class TestQuietAssets < Minitest::Test
   end
 
   def test_silences_with_default_prefix
-    assert_equal Logger::ERROR, middleware.call("PATH_INFO" => "/assets/stylesheets/application.css")
+    middleware_instance = Sprockets::Rails::QuietAssets.new(->(env) { Rails.logger.level })
+    # The logger should be silenced to ERROR inside middleware
+    level = middleware_instance.call("PATH_INFO" => "/assets/stylesheets/application.css")
+    assert_equal Logger::ERROR, level
   end
 
   def test_silences_with_custom_prefix
-    Rails.application.config.assets.prefix = "path/to"
-    assert_equal Logger::ERROR, middleware.call("PATH_INFO" => "/path/to/thing")
+    Rails.application.config.assets.prefix = "/path/to"
+    middleware_instance = Sprockets::Rails::QuietAssets.new(->(env) { Rails.logger.level })
+    level = middleware_instance.call("PATH_INFO" => "/path/to/thing")
+    assert_equal Logger::ERROR, level
   end
 
   def test_does_not_silence_without_match
-    assert_equal Logger::DEBUG, middleware.call("PATH_INFO" => "/path/to/thing")
+    middleware_instance = Sprockets::Rails::QuietAssets.new(->(env) { Rails.logger.level })
+    level = middleware_instance.call("PATH_INFO" => "/other/path")
+    assert_equal Logger::DEBUG, level
   end
 
   def test_logger_does_not_respond_to_silence
+    middleware_instance = Sprockets::Rails::QuietAssets.new(->(env) { Rails.logger.level })
     ::Rails.logger.stub :respond_to?, false do
-      assert_raises(Sprockets::Rails::LoggerSilenceError) { middleware.call("PATH_INFO" => "/assets/stylesheets/application.css") }
+      assert_raises(Sprockets::Rails::LoggerSilenceError) do
+        middleware_instance.call("PATH_INFO" => "/assets/stylesheets/application.css")
+      end
     end
-  end
-
-  private
-
-  def middleware
-    @middleware ||= Sprockets::Rails::QuietAssets.new(->(env) { Rails.logger.level })
   end
 end

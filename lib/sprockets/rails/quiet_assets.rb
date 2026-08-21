@@ -5,11 +5,13 @@ module Sprockets
     class QuietAssets
       def initialize(app)
         @app = app
-        @assets_regex = %r(\A/{0,2}#{::Rails.application.config.assets.prefix})
+        @prefix = ::Rails.application.config.assets.prefix
       end
 
       def call(env)
-        if env['PATH_INFO'] =~ @assets_regex
+        path = env['PATH_INFO'].to_s
+
+        if path == @prefix || path.start_with?("#{@prefix}/")
           raise_logger_silence_error unless ::Rails.logger.respond_to?(:silence)
 
           ::Rails.logger.silence { @app.call(env) }
@@ -23,12 +25,11 @@ module Sprockets
           error = <<~ERROR
             You have enabled `config.assets.quiet`, but your `Rails.logger`
             does not use the `LoggerSilence` module.
-
+  
             Please use a compatible logger such as `ActiveSupport::Logger`
             to take advantage of quiet asset logging.
-
           ERROR
-
+  
           raise LoggerSilenceError, error
         end
     end
