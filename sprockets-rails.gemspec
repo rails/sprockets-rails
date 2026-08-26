@@ -22,8 +22,6 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport", ">= 6.1"
   s.add_development_dependency "railties", ">= 6.1"
   s.add_development_dependency "rake"
-  s.add_development_dependency "sass"
-  s.add_development_dependency "uglifier"
 
   s.author = "Joshua Peek"
   s.email  = "josh@joshpeek.com"
