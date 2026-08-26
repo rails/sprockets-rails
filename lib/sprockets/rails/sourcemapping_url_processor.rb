@@ -2,20 +2,24 @@ module Sprockets
   module Rails
     # Rewrites source mapping urls with the digested paths and protect against semicolon appending with a dummy comment line
     class SourcemappingUrlProcessor
-      REGEX = /\/\/# sourceMappingURL=(.*\.map)/
+      FILE_REGEX = /\/\/# sourceMappingURL=(.*\.map)/
+      INLINE_REGEX = /\/\/# sourceMappingURL=(data:.*)$/
 
       class << self
         def call(input)
           env     = input[:environment]
           context = env.context_class.new(input)
-          data    = input[:data].gsub(REGEX) do |_match|
+          data    = input[:data].gsub(FILE_REGEX) do |_match|
             sourcemap_logical_path = combine_sourcemap_logical_path(sourcefile: input[:name], sourcemap: $1)
 
             begin
-              resolved_sourcemap_comment(sourcemap_logical_path, context: context)
+              resolved_sourcemap_file_comment(sourcemap_logical_path, context: context)
             rescue Sprockets::FileNotFound
-              removed_sourcemap_comment(sourcemap_logical_path, filename: input[:filename], env: env)
+              removed_sourcemap_file_comment(sourcemap_logical_path, filename: input[:filename], env: env)
             end
+          end
+          data    = data.gsub(INLINE_REGEX) do |_match|
+            "//# sourceMappingURL=#{$1}\n//!\n"
           end
 
           { data: data }
@@ -30,7 +34,7 @@ module Sprockets
             end
           end
 
-          def resolved_sourcemap_comment(sourcemap_logical_path, context:)
+          def resolved_sourcemap_file_comment(sourcemap_logical_path, context:)
             "//# sourceMappingURL=#{sourcemap_asset_path(sourcemap_logical_path, context: context)}\n//!\n"
           end
 
@@ -44,7 +48,7 @@ module Sprockets
             end
           end
 
-          def removed_sourcemap_comment(sourcemap_logical_path, filename:, env:)
+          def removed_sourcemap_file_comment(sourcemap_logical_path, filename:, env:)
             env.logger.warn "Removed sourceMappingURL comment for missing asset '#{sourcemap_logical_path}' from #{filename}"
             nil
           end
