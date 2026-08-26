@@ -23,7 +23,7 @@ Deployment task that compiles any assets listed in `config.assets.precompile` to
 
 **`rake assets:clean`**
 
-Only removes old assets (keeps the most recent 3 copies) from `public/assets`. Useful when doing rolling deploys that may still be serving old assets while the new ones are being compiled.
+Only removes old assets (by default keeps the most recent 3 copies and files created within 3600 ) from `public/assets`. Useful when doing rolling deploys that may still be serving old assets while the new ones are being compiled.  Use `rake assets:clean[3,3600]` to keep the last 3 assets or created within the last hour or `rake assets:clean[1,0]` to keep only the most recent old assets.  This never cleans up the currently used assets.
 
 **`rake assets:clobber`**
 
