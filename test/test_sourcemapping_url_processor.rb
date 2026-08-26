@@ -46,4 +46,28 @@ class TestSourceMappingUrlProcessor < Minitest::Test
     output = Sprockets::Rails::SourcemappingUrlProcessor.call(input)
     assert_equal({ data: "var mapped;\n" }, output)
   end
+
+  def test_missing_with_json_file_ext_also_removes_file_ext
+    @env.context_class.class_eval do
+      def resolve(path, **kargs)
+        raise Sprockets::FileNotFound
+      end
+    end
+
+    input = { environment: @env, data: "var mapped;\n//# sourceMappingURL=mappedNOT.js.map.json", name: 'mapped', filename: 'mapped.js', metadata: {} }
+    output = Sprockets::Rails::SourcemappingUrlProcessor.call(input)
+    assert_equal({ data: "var mapped;\n" }, output)
+  end
+
+  def test_missing_with_json_file_ext_and_subsequent_valid_js_retains_valid_js
+    @env.context_class.class_eval do
+      def resolve(path, **kargs)
+        raise Sprockets::FileNotFound
+      end
+    end
+
+    input = { environment: @env, data: "var mapped;\n//# sourceMappingURL=mappedNOT.js.map.json\nvar foo = bar();", name: 'mapped', filename: 'mapped.js', metadata: {} }
+    output = Sprockets::Rails::SourcemappingUrlProcessor.call(input)
+    assert_equal({ data: "var mapped;\n\nvar foo = bar();" }, output)
+  end
 end
