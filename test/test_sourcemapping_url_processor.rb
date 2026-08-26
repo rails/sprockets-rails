@@ -46,4 +46,25 @@ class TestSourceMappingUrlProcessor < Minitest::Test
     output = Sprockets::Rails::SourcemappingUrlProcessor.call(input)
     assert_equal({ data: "var mapped;\n" }, output)
   end
+
+
+  def test_resolving_erroneously_with_prefix_path_on_filename
+    @env.context_class.class_eval do
+      def resolve(path, **kargs)
+        if(path == "subdir/mapped.js.map") 
+          "assets/subdir/mapped.js.map"
+        else 
+          raise Sprockets::FileNotFound
+        end
+      end
+
+      def asset_path(path, options = {})
+        "/assets/subdir/mapped-HEXGOESHERE.js.map"
+      end
+    end
+
+    input = { environment: @env, data: "var mapped;\n//# sourceMappingURL=subdir/mapped.js.map", name: 'subdir/mapped', filename: 'subdir/mapped.js', metadata: {} }
+    output = Sprockets::Rails::SourcemappingUrlProcessor.call(input)
+    assert_equal({ data: "var mapped;\n//# sourceMappingURL=/assets/subdir/mapped-HEXGOESHERE.js.map\n//!\n" }, output)
+  end
 end
