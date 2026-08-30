@@ -60,21 +60,6 @@ module Sprockets
   class Railtie < ::Rails::Railtie
     include Sprockets::Rails::Utils
 
-    class ManifestNeededError < StandardError
-      def initialize
-        msg = "Expected to find a manifest file in `app/assets/config/manifest.js`\n" +
-        "But did not, please create this file and use it to link any assets that need\n" +
-        "to be rendered by your app:\n\n" +
-        "Example:\n" +
-        "  //= link_tree ../images\n"  +
-        "  //= link_directory ../javascripts .js\n" +
-        "  //= link_directory ../stylesheets .css\n"  +
-        "and restart your server\n\n" +
-        "For more information see: https://github.com/rails/sprockets/blob/070fc01947c111d35bb4c836e9bb71962a8e0595/UPGRADING.md#manifestjs"
-        super msg
-      end
-    end
-
     LOOSE_APP_ASSETS = lambda do |logical_path, filename|
       filename.start_with?(::Rails.root.join("app/assets").to_s) &&
       !['.js', '.css', ''].include?(File.extname(logical_path))
@@ -103,8 +88,20 @@ module Sprockets
 
     initializer :set_default_precompile do |app|
       if using_sprockets4?
-        raise ManifestNeededError unless ::Rails.root.join("app/assets/config/manifest.js").exist?
-        app.config.assets.precompile += %w( manifest.js )
+        if ::Rails.root.join("app/assets/config/manifest.js").exist?
+          app.config.assets.precompile += %w( manifest.js )
+        else
+          msg = "Expected to find a manifest file in `app/assets/config/manifest.js`\n" +
+          "But did not, please create this file and use it to link any assets that need\n" +
+          "to be rendered by your app:\n\n" +
+          "Example:\n" +
+          "  //= link_tree ../images\n"  +
+          "  //= link_directory ../javascripts .js\n" +
+          "  //= link_directory ../stylesheets .css\n"  +
+          "and restart your server\n\n" +
+          "For more information see: https://github.com/rails/sprockets/blob/070fc01947c111d35bb4c836e9bb71962a8e0595/UPGRADING.md#manifestjs"
+          Sprockets::Rails.deprecator.warn msg
+        end
       else
         app.config.assets.precompile += [LOOSE_APP_ASSETS, /(?:\/|\\|\A)application\.(css|js)$/]
       end
