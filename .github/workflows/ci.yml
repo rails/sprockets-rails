@@ -9,35 +9,43 @@ jobs:
         include:
           - ruby: 2.5
             gemfile: "gemfiles/Gemfile.rails-6.1-sprockets-3"
+            bundler: "2.3.0"
           - ruby: 2.5
             gemfile: "gemfiles/Gemfile.rails-6.1-sprockets-4"
-
+            bundler: "2.3.0"
           - ruby: 2.7
             gemfile: "gemfiles/Gemfile.rails-7.0-sprockets-3"
+            bundler: "2.4.8"
           - ruby: 2.7
             gemfile: "gemfiles/Gemfile.rails-7.0-sprockets-4"
-
+            bundler: "2.4.8"
           - ruby: 2.7
             gemfile: "gemfiles/Gemfile.rails-7.1-sprockets-3"
+            bundler: "2.4.8"
           - ruby: 2.7
             gemfile: "gemfiles/Gemfile.rails-7.1-sprockets-4"
-
+            bundler: "2.4.8"
           - ruby: 3.1
             gemfile: "gemfiles/Gemfile.rails-7.2-sprockets-3"
+            bundler: default
           - ruby: 3.1
             gemfile: "gemfiles/Gemfile.rails-7.2-sprockets-4"
-
+            bundler: default
           - ruby: 3.2
             gemfile: "gemfiles/Gemfile.rails-8.0-sprockets-3"
+            bundler: default
           - ruby: 3.2
             gemfile: "gemfiles/Gemfile.rails-8.0-sprockets-4"
-
+            bundler: default
           - ruby: 3.2
             gemfile: Gemfile
+            bundler: default
           - ruby: 3.3
             gemfile: Gemfile
+            bundler: default
           - ruby: head
             gemfile: Gemfile
+            bundler: default
 
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
@@ -49,6 +57,8 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+          cache-version: ${{ matrix.ruby }}-${{ matrix.ruby }}-${{ matrix.gemfile }}
+          bundler: ${{ matrix.bundler }}
       - name: Run tests
         run: bundle exec rake
         continue-on-error: ${{ matrix.gemfile == 'Gemfile' }}
